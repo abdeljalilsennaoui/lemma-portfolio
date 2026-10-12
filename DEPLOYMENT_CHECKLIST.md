@@ -31,12 +31,12 @@
 ## Moving to the custom domain
 
 - [x] Domain bought: `lemmabyajs.com`, registered at Porkbun on 12 October 2026.
-- [ ] Domain verified in GitHub account settings.
-- [ ] DNS records added at the registrar.
-- [ ] Custom domain entered in the repository's Pages settings.
-- [ ] Repository variables set: `SITE_URL` and `BASE_PATH=/`.
-- [ ] Workflow re-run; site loads at the new address.
-- [ ] **Enforce HTTPS** ticked.
-- [ ] Old project URL redirects to the new domain (GitHub does this automatically).
+- [x] Domain verified in GitHub account settings.
+- [x] DNS records added at the registrar.
+- [x] Custom domain entered in the repository's Pages settings.
+- [x] Repository variables set: `SITE_URL` and `BASE_PATH=/`.
+- [x] Workflow re-run; site loads at the new address.
+- [x] **Enforce HTTPS** ticked.
+- [x] Old project URL redirects to the new domain (GitHub does this automatically).
 
 Full steps are in the README under "Configuring the custom domain".
