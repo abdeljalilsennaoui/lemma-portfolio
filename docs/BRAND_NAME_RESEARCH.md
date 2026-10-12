@@ -33,8 +33,11 @@ Controls, to confirm the method distinguishes the two cases: `google.dev`, `lemm
 for domain".
 
 What this does not tell you: the price, whether a registrar lists the name as premium, or whether
-it will still be free tomorrow. Nothing was purchased. Confirm at a registrar at the moment of
-buying.
+it will still be free tomorrow.
+
+**Update, same day:** `lemmabyajs.com` was then registered by Abdeljalil Sennaoui at Porkbun. The
+registry shows it registered on 12 October 2026 and expiring on 12 October 2027, so it needs
+renewing each year. `lemmabyajs.dev` and `ajslemma.dev` were not bought and remain open to anyone.
 
 Note that `lemma.dev` and `lemma.com` are both taken, which is consistent with the name being in
 wide use on its own.
@@ -103,7 +106,8 @@ No use of the exact phrases "LEMMA by AJS", "LEMMA AJS" or "AJS LEMMA" was found
   confusion objection from one of the existing Lemma companies in a software class, and the
   difficulty of registering a mark whose main word is already claimed. Speak to a trademark agent
   before investing in the name commercially, and check the Quebec register at that point.
-- **The domain is the easy part.** `lemmabyajs.dev` was unregistered when checked.
+- **The domain is settled.** `lemmabyajs.com` is registered to you. Consider also registering
+  `lemmabyajs.dev` if you want to stop someone else from taking the look-alike.
 
 ## Sources
 

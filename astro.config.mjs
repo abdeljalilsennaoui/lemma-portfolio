@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // Where the site is served from. The defaults match the GitHub Pages project
 // URL (https://abdeljalilsennaoui.github.io/lemma-portfolio/). To move to a
-// custom domain, set SITE_URL=https://example.dev and BASE_PATH=/ — see
+// custom domain, set SITE_URL=https://lemmabyajs.com and BASE_PATH=/ — see
 // "Configuring the custom domain" in the README. Nothing else needs to change.
 const site = process.env.SITE_URL ?? 'https://abdeljalilsennaoui.github.io';
 const base = process.env.BASE_PATH ?? '/lemma-portfolio';

@@ -30,7 +30,7 @@
 
 ## Moving to the custom domain
 
-- [ ] Domain bought (`lemmabyajs.dev` preferred).
+- [x] Domain bought: `lemmabyajs.com`, registered at Porkbun on 12 October 2026.
 - [ ] Domain verified in GitHub account settings.
 - [ ] DNS records added at the registrar.
 - [ ] Custom domain entered in the repository's Pages settings.

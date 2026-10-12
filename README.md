@@ -197,38 +197,47 @@ Everything that prints it reads from `brand` in `src/config/site.ts`. To rename:
 
 ## Configuring the custom domain
 
-Do this only after the domain is bought. The preferred domain is `lemmabyajs.dev`.
+The domain is `lemmabyajs.com`, registered at Porkbun. Do the steps in this order: if GitHub is
+given the domain before DNS points at it, the working `github.io` address starts redirecting to a
+domain that does not resolve yet.
 
-1. **Verify the domain** on GitHub: your account **Settings → Pages → Add a domain**. GitHub
-   gives you a TXT record to add at your registrar. This stops anyone else from pointing your
-   domain at their own Pages site.
-2. **Add DNS records** at your registrar. For the apex domain (`lemmabyajs.dev`):
+1. **Verify the domain** on GitHub: your account **Settings → Pages → Add a domain**, enter
+   `lemmabyajs.com`. GitHub shows a TXT record; add it in Porkbun (step 2) and press **Verify**.
+   This stops anyone else from pointing your domain at their own Pages site.
+2. **Set the DNS records** in Porkbun: **Domain Management → lemmabyajs.com → DNS**. Delete the
+   two default parking records (an `ALIAS` for the root and a `CNAME` for `*`, both pointing at
+   `uixie.porkbun.com`), then add:
 
-   | Type | Name | Value |
+   | Type | Host | Answer |
    | --- | --- | --- |
-   | A | `@` | `185.199.108.153` |
-   | A | `@` | `185.199.109.153` |
-   | A | `@` | `185.199.110.153` |
-   | A | `@` | `185.199.111.153` |
-   | AAAA | `@` | `2606:50c0:8000::153` |
-   | AAAA | `@` | `2606:50c0:8001::153` |
-   | AAAA | `@` | `2606:50c0:8002::153` |
-   | AAAA | `@` | `2606:50c0:8003::153` |
+   | A | *(blank)* | `185.199.108.153` |
+   | A | *(blank)* | `185.199.109.153` |
+   | A | *(blank)* | `185.199.110.153` |
+   | A | *(blank)* | `185.199.111.153` |
+   | AAAA | *(blank)* | `2606:50c0:8000::153` |
+   | AAAA | *(blank)* | `2606:50c0:8001::153` |
+   | AAAA | *(blank)* | `2606:50c0:8002::153` |
+   | AAAA | *(blank)* | `2606:50c0:8003::153` |
    | CNAME | `www` | `abdeljalilsennaoui.github.io` |
+   | TXT | *(the host GitHub shows in step 1)* | *(the value GitHub shows in step 1)* |
 
    These are GitHub's published addresses at the time of writing; confirm them against
    [GitHub's documentation](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
-   before entering them.
-3. **Tell GitHub Pages**: repository **Settings → Pages → Custom domain**, enter
-   `lemmabyajs.dev` and save.
-4. **Tell the build**: repository **Settings → Secrets and variables → Actions → Variables**,
-   add `SITE_URL` = `https://lemmabyajs.dev` and `BASE_PATH` = `/`.
+   before entering them. Check the result with `dig +short lemmabyajs.com A`.
+3. **Tell the build**: repository **Settings → Secrets and variables → Actions → Variables**,
+   add `SITE_URL` = `https://lemmabyajs.com` and `BASE_PATH` = `/`.
+4. **Tell GitHub Pages**: repository **Settings → Pages → Custom domain**, enter
+   `lemmabyajs.com` and save.
 5. **Redeploy**: run the workflow from the Actions tab, or push a commit.
-6. When the certificate has been issued, tick **Enforce HTTPS** in the Pages settings. A `.dev`
-   domain only works over HTTPS, so the site is unreachable until this is done.
+6. When the certificate has been issued (usually within minutes, sometimes up to an hour), tick
+   **Enforce HTTPS** in the Pages settings.
 
 With a custom domain the site is served from the root, so `robots.txt` takes effect. On the
-project URL it does not, because crawlers only read `robots.txt` from the root of a host.
+project URL it does not, because crawlers only read `robots.txt` from the root of a host. The old
+`github.io` address redirects to the domain automatically.
+
+To go back to the project URL: clear the custom domain in the Pages settings, delete the two
+repository variables, and redeploy.
 
 ## Troubleshooting
 
