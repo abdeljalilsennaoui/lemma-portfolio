@@ -1,0 +1,217 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { principles } from '../data/principles';
+import { getProject } from '../data/projects';
+import { skillGroups } from '../data/skills';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import type { Evidence } from '../types/content';
+import { href } from '../utils/paths';
+
+interface Props {
+  locale: Locale;
+  number: number;
+}
+
+const { locale, number } = Astro.props;
+const strings = ui.engineering;
+
+// Turn an evidence pointer into a citation: "L2" for a case study on this
+// site, or the repository name for anything outside it.
+function resolve(evidence: Evidence) {
+  if (evidence.kind === 'link') {
+    return { text: evidence.label, url: evidence.url, title: evidence.label, external: true };
+  }
+  const project = getProject(evidence.slug);
+  if (!project) throw new Error(`Unknown project in skills evidence: ${evidence.slug}`);
+  return {
+    text: `L${project.order}`,
+    url: href(`/work/${project.slug}/`, locale),
+    title: project.title,
+    external: false,
+  };
+}
+---
+
+<section id="engineering" class="shell section" aria-labelledby="engineering-title">
+  <SectionHeading id="engineering-title" number={number} title={strings.title[locale]} intro={strings.intro[locale]} />
+
+  <div class="engineering">
+    <div>
+      <h3 class="subheading">{strings.principles[locale]}</h3>
+      <ul class="principles">
+        {
+          principles.map((principle) => (
+            <li>
+              <strong>{principle.name[locale]}.</strong> {principle.statement[locale]}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="subheading">{strings.skills[locale]}</h3>
+      <table class="booktabs skills">
+        <thead>
+          <tr>
+            <th scope="col">{strings.area[locale]}</th>
+            <th scope="col">{strings.skillsHead[locale]}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            skillGroups.map((group) => (
+              <tr>
+                <th scope="row">{group.label[locale]}</th>
+                <td>
+                  <ul>
+                    {group.skills.map((skill) => (
+                      <li>
+                        {skill.name}{' '}
+                        <span class="cite">
+                          {'['}
+                          {skill.evidence.map(resolve).map((item, index) => (
+                            <>
+                              {index > 0 && ', '}
+                              <a href={item.url} rel={item.external ? 'noopener' : undefined} title={item.title}>
+                                {item.text}
+                                {!item.external && <span class="sr-only">, {item.title}</span>}
+                              </a>
+                            </>
+                          ))}
+                          {']'}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="caption">
+        <span class="caption-label">{ui.work.table[locale]}&nbsp;1.</span>{' '}
+        {strings.evidenceHint[locale]}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-top: clamp(4rem, 9vw, 7rem);
+  }
+
+  .engineering {
+    display: grid;
+    gap: 3.5rem;
+    padding-top: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .subheading {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .principles {
+    display: grid;
+    gap: 1.125rem;
+    margin-top: 1.25rem;
+    max-width: 30rem;
+    color: var(--muted);
+  }
+
+  .principles strong {
+    font-family: var(--font-serif);
+    font-size: 1.15em;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .skills {
+    margin-top: 1.25rem;
+  }
+
+  .skills tbody th {
+    width: 9.5rem;
+  }
+
+  .skills ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.125rem;
+  }
+
+  .skills li {
+    white-space: nowrap;
+  }
+
+  /* Evidence is cited the way a paper cites its references. */
+  .cite {
+    font-size: var(--text-xs);
+    color: var(--muted);
+    white-space: normal;
+  }
+
+  .cite a {
+    display: inline-block;
+    /* A 24px-wide target, pulled in so the brackets still sit close. */
+    min-width: 1.5rem;
+    margin-inline: -0.25rem;
+    padding-block: 0.3rem;
+    text-align: center;
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.2em;
+  }
+
+  .cite a:hover {
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+  }
+
+  @media (max-width: 39.99rem) {
+    /* On narrow screens each area stacks above its skills. */
+    .skills thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .skills tbody tr {
+      display: grid;
+    }
+
+    .skills tbody th {
+      width: auto;
+      padding-bottom: 0;
+      border-top: 0;
+    }
+
+    .skills tbody tr + tr {
+      border-top: 1px solid var(--line);
+    }
+
+    .skills tbody tr + tr > * {
+      border-top: 0;
+    }
+
+    .skills tbody td {
+      padding-top: 0.25rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .engineering {
+      grid-template-columns: 5fr 7fr;
+      gap: 4rem;
+    }
+  }
+</style>

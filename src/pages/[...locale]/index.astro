@@ -1,0 +1,23 @@
+---
+import AboutSection from '../../components/AboutSection.astro';
+import ContactSection from '../../components/ContactSection.astro';
+import EngineeringSection from '../../components/EngineeringSection.astro';
+import Hero from '../../components/Hero.astro';
+import WorkSection from '../../components/WorkSection.astro';
+import { localeFromParam, localeParams } from '../../i18n';
+import Base from '../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  return localeParams();
+}
+
+const locale = localeFromParam(Astro.params.locale);
+---
+
+<Base locale={locale} route="/">
+  <Hero locale={locale} />
+  <WorkSection locale={locale} number={1} />
+  <AboutSection locale={locale} number={2} />
+  <EngineeringSection locale={locale} number={3} />
+  <ContactSection locale={locale} number={4} />
+</Base>

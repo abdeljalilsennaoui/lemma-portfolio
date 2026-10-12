@@ -1,0 +1,319 @@
+---
+import Icon from './Icon.astro';
+import Wordmark from './Wordmark.astro';
+import { languageName, languageTag, locales, type Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import { href } from '../utils/paths';
+
+interface Props {
+  locale: Locale;
+  /** Current page path without base or language prefix. */
+  route: string;
+}
+
+const { locale, route } = Astro.props;
+
+const items = [
+  { label: ui.nav.work[locale], target: '/#work' },
+  { label: ui.nav.about[locale], target: '/#about' },
+  { label: ui.nav.engineering[locale], target: '/#engineering' },
+  { label: ui.nav.contact[locale], target: '/#contact' },
+];
+---
+
+<header class="site-header board" data-header>
+  <div class="shell flex h-[4.5rem] items-center justify-between gap-6">
+    <Wordmark locale={locale} />
+
+    <nav aria-label={ui.nav.label[locale]} class="hidden md:block">
+      <ul class="flex items-center gap-8">
+        {
+          items.map((item) => (
+            <li>
+              <a href={href(item.target, locale)} class="nav-link">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-1">
+      <ul class="lang-list" aria-label={ui.nav.language[locale]}>
+        {
+          locales.map((code) => (
+            <li>
+              <a
+                href={href(route, code)}
+                hreflang={languageTag[code]}
+                lang={languageTag[code]}
+                aria-current={code === locale ? 'true' : undefined}
+                class="lang-link"
+              >
+                {code.toUpperCase()}
+                <span class="sr-only">, {languageName[code]}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <button
+        type="button"
+        class="icon-button"
+        data-theme-toggle
+        data-label-light={ui.nav.switchToLight[locale]}
+        data-label-dark={ui.nav.switchToDark[locale]}
+        aria-label={ui.nav.switchToLight[locale]}
+        hidden
+      >
+        <Icon name="sun" class="theme-icon-sun" />
+        <Icon name="moon" class="theme-icon-moon" />
+      </button>
+
+      <button
+        type="button"
+        class="icon-button menu-button"
+        data-menu-toggle
+        data-label-open={ui.nav.openMenu[locale]}
+        data-label-close={ui.nav.closeMenu[locale]}
+        aria-label={ui.nav.openMenu[locale]}
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        hidden
+      >
+        <Icon name="menu" class="menu-icon-open" />
+        <Icon name="close" class="menu-icon-close" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Without JavaScript this list simply stays visible on small screens. -->
+  <nav id="mobile-menu" class="mobile-menu md:hidden" aria-label={ui.nav.label[locale]} data-menu>
+    <ul class="shell flex flex-col pb-4">
+      {
+        items.map((item) => (
+          <li>
+            <a href={href(item.target, locale)} class="mobile-link">
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+      <li class="mobile-languages">
+        <span class="sr-only">{ui.nav.language[locale]}</span>
+        {
+          locales.map((code) => (
+            <a
+              href={href(route, code)}
+              hreflang={languageTag[code]}
+              lang={languageTag[code]}
+              aria-current={code === locale ? 'true' : undefined}
+              class="lang-link"
+            >
+              {languageName[code]}
+            </a>
+          ))
+        }
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const root = document.documentElement;
+
+  // Theme switch: dark by default, the choice is remembered on this device.
+  const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  if (themeToggle) {
+    const syncLabel = () => {
+      const isDark = root.dataset.theme !== 'light';
+      themeToggle.setAttribute(
+        'aria-label',
+        (isDark ? themeToggle.dataset.labelLight : themeToggle.dataset.labelDark) ?? '',
+      );
+    };
+    themeToggle.hidden = false;
+    syncLabel();
+    themeToggle.addEventListener('click', () => {
+      const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        // Storage unavailable: the switch still works for this page view.
+      }
+      syncLabel();
+    });
+  }
+
+  // Mobile menu: a disclosure that closes on Escape and after following a link.
+  const menuToggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  if (menuToggle && menu) {
+    const setOpen = (open: boolean) => {
+      menu.dataset.open = String(open);
+      menuToggle.setAttribute('aria-expanded', String(open));
+      menuToggle.setAttribute(
+        'aria-label',
+        (open ? menuToggle.dataset.labelClose : menuToggle.dataset.labelOpen) ?? '',
+      );
+    };
+    menuToggle.hidden = false;
+    setOpen(false);
+    menuToggle.addEventListener('click', () => setOpen(menu.dataset.open !== 'true'));
+    menu.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && menu.dataset.open === 'true') {
+        setOpen(false);
+        menuToggle.focus();
+      }
+    });
+  }
+
+  // A hairline under the header once the page has scrolled.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  if (header) {
+    const onScroll = () => header.toggleAttribute('data-scrolled', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>
+
+<style>
+  /* The header is a strip of blackboard in both themes. */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid transparent;
+    transition: border-color 200ms ease;
+  }
+
+  .site-header[data-scrolled] {
+    border-bottom-color: var(--line);
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-size: var(--text-sm);
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.45em;
+    transition: text-decoration-color 150ms ease;
+  }
+
+  .nav-link:hover {
+    text-decoration-color: var(--mark);
+  }
+
+  /* On small screens the language links live in the menu instead. */
+  .lang-list {
+    display: none;
+    align-items: center;
+  }
+
+  .mobile-languages {
+    display: flex;
+    gap: 1.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .mobile-languages .lang-link {
+    justify-content: flex-start;
+    min-width: 0;
+    font-size: var(--text-sm);
+    letter-spacing: 0;
+  }
+
+  .lang-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    min-height: 2.75rem;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    transition: color 150ms ease;
+  }
+
+  .lang-link:hover {
+    color: var(--text);
+  }
+
+  .lang-link[aria-current='true'] {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.45em;
+  }
+
+  .icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--text);
+    transition: color 150ms ease;
+  }
+
+  .icon-button[hidden] {
+    display: none;
+  }
+
+  .icon-button:hover {
+    color: var(--mark);
+  }
+
+  /* Show the icon for the theme you would switch to. The icons are child
+     components, so these selectors have to be global. */
+  :global(:root[data-theme='light'] .theme-icon-sun),
+  :global(:root:not([data-theme='light']) .theme-icon-moon) {
+    display: none;
+  }
+
+  :global([data-menu-toggle][aria-expanded='false'] .menu-icon-close),
+  :global([data-menu-toggle][aria-expanded='true'] .menu-icon-open) {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    .menu-button {
+      display: none;
+    }
+
+    .lang-list {
+      display: flex;
+    }
+  }
+
+  .mobile-menu {
+    border-top: 1px solid var(--line);
+  }
+
+  :global(.js) .mobile-menu:not([data-open='true']) {
+    display: none;
+  }
+
+  .mobile-link {
+    display: flex;
+    align-items: center;
+    min-height: 3.25rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    color: var(--text);
+  }
+
+</style>

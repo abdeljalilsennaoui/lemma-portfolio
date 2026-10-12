@@ -1,0 +1,517 @@
+---
+import { disciplines } from '../data/disciplines';
+import { projects } from '../data/projects';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import { href } from '../utils/paths';
+
+/**
+ * The hero visual: the relation R ⊆ P × D between projects and the
+ * disciplines they exercised, drawn from the project data.
+ *
+ * It is shown first as an adjacency matrix of squares — a filled square is
+ * the same mark that ends a proof — and, on request, as the bipartite graph
+ * of the same relation. Adding a project or changing its `disciplines`
+ * redraws both.
+ */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = ui.relation;
+
+const pairs = projects.reduce((count, project) => count + project.disciplines.length, 0);
+
+// Graph view: vertical position of row `index` out of `count`, in percent.
+const rowAt = (index: number, count: number) => (count === 1 ? 50 : 6 + (index * 88) / (count - 1));
+const left = projects.map((project, index) => ({ project, y: rowAt(index, projects.length) }));
+const right = disciplines.map((discipline, index) => ({ discipline, y: rowAt(index, disciplines.length) }));
+const edges = left.flatMap(({ project, y: y1 }) =>
+  right
+    .filter(({ discipline }) => project.disciplines.includes(discipline.id))
+    .map(({ discipline, y: y2 }) => ({
+      project: project.slug,
+      discipline: discipline.id,
+      d: `M0,${y1} C45,${y1} 55,${y2} 100,${y2}`,
+    })),
+);
+---
+
+<figure class="relation" data-relation>
+  <div class="relation-bar">
+    <p class="relation-notation" aria-hidden="true">
+      <i>R</i> ⊆ <i>P</i> × <i>D</i>, <span class="relation-count">|<i>R</i>| = {pairs}</span>
+    </p>
+    <div class="relation-switch" role="group" aria-label={strings.viewLabel[locale]} data-switch hidden>
+      <button type="button" data-view="matrix" aria-pressed="true">{strings.matrix[locale]}</button>
+      <button type="button" data-view="graph" aria-pressed="false">{strings.graph[locale]}</button>
+    </div>
+  </div>
+
+  <div class="relation-matrix" data-panel="matrix">
+    <table>
+      <caption class="sr-only">{strings.title[locale]}</caption>
+      <thead>
+        <tr>
+          <td></td>
+          {
+            disciplines.map((discipline) => (
+              <th scope="col" data-col={discipline.id}>
+                <span>{discipline.label[locale]}</span>
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          projects.map((project, row) => (
+            <tr data-row={project.slug}>
+              <th scope="row">
+                <a href={href(`/work/${project.slug}/`, locale)}>
+                  <span class="relation-id">L{project.order}</span>
+                  <span class="relation-name">{project.shortTitle}</span>
+                </a>
+              </th>
+              {disciplines.map((discipline, col) => {
+                const on = project.disciplines.includes(discipline.id);
+                return (
+                  <td data-col={discipline.id}>
+                    <span class="cell" data-on={on ? '' : undefined} style={`--n:${row * 2 + col}`} />
+                    <span class="sr-only">{on ? strings.yes[locale] : strings.no[locale]}</span>
+                  </td>
+                );
+              })}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="relation-graph" data-panel="graph" hidden>
+    <ul class="relation-column relation-column-left" aria-label={strings.projects[locale]}>
+      {
+        left.map(({ project, y }) => (
+          <li style={`top:${y}%`}>
+            <a href={href(`/work/${project.slug}/`, locale)} data-project={project.slug}>
+              <span class="relation-id">L{project.order}</span>
+              <span class="relation-name">{project.shortTitle}</span>
+              <span class="node node-on" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <svg class="relation-edges" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      {edges.map((edge) => <path d={edge.d} data-project={edge.project} data-discipline={edge.discipline} />)}
+    </svg>
+
+    <ul class="relation-column relation-column-right" aria-label={strings.disciplines[locale]}>
+      {
+        right.map(({ discipline, y }) => (
+          <li style={`top:${y}%`} data-discipline={discipline.id}>
+            <span class="node" />
+            <span class="relation-name">{discipline.label[locale]}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <figcaption>{strings.caption[locale]}</figcaption>
+</figure>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-relation]');
+  if (root) {
+    // Matrix ⇄ graph.
+    const switcher = root.querySelector<HTMLElement>('[data-switch]');
+    const panels = root.querySelectorAll<HTMLElement>('[data-panel]');
+    if (switcher) {
+      switcher.hidden = false;
+      switcher.addEventListener('click', (event) => {
+        const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-view]');
+        if (!button) return;
+        for (const other of switcher.querySelectorAll('button')) {
+          other.setAttribute('aria-pressed', String(other === button));
+        }
+        for (const panel of panels) panel.hidden = panel.dataset.panel !== button.dataset.view;
+      });
+    }
+
+    // Matrix: pointing at a cell or a heading picks out its row and column.
+    const matrix = root.querySelector<HTMLElement>('[data-panel="matrix"]');
+    if (matrix) {
+      const clear = () => {
+        matrix.removeAttribute('data-active');
+        for (const lit of matrix.querySelectorAll('[data-lit]')) lit.removeAttribute('data-lit');
+      };
+      const light = (target: HTMLElement) => {
+        clear();
+        const row = target.closest<HTMLElement>('tr[data-row]');
+        const col = target.closest<HTMLElement>('[data-col]')?.dataset.col;
+        if (!row && !col) return;
+        matrix.setAttribute('data-active', '');
+        row?.setAttribute('data-lit', '');
+        if (col) for (const cell of matrix.querySelectorAll(`[data-col="${col}"]`)) cell.setAttribute('data-lit', '');
+      };
+      matrix.addEventListener('pointerover', (event) => light(event.target as HTMLElement));
+      matrix.addEventListener('pointerleave', clear);
+      matrix.addEventListener('focusin', (event) => light(event.target as HTMLElement));
+      matrix.addEventListener('focusout', clear);
+    }
+
+    // Graph: pointing at a project or a discipline lights up its edges and
+    // the nodes at their far ends.
+    const graph = root.querySelector<HTMLElement>('[data-panel="graph"]');
+    if (graph) {
+      const edges = [...graph.querySelectorAll<SVGPathElement>('path')];
+      const clear = () => {
+        graph.removeAttribute('data-active');
+        for (const lit of graph.querySelectorAll('[data-lit]')) lit.removeAttribute('data-lit');
+      };
+      const light = (key: 'project' | 'discipline', value: string) => {
+        clear();
+        graph.setAttribute('data-active', '');
+        const other = key === 'project' ? 'discipline' : 'project';
+        graph.querySelector(`:is(a, li)[data-${key}="${value}"]`)?.setAttribute('data-lit', '');
+        for (const edge of edges) {
+          if (edge.dataset[key] !== value) continue;
+          edge.setAttribute('data-lit', '');
+          graph.querySelector(`:is(a, li)[data-${other}="${edge.dataset[other]}"]`)?.setAttribute('data-lit', '');
+        }
+      };
+      for (const node of graph.querySelectorAll<HTMLElement>('a[data-project], li[data-discipline]')) {
+        const key = node.dataset.project ? 'project' : 'discipline';
+        const value = (node.dataset.project ?? node.dataset.discipline)!;
+        node.addEventListener('pointerenter', () => light(key, value));
+        node.addEventListener('pointerleave', clear);
+        node.addEventListener('focus', () => light(key, value));
+        node.addEventListener('blur', clear);
+      }
+    }
+  }
+</script>
+
+<style>
+  .relation {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .relation-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0 1rem;
+  }
+
+  .relation-notation {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    white-space: nowrap;
+  }
+
+  .relation-count {
+    margin-left: 0.25rem;
+  }
+
+  /* Two text tabs; the current one is underlined in chalk. */
+  .relation-switch {
+    display: inline-flex;
+    gap: 1.25rem;
+  }
+
+  .relation-switch[hidden] {
+    display: none;
+  }
+
+  .relation-switch button {
+    min-height: 2.75rem;
+    font-size: var(--text-sm);
+    color: var(--muted);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.45em;
+    transition:
+      color 150ms ease,
+      text-decoration-color 150ms ease;
+  }
+
+  .relation-switch button:hover {
+    color: var(--text);
+  }
+
+  .relation-switch button[aria-pressed='true'] {
+    color: var(--text);
+    text-decoration-color: var(--mark);
+  }
+
+  /* ----- Matrix ----- */
+  .relation-matrix[hidden] {
+    display: none;
+  }
+
+  .relation-matrix table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+  }
+
+  .relation-matrix thead td {
+    width: 7.75rem;
+  }
+
+  .relation-matrix thead th {
+    height: 8.75rem;
+    padding: 0 0 0.75rem;
+    vertical-align: bottom;
+    font-size: var(--text-xs);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--muted);
+    transition: color 150ms ease;
+  }
+
+  .relation-matrix thead th span {
+    display: inline-block;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+  }
+
+  .relation-matrix tbody th {
+    padding: 0;
+    font-size: var(--text-sm);
+    font-weight: 400;
+    text-align: left;
+  }
+
+  .relation-matrix tbody th a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-right: 0.5rem;
+    line-height: 1.15;
+  }
+
+  .relation-id {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .relation-matrix tbody th a:hover .relation-name,
+  .relation-column a:hover .relation-name,
+  .relation-column a:focus-visible .relation-name {
+    text-decoration: underline;
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  .relation-matrix tbody td {
+    padding: 0.1875rem;
+  }
+
+  .cell {
+    display: block;
+    width: 100%;
+    max-width: 3.5rem;
+    aspect-ratio: 1;
+    margin-inline: auto;
+    border: 1px solid var(--line-strong);
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      opacity 150ms ease;
+  }
+
+  .cell[data-on] {
+    border-color: var(--mark);
+    background: var(--mark);
+  }
+
+  /* The one orchestrated moment on the page: the squares are chalked in. */
+  @media (prefers-reduced-motion: no-preference) {
+    .cell[data-on] {
+      animation: chalk 380ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+      animation-delay: calc(450ms + var(--n) * 55ms);
+    }
+
+    @keyframes chalk {
+      from {
+        background: transparent;
+        border-color: var(--line-strong);
+        transform: scale(0.82);
+      }
+      to {
+        background: var(--mark);
+        border-color: var(--mark);
+        transform: none;
+      }
+    }
+  }
+
+  .relation-matrix[data-active] td:not([data-lit]) .cell {
+    opacity: 0.3;
+  }
+
+  .relation-matrix[data-active] tr[data-lit] .cell {
+    opacity: 1;
+  }
+
+  .relation-matrix thead th[data-lit] {
+    color: var(--text);
+  }
+
+  /* ----- Graph ----- */
+  .relation-graph {
+    display: grid;
+    grid-template-columns: auto minmax(2.5rem, 1fr) auto;
+    height: 21rem;
+  }
+
+  .relation-graph[hidden] {
+    display: none;
+  }
+
+  .relation-column {
+    position: relative;
+    height: 100%;
+    /* Labels are absolutely placed, so each column needs an explicit width. */
+    width: var(--w);
+  }
+
+  .relation-column-left {
+    --w: 7.75rem;
+  }
+
+  .relation-column-right {
+    --w: 9.75rem;
+  }
+
+  .relation-column > li {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    transform: translateY(-50%);
+    line-height: 1.2;
+    font-size: var(--text-xs);
+    transition: opacity 200ms ease;
+  }
+
+  .relation-column-left > li {
+    right: 0;
+  }
+
+  .relation-column-right > li {
+    left: 0;
+    gap: 0.625rem;
+    color: var(--muted);
+  }
+
+  .relation-column a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    text-align: right;
+    color: var(--text);
+  }
+
+  .node {
+    flex: none;
+    width: 0.6875rem;
+    height: 0.6875rem;
+    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    transition:
+      border-color 200ms ease,
+      background-color 200ms ease;
+  }
+
+  .node-on {
+    margin-left: 0.125rem;
+    border-color: var(--mark);
+    background: var(--mark);
+  }
+
+  .relation-edges {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .relation-edges path {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: 1.25;
+    vector-effect: non-scaling-stroke;
+    transition:
+      stroke 200ms ease,
+      opacity 200ms ease;
+  }
+
+  .relation-graph[data-active] path:not([data-lit]) {
+    opacity: 0.25;
+  }
+
+  .relation-graph[data-active] path[data-lit] {
+    stroke: var(--mark);
+  }
+
+  .relation-graph[data-active] .relation-column > li:not([data-lit]):not(:has([data-lit])) {
+    opacity: 0.4;
+  }
+
+  .relation-graph li[data-lit] {
+    color: var(--text);
+  }
+
+  .relation-graph li[data-lit] .node {
+    border-color: var(--mark);
+    background: var(--mark);
+  }
+
+  figcaption {
+    max-width: 30rem;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  @media (min-width: 30rem) {
+    .relation-matrix thead td {
+      width: 10rem;
+    }
+
+    .relation-matrix tbody td {
+      padding: 0.25rem;
+    }
+
+    .relation-column > li {
+      font-size: var(--text-sm);
+    }
+
+    .relation-column-left {
+      --w: 10.5rem;
+    }
+
+    .relation-column-right {
+      --w: 12.5rem;
+    }
+
+    .relation-column a {
+      white-space: nowrap;
+    }
+  }
+</style>

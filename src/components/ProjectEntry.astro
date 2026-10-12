@@ -1,0 +1,180 @@
+---
+import Icon from './Icon.astro';
+import ProjectVisual from './ProjectVisual.astro';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import type { Project } from '../types/content';
+import { href } from '../utils/paths';
+
+/**
+ * One project in the gallery, stated the way a paper states a result:
+ * "Lemma 2 (CampusGuide). An Android app for …"
+ */
+interface Props {
+  project: Project;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const caseStudy = href(`/work/${project.slug}/`, locale);
+const headingId = `work-${project.slug}`;
+// Month names take a capital in English but not in French.
+const period = locale === 'fr' ? project.period.fr.toLowerCase() : project.period.en;
+---
+
+<article class="entry" aria-labelledby={headingId}>
+  <div class="entry-text">
+    <div class="statement">
+      <h3 id={headingId} class="theorem-label">
+        {ui.work.lemma[locale]}&nbsp;{project.order} <span class="statement-name">(<a href={caseStudy}>{project.title}</a>).</span>
+      </h3>{' '}
+      <p class="theorem-body">{project.summary[locale]}</p>
+    </div>
+
+    <dl class="entry-facts">
+      <div>
+        <dt>{ui.caseStudy.meta.context[locale]}</dt>
+        <dd>{project.context.label[locale]}, {period}</dd>
+      </div>
+      <div>
+        <dt>{ui.caseStudy.sections.technologies[locale]}</dt>
+        <dd>{project.stack.join(', ')}</dd>
+      </div>
+    </dl>
+
+    <p class="entry-links">
+      <a class="link" href={caseStudy}>
+        {ui.work.caseStudy[locale]}<span class="sr-only">: {project.title}</span>
+      </a>
+      <a class="link entry-repo" href={project.repository.url} target="_blank" rel="noopener">
+        <Icon name="github" size={16} />
+        {ui.work.repository[locale]}<span class="sr-only">: {project.title} ({ui.work.opensInNewTab[locale]})</span>
+        <Icon name="external" size={14} />
+      </a>
+    </p>
+  </div>
+
+  <!-- Clicking the picture opens the case study too. It is a pointer
+       convenience only: the title and the text link are the real links. -->
+  <figure class="entry-visual" data-open={caseStudy}>
+    <ProjectVisual project={project} locale={locale} variant="card" />
+    <figcaption class="caption">
+      <span class="caption-label">{ui.work.figure[locale]}&nbsp;{project.order}.</span>{' '}
+      {project.cover ? project.cover.caption[locale] : project.architecture.diagram.caption[locale]}
+    </figcaption>
+  </figure>
+</article>
+
+<script>
+  for (const visual of document.querySelectorAll<HTMLElement>('[data-open]')) {
+    visual.addEventListener('click', () => {
+      if (visual.dataset.open) window.location.href = visual.dataset.open;
+    });
+  }
+</script>
+
+<style>
+  .entry {
+    display: grid;
+    gap: 2.25rem;
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .entry + .entry {
+    border-top: 1px solid var(--line);
+  }
+
+  /* Label, name and claim run on as one paragraph, as in a paper. */
+  .statement {
+    font-size: clamp(1.4375rem, 2.5vw, 1.75rem);
+    line-height: 1.32;
+  }
+
+  .statement h3,
+  .statement p {
+    display: inline;
+  }
+
+  .statement-name {
+    font-weight: 400;
+  }
+
+  .statement-name a {
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    transition: text-decoration-color 150ms ease;
+  }
+
+  .statement-name a:hover {
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+  }
+
+  .entry-facts {
+    margin-top: 1.75rem;
+    font-size: var(--text-sm);
+  }
+
+  .entry-facts > div {
+    display: grid;
+    grid-template-columns: 6.75rem 1fr;
+    gap: 1rem;
+    padding-block: 0.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .entry-facts > div:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .entry-facts dt {
+    color: var(--muted);
+  }
+
+  .entry-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.75rem;
+    margin-top: 1rem;
+    font-size: var(--text-sm);
+  }
+
+  .entry-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .entry-repo {
+    gap: 0.4375rem;
+  }
+
+  .entry-visual {
+    align-self: start;
+    min-width: 0;
+  }
+
+  :global(.js) .entry-visual {
+    cursor: pointer;
+  }
+
+  .entry-visual :global(.plate) {
+    outline: 2px solid transparent;
+    outline-offset: 0;
+    transition: outline-color 200ms ease;
+  }
+
+  .entry-visual:hover :global(.plate) {
+    outline-color: var(--mark);
+  }
+
+  @media (min-width: 64rem) {
+    .entry {
+      grid-template-columns: 5fr 7fr;
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+</style>

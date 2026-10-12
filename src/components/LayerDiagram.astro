@@ -1,0 +1,132 @@
+---
+import type { Locale } from '../i18n';
+import type { Diagram } from '../types/content';
+
+/**
+ * A layered architecture diagram built from project data. It is plain HTML —
+ * a list of layers, each a list of parts — so it stays readable at any width
+ * and is available to screen readers. It is always drawn on a board panel.
+ */
+interface Props {
+  diagram: Diagram;
+  locale: Locale;
+  /** Smaller text and no details, for use as a card visual. */
+  compact?: boolean;
+}
+
+const { diagram, locale, compact = false } = Astro.props;
+---
+
+<ol class:list={['layers', { compact }]}>
+  {
+    diagram.layers.map((layer) => (
+      <li class="layer">
+        <p class="layer-label">{layer.label[locale]}</p>
+        <ul class="layer-nodes">
+          {layer.nodes.map((node) => (
+            <li class="node">
+              <span class="node-name">{node.name}</span>
+              {!compact && node.detail && <span class="node-detail">{node.detail[locale]}</span>}
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .layers {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .layer {
+    position: relative;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  /* Connector to the next layer: a chalk stroke ending in an arrowhead. */
+  .layer:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    bottom: -1.5rem;
+    width: 1px;
+    height: 1.125rem;
+    background: var(--line-strong);
+  }
+
+  .layer:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: calc(1.25rem - 3px);
+    bottom: -1.5rem;
+    width: 7px;
+    height: 7px;
+    border-right: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line-strong);
+    transform: rotate(45deg);
+  }
+
+  .layer-label {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--muted);
+  }
+
+  .layer-nodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .node {
+    display: grid;
+    gap: 0.125rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--line-strong);
+  }
+
+  .node-name {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text);
+  }
+
+  .node-detail {
+    font-size: var(--text-2xs);
+    color: var(--muted);
+  }
+
+  .compact {
+    gap: 1.625rem;
+  }
+
+  .compact .layer {
+    gap: 0.375rem;
+  }
+
+  .compact .layer:not(:last-child)::after {
+    bottom: -1.25rem;
+    height: 0.875rem;
+  }
+
+  .compact .layer:not(:last-child)::before {
+    bottom: -1.25rem;
+  }
+
+  .compact .layer-label {
+    font-size: var(--text-sm);
+  }
+
+  .compact .node-name {
+    font-size: var(--text-2xs);
+  }
+
+  .compact .node {
+    padding: 0.3125rem 0.5rem;
+  }
+</style>

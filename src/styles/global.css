@@ -1,0 +1,306 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Typefaces
+
+   Display type is Computer Modern, the face mathematics has been typeset in
+   since TeX. The files are Latin subsets built by `npm run fonts`; see
+   src/assets/fonts/OFL.txt for the licence.
+--------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Lemma Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/lemma-serif-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Lemma Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/lemma-serif-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Lemma Serif';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/lemma-serif-bold.woff2') format('woff2');
+}
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+
+   Two themes share one set of names.
+
+   Blackboard (default): chalk on a green board, with yellow chalk for the
+   proof mark.
+
+   Paper (`data-theme="light"`): ink on paper, with board green as the mark.
+   The header, hero, contact band and every figure stay on the board.
+
+   Components reference the tokens only. `.board` re-declares them, so
+   anything placed inside a board panel is chalk-coloured in either theme.
+--------------------------------------------------------------------------- */
+:root,
+.board {
+  --bg: #0f3a2e;
+  --panel: #0b2f25;
+  --line: #2b5647;
+  --line-strong: #5a8474;
+  --text: #f4f2e8;
+  --muted: #b7c6bb;
+  --mark: #f4cf45;
+  --mark-ink: #10231c;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f5f6f1;
+  --panel: #ffffff;
+  --line: #d2d9cf;
+  --line-strong: #8d9c91;
+  --text: #10231c;
+  --muted: #47584e;
+  --mark: #14553f;
+  --mark-ink: #f5f6f1;
+}
+
+/* On paper, a board panel is the page's dark element; on the blackboard it
+   is a slightly deeper inset. */
+.board {
+  background: var(--bg);
+  color: var(--text);
+}
+
+:root:not([data-theme='light']) .board-inset {
+  --bg: #0b2f25;
+  --panel: #082620;
+}
+
+@theme inline {
+  --font-serif: 'Lemma Serif', 'Latin Modern Roman', 'Computer Modern', Georgia, 'Times New Roman', serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-mark: var(--mark);
+  --color-mark-ink: var(--mark-ink);
+
+  /* Type scale, a perfect fourth from 1rem, rounded. */
+  --text-2xs: 0.75rem;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.3125rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.375rem;
+  --text-3xl: 3.125rem;
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Keeps in-page targets clear of the sticky header. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    min-height: 100dvh;
+    font-size: var(--text-base);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--mark);
+    color: var(--mark-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--mark);
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  dd,
+  figcaption {
+    text-wrap: pretty;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Page gutter and measure. */
+  .shell {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  /* Text links. */
+  .link {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    transition: text-decoration-color 150ms ease;
+  }
+
+  .link:hover {
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.625rem 1.375rem;
+    border: 1.5px solid var(--text);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text);
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .button:hover {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .button-primary {
+    border-color: var(--mark);
+    background: var(--mark);
+    color: var(--mark-ink);
+  }
+
+  .button-primary:hover {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  /* The end-of-proof mark, ∎. It closes proofs, stands in for the full stop
+     of the wordmark, and fills the cells of the hero matrix. */
+  .tombstone {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    background: var(--mark);
+  }
+
+  /* Statements set the way a paper sets them: a bold label, an optional
+     name in parentheses, then the claim in italics. */
+  .theorem-label {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .theorem-body {
+    font-family: var(--font-serif);
+    font-style: italic;
+  }
+
+  /* Tables in the style of a typeset journal: a heavy rule above and below,
+     a light one under the head, and no vertical lines. */
+  .booktabs {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 2px solid var(--text);
+    border-bottom: 2px solid var(--text);
+    font-size: var(--text-sm);
+    text-align: left;
+  }
+
+  .booktabs thead th {
+    padding: 0.625rem 1rem 0.625rem 0;
+    border-bottom: 1px solid var(--text);
+    font-weight: 600;
+    vertical-align: bottom;
+  }
+
+  .booktabs tbody th,
+  .booktabs tbody td {
+    padding: 0.75rem 1rem 0.75rem 0;
+    vertical-align: top;
+    font-weight: 400;
+  }
+
+  .booktabs tbody tr + tr > * {
+    border-top: 1px solid var(--line);
+  }
+
+  .booktabs tbody th {
+    color: var(--muted);
+  }
+
+  /* Numbered captions: "Figure 2." and "Table 1." */
+  .caption {
+    margin-top: 0.875rem;
+    max-width: 44rem;
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .caption-label {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 1.0625em;
+    color: var(--text);
+  }
+}

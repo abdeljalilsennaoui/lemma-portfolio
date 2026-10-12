@@ -1,0 +1,69 @@
+---
+import { brand, links, person } from '../config/site';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="footer board">
+  <div class="shell footer-inner">
+    <div>
+      <p class="footer-brand">{brand.name}</p>
+      <p>{ui.footer.tagline[locale]}</p>
+      <p>© {year} {person.name}</p>
+    </div>
+    <ul>
+      <li><a class="link" href={links.github} rel="me noopener">GitHub</a></li>
+      <li><a class="link" href={links.repository} rel="noopener">{ui.footer.source[locale]}</a></li>
+      <li><a class="link" href="#main">{ui.footer.backToTop[locale]}</a></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-block: 2rem 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .footer-brand {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+  }
+
+  ul a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  @media (min-width: 48rem) {
+    .footer-inner {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+  }
+</style>

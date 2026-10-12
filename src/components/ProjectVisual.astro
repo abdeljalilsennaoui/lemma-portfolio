@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import LayerDiagram from './LayerDiagram.astro';
+import type { Locale } from '../i18n';
+import type { Project } from '../types/content';
+
+/**
+ * The picture for a project, always shown on a board panel: its real
+ * screenshot when it has one, and its architecture diagram — drawn in chalk,
+ * and captioned as a diagram — when it does not.
+ */
+interface Props {
+  project: Project;
+  locale: Locale;
+  /** `card` in the gallery, `cover` at the top of a case study. */
+  variant: 'card' | 'cover';
+}
+
+const { project, locale, variant } = Astro.props;
+const isCover = variant === 'cover';
+---
+
+<div class:list={['plate board board-inset', { 'plate-diagram': !project.cover }]}>
+  {
+    project.cover ? (
+      <Image
+        src={project.cover.src}
+        alt={project.cover.alt[locale]}
+        widths={[480, 800, 1200, 1600]}
+        sizes={isCover ? '(min-width: 76rem) 68rem, 88vw' : '(min-width: 64rem) 38rem, 88vw'}
+        loading={isCover || project.order === 1 ? 'eager' : 'lazy'}
+        fetchpriority={isCover ? 'high' : undefined}
+        class="shot"
+      />
+    ) : (
+      <LayerDiagram diagram={project.architecture.diagram} locale={locale} compact={!isCover} />
+    )
+  }
+</div>
+
+<style>
+  .plate {
+    padding: clamp(0.75rem, 2.5vw, 1.5rem);
+  }
+
+  .plate-diagram {
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  .shot {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

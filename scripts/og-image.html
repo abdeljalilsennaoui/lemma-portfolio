@@ -1,0 +1,102 @@
+<!doctype html>
+<!--
+  Source for public/og.png, the image shown when the site is shared.
+  Regenerate with `npm run og` (needs Google Chrome installed).
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: 'Lemma Serif';
+        font-style: italic;
+        font-weight: 400;
+        src: url('../src/assets/fonts/lemma-serif-italic.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Lemma Serif';
+        font-style: normal;
+        font-weight: 700;
+        src: url('../src/assets/fonts/lemma-serif-bold.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'IBM Plex Sans';
+        font-weight: 400;
+        src: url('../node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2') format('woff2');
+      }
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        width: 1200px;
+        height: 630px;
+        padding: 64px 72px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: #0f3a2e;
+        color: #f4f2e8;
+        font-family: 'IBM Plex Sans', sans-serif;
+        overflow: hidden;
+      }
+      .wordmark {
+        font: 700 46px/1 'Lemma Serif', serif;
+        display: flex;
+        align-items: baseline;
+        gap: 18px;
+      }
+      .wordmark i {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-left: 4px;
+        background: #f4cf45;
+      }
+      .wordmark span {
+        font: 500 15px/1 'IBM Plex Sans', sans-serif;
+        letter-spacing: 0.16em;
+        color: #b7c6bb;
+      }
+      .label {
+        font: 700 34px/1 'Lemma Serif', serif;
+      }
+      h1 {
+        margin-top: 4px;
+        margin-left: -6px;
+        font: italic 400 178px/0.95 'Lemma Serif', serif;
+        letter-spacing: -0.025em;
+        white-space: nowrap;
+      }
+      .foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        font-size: 26px;
+        color: #b7c6bb;
+      }
+      .foot b {
+        display: block;
+        font-weight: 400;
+        font-size: 32px;
+        color: #f4f2e8;
+      }
+      .qed {
+        width: 30px;
+        height: 30px;
+        background: #f4cf45;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wordmark"><div>lemma<i></i></div><span>BY AJS</span></div>
+    <div>
+      <div class="label">Lemma.</div>
+      <h1>Built on logic.</h1>
+    </div>
+    <div class="foot">
+      <div><b>Abdeljalil Sennaoui</b>Software engineering projects</div>
+      <div class="qed"></div>
+    </div>
+  </body>
+</html>

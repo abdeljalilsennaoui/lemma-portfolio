@@ -1,0 +1,25 @@
+---
+import ProjectEntry from './ProjectEntry.astro';
+import SectionHeading from './SectionHeading.astro';
+import { projects } from '../data/projects';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  number: number;
+}
+
+const { locale, number } = Astro.props;
+---
+
+<section id="work" class="shell section" aria-labelledby="work-title">
+  <SectionHeading id="work-title" number={number} title={ui.work.title[locale]} intro={ui.work.intro[locale]} />
+  {projects.map((project) => <ProjectEntry project={project} locale={locale} />)}
+</section>
+
+<style>
+  .section {
+    padding-top: clamp(4rem, 9vw, 7rem);
+  }
+</style>

@@ -1,0 +1,66 @@
+---
+/**
+ * Small inline icons. They inherit `currentColor` and are hidden from
+ * assistive technology; the surrounding link or button carries the name.
+ */
+interface Props {
+  name: 'external' | 'github' | 'mail' | 'linkedin' | 'sun' | 'moon' | 'menu' | 'close' | 'arrow-left' | 'arrow-right' | 'file';
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 18, class: className } = Astro.props;
+---
+
+<svg
+  class={className}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {name === 'external' && <path d="M8 16 16.5 7.5M9.5 7h7.5v7.5" />}
+  {name === 'arrow-left' && <path d="M19 12H5m6-6-6 6 6 6" />}
+  {name === 'arrow-right' && <path d="M5 12h14m-6-6 6 6-6 6" />}
+  {name === 'mail' && (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="1.5" />
+      <path d="m3.5 6.5 8.5 6.5 8.5-6.5" />
+    </>
+  )}
+  {name === 'file' && (
+    <>
+      <path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7z" />
+      <path d="M14 3v4h4M9 13h6M9 17h6" />
+    </>
+  )}
+  {name === 'sun' && (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+    </>
+  )}
+  {name === 'moon' && <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />}
+  {name === 'menu' && <path d="M4 8h16M4 16h16" />}
+  {name === 'close' && <path d="m6 6 12 12M18 6 6 18" />}
+  {name === 'github' && (
+    <path
+      fill="currentColor"
+      stroke="none"
+      d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"
+    />
+  )}
+  {name === 'linkedin' && (
+    <path
+      fill="currentColor"
+      stroke="none"
+      d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11.25H3zM9.5 9.75h3.8v1.6h.06c.53-1 1.83-1.9 3.76-1.9 4.02 0 4.76 2.6 4.76 6V21h-4v-4.9c0-1.17-.02-2.67-1.63-2.67-1.63 0-1.88 1.27-1.88 2.59V21h-4z"
+    />
+  )}
+</svg>

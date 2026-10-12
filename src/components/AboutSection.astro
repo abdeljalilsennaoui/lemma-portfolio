@@ -1,0 +1,153 @@
+---
+import Icon from './Icon.astro';
+import SectionHeading from './SectionHeading.astro';
+import { brand, links, person } from '../config/site';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import { asset } from '../utils/paths';
+
+interface Props {
+  locale: Locale;
+  number: number;
+}
+
+const { locale, number } = Astro.props;
+const strings = ui.about;
+---
+
+<section id="about" class="shell section" aria-labelledby="about-title">
+  <SectionHeading id="about-title" number={number} title={strings.title[locale]} />
+
+  <div class="about">
+    <div class="about-body">
+      <p class="statement">
+        <span class="theorem-label">{strings.definition[locale]}</span> ({brand.name})<span class="theorem-label">.</span>{' '}
+        <span class="theorem-body">{strings.definitionBody[locale]}</span>
+      </p>
+      {strings.paragraphs.map((paragraph) => <p>{paragraph[locale]}</p>)}
+      <p class="remark">
+        <span class="theorem-body">{strings.remark[locale]}.</span>{' '}
+        {strings.remarkBody[locale]}
+      </p>
+    </div>
+
+    <table class="booktabs about-facts">
+      <caption class="sr-only">{person.name}</caption>
+      <tbody>
+        <tr>
+          <th scope="row">{strings.facts.name[locale]}</th>
+          <td>{person.name}</td>
+        </tr>
+        <tr>
+          <th scope="row">{strings.facts.studies[locale]}</th>
+          <td>{strings.facts.studiesValue[locale]}</td>
+        </tr>
+        <tr>
+          <th scope="row">{strings.facts.location[locale]}</th>
+          <td>{person.location[locale]}</td>
+        </tr>
+        <tr>
+          <th scope="row">{strings.facts.links[locale]}</th>
+          <td>
+            <ul class="about-links">
+              <li>
+                <a class="link" href={links.github} rel="me noopener">
+                  <Icon name="github" size={16} />github.com/{links.githubHandle}
+                </a>
+              </li>
+              {
+                links.linkedin && (
+                  <li>
+                    <a class="link" href={links.linkedin} rel="me noopener">
+                      <Icon name="linkedin" size={16} />
+                      LinkedIn
+                    </a>
+                  </li>
+                )
+              }
+              {
+                links.resume && (
+                  <li>
+                    <a class="link" href={asset(links.resume)}>
+                      <Icon name="file" size={16} />
+                      {strings.resume[locale]}
+                    </a>
+                  </li>
+                )
+              }
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-top: clamp(4rem, 9vw, 7rem);
+  }
+
+  .about {
+    display: grid;
+    gap: 3rem;
+    padding-top: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .about-body {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 40rem;
+  }
+
+  .about-body p {
+    color: var(--muted);
+  }
+
+  .about-body .statement {
+    margin-bottom: 0.5rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.4375rem, 2.5vw, 1.75rem);
+    line-height: 1.32;
+    color: var(--text);
+  }
+
+  .remark {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .remark .theorem-body {
+    margin-right: 0.2em;
+    font-size: 1.15em;
+    color: var(--text);
+  }
+
+  .about-facts {
+    align-self: start;
+  }
+
+  .about-facts th {
+    width: 6.5rem;
+  }
+
+  .about-links {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .about-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2rem;
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 64rem) {
+    .about {
+      grid-template-columns: 7fr 5fr;
+      gap: 5rem;
+    }
+  }
+</style>

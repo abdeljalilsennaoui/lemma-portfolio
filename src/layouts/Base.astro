@@ -1,0 +1,161 @@
+---
+import '@fontsource/ibm-plex-sans/latin-400.css';
+import '@fontsource/ibm-plex-sans/latin-500.css';
+import '@fontsource/ibm-plex-sans/latin-600.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '../styles/global.css';
+
+import serifUrl from '../assets/fonts/lemma-serif-italic.woff2?url';
+import sansUrl from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { brand, links, person, seo } from '../config/site';
+import { defaultLocale, languageTag, locales, type Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import { absolute, asset, href } from '../utils/paths';
+
+interface Props {
+  locale: Locale;
+  /** Path of this page without base or language prefix, e.g. "/work/summs/". */
+  route: string;
+  /** Page title. The home page passes none and gets the full site title. */
+  title?: string;
+  description?: string;
+  /** Social image, as a path with base. Defaults to the site image. */
+  image?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  locale,
+  route,
+  title,
+  description = seo.description[locale],
+  image = asset(seo.ogImage),
+  ogType = 'website',
+  noindex = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${person.name} — ${brand.name}` : seo.title[locale];
+const canonical = absolute(href(route, locale), Astro.site);
+const sameAs = [links.github, links.linkedin].filter((url): url is string => Boolean(url));
+
+// LEMMA is a personal identity, so the structured data describes a Person
+// and their website. It deliberately does not declare an Organization.
+const personId = absolute(href('/'), Astro.site) + '#person';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: person.name,
+      givenName: person.givenName,
+      familyName: person.familyName,
+      url: absolute(href('/'), Astro.site),
+      description: person.role[locale],
+      affiliation: {
+        '@type': 'CollegeOrUniversity',
+        name: person.school.name[locale],
+        url: person.school.url,
+      },
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Montreal',
+        addressRegion: 'QC',
+        addressCountry: 'CA',
+      },
+      knowsAbout: [
+        'Software engineering',
+        'Software testing',
+        'Test automation',
+        'Back-end development',
+        'Software architecture',
+      ],
+      sameAs,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': absolute(href('/'), Astro.site) + '#website',
+      url: absolute(href('/'), Astro.site),
+      name: brand.name,
+      description: seo.description[locale],
+      inLanguage: locales.map((code) => languageTag[code]),
+      author: { '@id': personId },
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang={languageTag[locale]} data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={person.name} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {
+      !noindex &&
+        locales.map((code) => (
+          <link rel="alternate" hreflang={languageTag[code]} href={absolute(href(route, code), Astro.site)} />
+        ))
+    }
+    {!noindex && <link rel="alternate" hreflang="x-default" href={absolute(href(route, defaultLocale), Astro.site)} />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={brand.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={languageTag[locale].replace('-', '_')} />
+    <meta property="og:image" content={absolute(image, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${brand.name} — ${person.name}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#0f3a2e" />
+    <link rel="icon" href={asset('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={asset('/favicon.ico')} sizes="32x32" />
+    <link rel="apple-touch-icon" href={asset('/apple-touch-icon.png')} />
+    <link rel="sitemap" href={asset('/sitemap-index.xml')} />
+
+    <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={sansUrl} as="font" type="font/woff2" crossorigin />
+
+    <!-- Applies a saved theme before first paint, and marks the page as scripted. -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        try {
+          var saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+        } catch (error) {
+          /* Storage can be unavailable; the default theme stays. */
+        }
+      })();
+    </script>
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-mark focus:px-4 focus:py-2 focus:text-mark-ink"
+    >
+      {ui.skipToContent[locale]}
+    </a>
+    <Header locale={locale} route={route} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

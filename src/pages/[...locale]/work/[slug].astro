@@ -1,0 +1,732 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '../../../components/Icon.astro';
+import LayerDiagram from '../../../components/LayerDiagram.astro';
+import ProjectVisual from '../../../components/ProjectVisual.astro';
+import { projects } from '../../../data/projects';
+import { defaultLocale, locales, localeFromParam } from '../../../i18n';
+import { ui } from '../../../i18n/ui';
+import Base from '../../../layouts/Base.astro';
+import type { Project } from '../../../types/content';
+import { href } from '../../../utils/paths';
+
+export function getStaticPaths() {
+  return locales.flatMap((locale) =>
+    projects.map((project) => ({
+      params: { locale: locale === defaultLocale ? undefined : locale, slug: project.slug },
+      props: { project },
+    })),
+  );
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const locale = localeFromParam(Astro.params.locale);
+const strings = ui.caseStudy;
+const figureLabel = ui.work.figure[locale];
+
+const index = projects.findIndex((candidate) => candidate.slug === project.slug);
+const previous = projects[index - 1];
+const next = projects[index + 1];
+
+// Figures are numbered in reading order: the cover, then the architecture
+// diagram when it is not already the cover, then the gallery.
+const diagramFigure = project.cover ? 2 : 1;
+const firstGalleryFigure = diagramFigure + 1;
+
+const sections = [
+  { id: 'overview', label: strings.sections.overview[locale] },
+  { id: 'problem', label: strings.sections.problem[locale] },
+  { id: 'goals', label: strings.sections.goals[locale] },
+  { id: 'technologies', label: strings.sections.technologies[locale] },
+  { id: 'architecture', label: strings.sections.architecture[locale] },
+  { id: 'role', label: strings.sections.role[locale] },
+  { id: 'decisions', label: strings.sections.decisions[locale] },
+  { id: 'testing', label: strings.sections.testing[locale] },
+  { id: 'challenges', label: strings.sections.challenges[locale] },
+  { id: 'results', label: strings.sections.results[locale] },
+  { id: 'links', label: strings.sections.links[locale] },
+];
+---
+
+<Base
+  locale={locale}
+  route={`/work/${project.slug}/`}
+  title={`${project.title} — ${strings.titleSuffix[locale]}`}
+  description={project.summary[locale]}
+  ogType="article"
+>
+  <article class="shell case">
+    <header class="case-header">
+      <p>
+        <a class="back" href={href('/#work', locale)}>
+          <Icon name="arrow-left" size={16} />
+          {strings.allWork[locale]}
+        </a>
+      </p>
+      <p class="case-number theorem-label">{ui.work.lemma[locale]}&nbsp;{project.order}</p>
+      <h1>{project.title}</h1>
+      <p class="case-summary theorem-body">{project.summary[locale]}</p>
+
+      <dl class="case-meta">
+        <div>
+          <dt>{strings.meta.context[locale]}</dt>
+          <dd>{project.context.label[locale]}</dd>
+        </div>
+        <div>
+          <dt>{strings.meta.period[locale]}</dt>
+          <dd>{project.period[locale]}</dd>
+        </div>
+        <div>
+          <dt>{strings.meta.repository[locale]}</dt>
+          <dd>
+            <a class="link repo" href={project.repository.url} target="_blank" rel="noopener">
+              {project.repository.label}
+              <span class="sr-only">({ui.work.opensInNewTab[locale]})</span>
+              <Icon name="external" size={14} />
+            </a>
+          </dd>
+        </div>
+      </dl>
+    </header>
+
+    <figure class="case-cover">
+      <ProjectVisual project={project} locale={locale} variant="cover" />
+      <figcaption class="caption">
+        <span class="caption-label">{figureLabel}&nbsp;1.</span>{' '}
+        {project.cover ? project.cover.caption[locale] : project.architecture.diagram.caption[locale]}
+      </figcaption>
+    </figure>
+
+    <div class="case-layout">
+      <nav class="toc" aria-label={strings.contents[locale]}>
+        <p class="toc-title">{strings.contents[locale]}</p>
+        <ol>
+          {
+            sections.map((section) => (
+              <li>
+                <a href={`#${section.id}`}>{section.label}</a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div class="case-body">
+        <section id="overview" aria-labelledby="overview-title">
+          <h2 id="overview-title">{strings.sections.overview[locale]}</h2>
+          {project.overview.map((paragraph) => <p>{paragraph[locale]}</p>)}
+        </section>
+
+        <section id="problem" aria-labelledby="problem-title">
+          <h2 id="problem-title">{strings.sections.problem[locale]}</h2>
+          {project.problem.map((paragraph) => <p>{paragraph[locale]}</p>)}
+        </section>
+
+        <section id="goals" aria-labelledby="goals-title">
+          <h2 id="goals-title">{strings.sections.goals[locale]}</h2>
+          <ul class="bullets">
+            {project.goals.map((goal) => <li>{goal[locale]}</li>)}
+          </ul>
+        </section>
+
+        <section id="technologies" aria-labelledby="technologies-title">
+          <h2 id="technologies-title">{strings.sections.technologies[locale]}</h2>
+          <table class="booktabs tech">
+            <tbody>
+              {
+                project.technologies.map((group) => (
+                  <tr>
+                    <th scope="row">{group.group[locale]}</th>
+                    <td>{group.items.join(', ')}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </section>
+
+        <section id="architecture" aria-labelledby="architecture-title">
+          <h2 id="architecture-title">{strings.sections.architecture[locale]}</h2>
+          {project.architecture.body.map((paragraph) => <p>{paragraph[locale]}</p>)}
+          {
+            // Projects without a screenshot already show this diagram as Figure 1.
+            project.cover && (
+              <figure class="figure">
+                <div class="board board-inset figure-diagram">
+                  <LayerDiagram diagram={project.architecture.diagram} locale={locale} />
+                </div>
+                <figcaption class="caption">
+                  <span class="caption-label">
+                    {figureLabel}&nbsp;{diagramFigure}.
+                  </span>{' '}
+                  {project.architecture.diagram.caption[locale]}
+                </figcaption>
+              </figure>
+            )
+          }
+        </section>
+
+        <section id="role" aria-labelledby="role-title">
+          <h2 id="role-title">{strings.sections.role[locale]}</h2>
+          <p>{project.role.summary[locale]}</p>
+          <ul class="bullets">
+            {project.role.contributions.map((item) => <li>{item[locale]}</li>)}
+          </ul>
+          <p class="aside">{project.role.evidence[locale]}</p>
+        </section>
+
+        <section id="decisions" aria-labelledby="decisions-title">
+          <h2 id="decisions-title">{strings.sections.decisions[locale]}</h2>
+          {
+            project.decisions.map((decision) => (
+              <div class="note">
+                <h3>{decision.title[locale]}</h3>
+                <p>{decision.body[locale]}</p>
+              </div>
+            ))
+          }
+        </section>
+
+        <section id="testing" aria-labelledby="testing-title">
+          <h2 id="testing-title">{strings.sections.testing[locale]}</h2>
+          {project.testing.map((paragraph) => <p>{paragraph[locale]}</p>)}
+        </section>
+
+        <section id="challenges" aria-labelledby="challenges-title">
+          <h2 id="challenges-title">{strings.sections.challenges[locale]}</h2>
+          {
+            project.challenges.map((challenge) => (
+              <div class="note">
+                <h3>{challenge.title[locale]}</h3>
+                <p>{challenge.body[locale]}</p>
+              </div>
+            ))
+          }
+          {
+            project.gallery?.map((figure, galleryIndex) => (
+              <figure class="figure">
+                <div class="board board-inset figure-shot">
+                  <Image
+                    src={figure.src}
+                    alt={figure.alt[locale]}
+                    widths={[480, 800, 1200]}
+                    sizes="(min-width: 64rem) 44rem, 88vw"
+                    loading="lazy"
+                  />
+                </div>
+                <figcaption class="caption">
+                  <span class="caption-label">
+                    {figureLabel}&nbsp;{firstGalleryFigure + galleryIndex}.
+                  </span>{' '}
+                  {figure.caption[locale]}
+                </figcaption>
+              </figure>
+            ))
+          }
+        </section>
+
+        <section id="results" aria-labelledby="results-title">
+          <h2 id="results-title">{strings.sections.results[locale]}</h2>
+          <table class="booktabs results">
+              <thead>
+                <tr>
+                  <th scope="col">{strings.results.measure[locale]}</th>
+                  <th scope="col">{strings.results.value[locale]}</th>
+                  <th scope="col">{strings.results.source[locale]}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  project.results.rows.map((row) => (
+                    <tr>
+                      <th scope="row">{row.label[locale]}</th>
+                      <td>{row.value[locale]}</td>
+                      <td class="source">{row.source[locale]}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+          </table>
+          <p class="caption">
+            <span class="caption-label">{ui.work.table[locale]}&nbsp;1.</span>{' '}
+            {project.results.note[locale]}
+          </p>
+          {
+            project.limitations && (
+              <>
+                <h3>{strings.limitations[locale]}</h3>
+                <ul class="bullets">
+                  {project.limitations.map((item) => (
+                    <li>{item[locale]}</li>
+                  ))}
+                </ul>
+              </>
+            )
+          }
+        </section>
+
+        <section id="links" aria-labelledby="links-title">
+          <h2 id="links-title">{strings.sections.links[locale]}</h2>
+          <p>
+            <a class="link repo" href={project.repository.url} target="_blank" rel="noopener">
+              <Icon name="github" size={18} />
+              {project.repository.label}
+              <span class="sr-only">({ui.work.opensInNewTab[locale]})</span>
+              <Icon name="external" size={14} />
+            </a>
+          </p>
+          {project.repository.note && <p class="aside">{project.repository.note[locale]}</p>}
+          {
+            project.demo ? (
+              <p>
+                <a class="link repo" href={project.demo.url} target="_blank" rel="noopener">
+                  {project.demo.label[locale]}
+                  <span class="sr-only">({ui.work.opensInNewTab[locale]})</span>
+                  <Icon name="external" size={14} />
+                </a>
+              </p>
+            ) : (
+              <p class="aside">{strings.noDemo[locale]}</p>
+            )
+          }
+        </section>
+
+        <p class="qed">
+          <span class="tombstone" aria-hidden="true"></span><span class="sr-only">{strings.endOfProof[locale]}</span>
+        </p>
+      </div>
+    </div>
+
+    <nav class="pager" aria-label={ui.work.title[locale]}>
+      {
+        previous ? (
+          <a href={href(`/work/${previous.slug}/`, locale)} rel="prev">
+            <span class="pager-kind">
+              <Icon name="arrow-left" size={14} />
+              {strings.previous[locale]}
+            </span>
+            <span class="pager-title">
+              <span class="theorem-label">
+                {ui.work.lemma[locale]}&nbsp;{previous.order}
+              </span>{' '}
+              ({previous.shortTitle})
+            </span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next && (
+          <a class="pager-next" href={href(`/work/${next.slug}/`, locale)} rel="next">
+            <span class="pager-kind">
+              {strings.next[locale]}
+              <Icon name="arrow-right" size={14} />
+            </span>
+            <span class="pager-title">
+              <span class="theorem-label">
+                {ui.work.lemma[locale]}&nbsp;{next.order}
+              </span>{' '}
+              ({next.shortTitle})
+            </span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .case {
+    padding-top: clamp(1.5rem, 4vw, 3rem);
+    padding-bottom: clamp(4rem, 9vw, 7rem);
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    font-size: var(--text-sm);
+    color: var(--muted);
+    transition: color 150ms ease;
+  }
+
+  .back:hover {
+    color: var(--text);
+  }
+
+  .case-number {
+    margin-top: clamp(1.5rem, 4vw, 2.5rem);
+    font-size: var(--text-xl);
+    line-height: 1;
+  }
+
+  h1 {
+    margin-top: 0.5rem;
+    max-width: 20ch;
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .case-summary {
+    margin-top: 1.5rem;
+    max-width: 44rem;
+    font-size: clamp(1.3125rem, 2.4vw, 1.625rem);
+    line-height: 1.38;
+  }
+
+  .case-meta {
+    display: grid;
+    margin-top: 2.5rem;
+    border-top: 2px solid var(--text);
+    border-bottom: 2px solid var(--text);
+    font-size: var(--text-sm);
+  }
+
+  .case-meta > div {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1rem;
+    padding-block: 0.75rem;
+  }
+
+  .case-meta > div + div {
+    border-top: 1px solid var(--line);
+  }
+
+  .case-meta dt {
+    color: var(--muted);
+  }
+
+  /* Inline, so the icons stay with the text when a long name wraps. */
+  .repo {
+    padding-block: 0.25rem;
+    overflow-wrap: anywhere;
+  }
+
+  .repo :global(svg) {
+    display: inline;
+    vertical-align: -0.15em;
+    margin-inline: 0.15em;
+  }
+
+  .case-cover {
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .case-layout {
+    display: grid;
+    gap: 2.5rem;
+    margin-top: clamp(3rem, 7vw, 5rem);
+  }
+
+  /* On small screens the contents list is a compact two-column index. */
+  .toc {
+    padding-block: 1rem;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    font-size: var(--text-sm);
+  }
+
+  .toc-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: var(--text-base);
+  }
+
+  .toc ol {
+    margin-top: 0.25rem;
+    columns: 2;
+    column-gap: 1.5rem;
+  }
+
+  .toc a {
+    display: flex;
+    align-items: center;
+    min-height: 2.25rem;
+    color: var(--text);
+  }
+
+  .toc a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  .case-body {
+    min-width: 0;
+    max-width: 46rem;
+  }
+
+  .case-body > section {
+    padding-block: clamp(2rem, 5vw, 3rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .case-body > section:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .case-body h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .case-body h3 {
+    margin-top: 2rem;
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .case-body p {
+    margin-top: 1.125rem;
+    color: var(--muted);
+  }
+
+  .case-body h2 + p {
+    margin-top: 1.25rem;
+  }
+
+  #overview p:first-of-type {
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .note p {
+    margin-top: 0.5rem;
+  }
+
+  .case-body .aside {
+    padding-left: 1rem;
+    border-left: 2px solid var(--mark);
+    font-size: var(--text-sm);
+  }
+
+  .bullets {
+    display: grid;
+    gap: 0.625rem;
+    margin-top: 1.25rem;
+    color: var(--muted);
+  }
+
+  .bullets li {
+    position: relative;
+    padding-left: 1.375rem;
+  }
+
+  .bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0.125rem;
+    top: 0.62em;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border: 1px solid var(--text);
+  }
+
+  .tech {
+    margin-top: 1.5rem;
+  }
+
+  .tech th {
+    width: 11rem;
+  }
+
+  .figure {
+    margin-top: 2.25rem;
+  }
+
+  .figure-diagram {
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  .figure-shot {
+    padding: clamp(0.75rem, 2.5vw, 1.25rem);
+  }
+
+  .figure-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .results {
+    margin-top: 1.5rem;
+  }
+
+  .results tbody th {
+    width: 30%;
+  }
+
+  .results .source {
+    width: 28%;
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  .case-body p.caption {
+    margin-top: 0.875rem;
+  }
+
+  .qed {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .qed .tombstone {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: clamp(3rem, 7vw, 5rem);
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--text);
+  }
+
+  .pager a {
+    display: grid;
+    gap: 0.25rem;
+    align-content: start;
+    min-height: 2.75rem;
+  }
+
+  .pager-next {
+    grid-column: 2;
+    justify-items: end;
+    text-align: right;
+  }
+
+  .pager-kind {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .pager-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    line-height: 1.25;
+  }
+
+  .pager a:hover .pager-title {
+    text-decoration: underline;
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
+  }
+
+  @media (min-width: 40rem) {
+    .case-meta {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .case-meta > div {
+      grid-template-columns: 1fr;
+      gap: 0.125rem;
+      padding: 0.875rem 1.5rem 0.875rem 0;
+    }
+
+    .case-meta > div + div {
+      border-top: 0;
+    }
+  }
+
+  @media (max-width: 39.99rem) {
+    /* On phones each result stacks: measure, result, then its source. */
+    .results thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .results tbody tr {
+      display: grid;
+      padding-block: 0.75rem;
+    }
+
+    .results tbody tr + tr {
+      border-top: 1px solid var(--line);
+    }
+
+    .results tbody th,
+    .results tbody td,
+    .results .source {
+      width: auto;
+      padding: 0;
+      border-top: 0;
+    }
+
+    .results .source {
+      padding-top: 0.25rem;
+    }
+
+    .tech tbody tr {
+      display: grid;
+    }
+
+    .tech tbody th {
+      width: auto;
+      padding-bottom: 0;
+    }
+
+    .tech tbody tr + tr > td {
+      border-top: 0;
+    }
+
+    .tech tbody td {
+      padding-top: 0.25rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .case-layout {
+      grid-template-columns: 13rem minmax(0, 1fr);
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 6.5rem;
+      padding: 0;
+      border: 0;
+    }
+
+    .toc ol {
+      columns: 1;
+      margin-top: 0.5rem;
+    }
+
+    .toc a {
+      min-height: 2rem;
+      color: var(--muted);
+    }
+
+    .toc a:hover {
+      color: var(--text);
+    }
+  }
+</style>
