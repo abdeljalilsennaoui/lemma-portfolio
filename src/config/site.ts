@@ -47,11 +47,12 @@ export const links: {
 } = {
   github: 'https://github.com/abdeljalilsennaoui',
   githubHandle: 'abdeljalilsennaoui',
-  // The address published on the GitHub profile above.
-  email: 'name@example.com',
+  // Hidden by choice. Set to an address to show it in the contact section.
+  email: null,
   // Not verified yet. Set to the full profile URL to show it.
   linkedin: null,
-  // Put the PDF in `public/` and set this to its path, e.g. '/resume.pdf'.
+  // Hidden by choice. To show one, put the PDF in `public/` and set this to its
+  // path, e.g. '/resume.pdf'.
   resume: null,
   repository: 'https://github.com/abdeljalilsennaoui/lemma-portfolio',
 };

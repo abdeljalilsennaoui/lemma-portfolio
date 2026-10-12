@@ -173,12 +173,12 @@ cover: {
 
 Use only real screenshots of the real application.
 
-## Adding the LinkedIn link, a résumé or a different email
+## Adding the LinkedIn link, a résumé or an email address
 
 All three are in `src/config/site.ts`:
 
 ```ts
-email: 'name@example.com',
+email: null,    // set to an address to show it
 linkedin: null, // set to the full profile URL to show it
 resume: null,   // put the PDF in public/ and set to '/resume.pdf'
 ```
