@@ -47,8 +47,9 @@ export const links: {
 } = {
   github: 'https://github.com/abdeljalilsennaoui',
   githubHandle: 'abdeljalilsennaoui',
-  // Hidden by choice. Set to an address to show it in the contact section.
-  email: null,
+  // A forwarding address at the domain, set up at Porkbun. Keep personal
+  // addresses out of this file; set to `null` to hide the link.
+  email: 'hello@lemmabyajs.com',
   // Not verified yet. Set to the full profile URL to show it.
   linkedin: null,
   // Hidden by choice. To show one, put the PDF in `public/` and set this to its

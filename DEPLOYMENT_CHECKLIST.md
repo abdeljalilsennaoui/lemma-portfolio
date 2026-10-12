@@ -21,9 +21,8 @@
 
 - [ ] **LinkedIn URL** — set `links.linkedin` in `src/config/site.ts`. It is hidden until then.
 - [x] **Résumé** — not published, by choice. `links.resume` stays `null`.
-- [x] **Email** — not published, by choice. `links.email` is `null`. A forwarding address at
-      the domain (for example `hello@lemmabyajs.com`) could go there without exposing a
-      personal one.
+- [x] **Email** — the site shows `hello@lemmabyajs.com`, which Porkbun forwards to a private
+      inbox. No personal address is published.
 - [ ] **Screenshots for CampusGuide and SUMMS** — both show an architecture diagram until real
       screenshots are added. See "Replacing portfolio images" in the README.
 - [x] **Quebec enterprise register** — `lemma` and `ajs` searched by hand on 12 October 2026. No
