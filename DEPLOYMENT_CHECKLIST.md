@@ -9,13 +9,13 @@
 
 ## First deployment
 
-- [ ] The repository exists at `github.com/abdeljalilsennaoui/lemma-portfolio` and is public.
-- [ ] **Settings → Pages → Source** is set to **GitHub Actions**.
-- [ ] The "Deploy to GitHub Pages" workflow finished green on `main`.
-- [ ] <https://abdeljalilsennaoui.github.io/lemma-portfolio/> loads with styles and fonts.
-- [ ] A case study page loads, and its images appear.
-- [ ] The French version loads at `/fr/`, and the language switch stays on the same page.
-- [ ] An unknown address shows the 404 page.
+- [x] The repository exists at `github.com/abdeljalilsennaoui/lemma-portfolio` and is public.
+- [x] **Settings → Pages → Source** is set to **GitHub Actions**.
+- [x] The "Deploy to GitHub Pages" workflow finished green on `main`.
+- [x] <https://abdeljalilsennaoui.github.io/lemma-portfolio/> loads with styles and fonts.
+- [x] A case study page loads, and its images appear.
+- [x] The French version loads at `/fr/`, and the language switch stays on the same page.
+- [x] An unknown address shows the 404 page.
 
 ## Still to supply
 
@@ -25,8 +25,8 @@
       `links.email` if another address is preferred, or set it to `null` to hide it.
 - [ ] **Screenshots for CampusGuide and SUMMS** — both show an architecture diagram until real
       screenshots are added. See "Replacing portfolio images" in the README.
-- [ ] **Quebec enterprise register** — search for the name by hand; it could not be checked
-      automatically. See `docs/BRAND_NAME_RESEARCH.md`.
+- [x] **Quebec enterprise register** — `lemma` and `ajs` searched by hand on 12 October 2026. No
+      name combines the two. See `docs/BRAND_NAME_RESEARCH.md`.
 
 ## Moving to the custom domain
 
