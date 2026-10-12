@@ -3,7 +3,7 @@
 The software engineering portfolio of **Abdeljalil Sennaoui**, a Software Engineering student at
 Concordia University in Montreal.
 
-Live site: <https://abdeljalilsennaoui.github.io/lemma-portfolio/>
+Live site: <https://lemmabyajs.com/>
 
 LEMMA by AJS is the name I publish my work under. It is a personal identity, not a company: there
 are no employees and no clients, and every project on the site is one I worked on myself. The
@@ -197,7 +197,8 @@ Everything that prints it reads from `brand` in `src/config/site.ts`. To rename:
 
 ## Configuring the custom domain
 
-The domain is `lemmabyajs.com`, registered at Porkbun. Do the steps in this order: if GitHub is
+The domain is `lemmabyajs.com`, registered at Porkbun. The site moved to it on 12 October 2026;
+the steps are kept here in case it has to be set up again. Do them in this order: if GitHub is
 given the domain before DNS points at it, the working `github.io` address starts redirecting to a
 domain that does not resolve yet.
 
