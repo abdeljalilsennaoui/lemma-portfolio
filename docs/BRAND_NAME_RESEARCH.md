@@ -13,7 +13,7 @@ unregistered mark, a mark filed after this date, or a business that a search did
 | --- | --- | --- |
 | Are the three candidate domains registered? | No, none of them | High — asked the registries directly |
 | Is there a Canadian trademark for LEMMA, or for the combinations? | None found | Medium — queried the CIPO database, see caveats |
-| Is the name in Quebec's enterprise register? | **Not verified** | — the register refused automated access |
+| Is the name in Quebec's enterprise register? | No name combines "Lemma" and "AJS". Two active enterprises use "Lemma"; more than twenty use "AJS" | Medium — two searches by hand, activities not checked |
 | Do other technology companies use "Lemma"? | Yes, several | High |
 | Does anyone use "LEMMA by AJS", "LEMMA AJS" or "AJS LEMMA"? | None found | Medium — web search only |
 
@@ -65,15 +65,60 @@ unregistered mark can still have rights in Canada through use.
 
 ## Quebec enterprise register (REQ)
 
-**Not verified.** The Registraire des entreprises website returned HTTP 403 to automated
-requests, so no search could be run.
+The Registraire des entreprises website returned HTTP 403 to automated requests, so the searches
+were run by hand on 12 October 2026 at <https://www.registreentreprises.gouv.qc.ca>, under
+"Rechercher une entreprise au registre". Two terms were searched: `lemma` and `ajs`. The search
+matches the term anywhere in a name and also returns close spellings.
 
-To check it yourself: go to <https://www.registreentreprises.gouv.qc.ca>, choose "Rechercher une
-entreprise au registre", and search for `LEMMA`, `LEMMA AJS` and `AJS LEMMA`. The search is free.
+**No name combines the two words.** None of the 49 names returned for `lemma` contains "AJS", and
+none of the 107 returned for `ajs` contains "Lemma". So no "LEMMA by AJS", "LEMMA AJS" or
+"AJS LEMMA" is registered, reserved or formerly registered.
+
+### Search for `lemma`: 49 names
+
+Most are "Lema", "Léma" or "Lemas", many of them surnames of sole proprietors. Names spelled
+"Lemma":
+
+| Name | NEQ | Enterprise status | Name status |
+| --- | --- | --- | --- |
+| Lemma Solutions Inc. | 1168369123 | Registered | In force since 2012-06-28 |
+| Groupe Lemma inc. / Lemma Group Inc. / Groupe Lemma SCS / Lemma SCS Group | 1176046234 | Registered | All four in force since December 2020 |
+| Transport Lemma | 1171071716 | Struck off, 2021-01-05 | Former |
+| Les Entreprises Lemma enr. | 3342275057 | Struck off, 1997-05-22 | Former |
+
+One close spelling is in computing: Informatique Lema inc. (NEQ 1140342586), struck off in 1996.
+
+### Search for `ajs`: 107 names
+
+"AJS" is a common set of initials in Quebec business names. The 107 names include a few "AJZ"
+spellings and belong to more than twenty enterprises that are still registered, almost all with a
+trade in the name: security, transport, painting, excavation, electrical work, cleaning, farming.
+
+The names nearest to software or consulting, or with no trade in them:
+
+| Name | NEQ | Enterprise status | Name status |
+| --- | --- | --- | --- |
+| Systèmes AJS Inc. | 1172152507 | Struck off, 2017-12-21 | Former |
+| A.J.S. Électroniques | 1143745314 | Struck off, 2001-05-04 | Former |
+| Consultation AJS inc. | 1166710021 | Registered | In force since 2010-07-07 |
+| AJS International | 1179769105 | Registered | In force since 2026-02-11 |
+| Groupe AJS | 1149323934 | Registered | In force since 2000-06-26 |
+| A.J.S. | 1170088737 | Registered | In force since 2014-06-06 |
+
+No active name in the list points to software. With this many holders, "AJS" is not a term
+anyone has to themselves in Quebec, which cuts both ways: it is unlikely to draw an objection on
+its own, and it adds little distinctiveness to "LEMMA".
+
+### What the searches do not show
+
+The results list gives names and statuses, not what an enterprise does. Each record's detail page
+gives its sector of activity; none was opened.
 
 This matters less while LEMMA is only the name of a portfolio. It would matter if you ever
 carried on a business in Quebec under the name, because a name used for a business there
 generally has to be declared and must not be confusingly similar to one already registered.
+Lemma Solutions Inc. is the one to look at first, since its name would sit closest to a software
+business called Lemma.
 
 ## Other uses of "Lemma" in technology
 
@@ -105,7 +150,8 @@ No use of the exact phrases "LEMMA by AJS", "LEMMA AJS" or "AJS LEMMA" was found
 - **If this becomes a business,** treat the name as unvetted. The realistic risks are a
   confusion objection from one of the existing Lemma companies in a software class, and the
   difficulty of registering a mark whose main word is already claimed. Speak to a trademark agent
-  before investing in the name commercially, and check the Quebec register at that point.
+  before investing in the name commercially, and open the Quebec register records for Lemma
+  Solutions Inc. and Groupe Lemma inc. at that point to see what they do.
 - **The domain is settled.** `lemmabyajs.com` is registered to you. Consider also registering
   `lemmabyajs.dev` if you want to stop someone else from taking the look-alike.
 
