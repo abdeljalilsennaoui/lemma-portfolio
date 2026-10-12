@@ -178,7 +178,7 @@ Use only real screenshots of the real application.
 All three are in `src/config/site.ts`:
 
 ```ts
-email: null,    // set to an address to show it
+email: 'hello@lemmabyajs.com', // forwards to a private inbox; null hides it
 linkedin: null, // set to the full profile URL to show it
 resume: null,   // put the PDF in public/ and set to '/resume.pdf'
 ```

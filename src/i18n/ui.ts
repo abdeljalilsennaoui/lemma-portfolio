@@ -124,8 +124,8 @@ export const ui = {
     title: t('Contact', 'Contact'),
     heading: t('Get in touch', 'Écrivez-moi'),
     body: t(
-      'I’m interested in software engineering internships, co-op placements and junior roles, and I’m glad to talk about any project on this site.',
-      "Je m'intéresse aux stages en génie logiciel, aux placements coopératifs et aux postes de niveau débutant, et je discute volontiers de n'importe quel projet présenté sur ce site.",
+      'I’m interested in software engineering internships, co-op placements and junior roles, and I’m glad to talk about any project on this site. Email is the best way to reach me.',
+      "Je m'intéresse aux stages en génie logiciel, aux placements coopératifs et aux postes de niveau débutant, et je discute volontiers de n'importe quel projet présenté sur ce site. Le courriel reste le meilleur moyen de me joindre.",
     ),
     email: t('Email', 'Courriel'),
     github: t('GitHub', 'GitHub'),
