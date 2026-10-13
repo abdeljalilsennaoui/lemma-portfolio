@@ -1,12 +1,12 @@
 ---
-import '@fontsource/ibm-plex-sans/latin-400.css';
-import '@fontsource/ibm-plex-sans/latin-500.css';
-import '@fontsource/ibm-plex-sans/latin-600.css';
-import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/charis-sil/latin-400.css';
+import '@fontsource/charis-sil/latin-400-italic.css';
+import '@fontsource/charis-sil/latin-700.css';
+import '@fontsource/charis-sil/latin-700-italic.css';
 import '../styles/global.css';
 
-import serifUrl from '../assets/fonts/lemma-serif-italic.woff2?url';
-import sansUrl from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url';
+import textUrl from '@fontsource/charis-sil/files/charis-sil-latin-400-normal.woff2?url';
+import boldUrl from '@fontsource/charis-sil/files/charis-sil-latin-700-normal.woff2?url';
 
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -126,8 +126,8 @@ const jsonLd = {
     <link rel="apple-touch-icon" href={asset('/apple-touch-icon.png')} />
     <link rel="sitemap" href={asset('/sitemap-index.xml')} />
 
-    <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={sansUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={textUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={boldUrl} as="font" type="font/woff2" crossorigin />
 
     <!-- Applies a saved theme before first paint, and marks the page as scripted. -->
     <script is:inline>

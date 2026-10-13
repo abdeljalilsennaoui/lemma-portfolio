@@ -8,21 +8,16 @@
     <meta charset="utf-8" />
     <style>
       @font-face {
-        font-family: 'Lemma Serif';
-        font-style: italic;
+        font-family: 'Charis SIL';
+        font-style: normal;
         font-weight: 400;
-        src: url('../src/assets/fonts/lemma-serif-italic.woff2') format('woff2');
+        src: url('../node_modules/@fontsource/charis-sil/files/charis-sil-latin-400-normal.woff2') format('woff2');
       }
       @font-face {
-        font-family: 'Lemma Serif';
+        font-family: 'Charis SIL';
         font-style: normal;
         font-weight: 700;
-        src: url('../src/assets/fonts/lemma-serif-bold.woff2') format('woff2');
-      }
-      @font-face {
-        font-family: 'IBM Plex Sans';
-        font-weight: 400;
-        src: url('../node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2') format('woff2');
+        src: url('../node_modules/@fontsource/charis-sil/files/charis-sil-latin-700-normal.woff2') format('woff2');
       }
       * {
         margin: 0;
@@ -37,11 +32,11 @@
         justify-content: space-between;
         background: #0f3a2e;
         color: #f4f2e8;
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'Charis SIL', serif;
         overflow: hidden;
       }
       .wordmark {
-        font: 700 46px/1 'Lemma Serif', serif;
+        font: 700 46px/1 'Charis SIL', serif;
         display: flex;
         align-items: baseline;
         gap: 18px;
@@ -54,18 +49,18 @@
         background: #f4cf45;
       }
       .wordmark span {
-        font: 500 15px/1 'IBM Plex Sans', sans-serif;
+        font: 400 15px/1 'Charis SIL', serif;
         letter-spacing: 0.16em;
         color: #b7c6bb;
       }
       .label {
-        font: 700 34px/1 'Lemma Serif', serif;
+        font: 700 34px/1 'Charis SIL', serif;
       }
       h1 {
-        margin-top: 4px;
-        margin-left: -6px;
-        font: italic 400 178px/0.95 'Lemma Serif', serif;
-        letter-spacing: -0.025em;
+        margin-top: 10px;
+        margin-left: -4px;
+        font: 700 138px/1.02 'Charis SIL', serif;
+        letter-spacing: -0.02em;
         white-space: nowrap;
       }
       .foot {

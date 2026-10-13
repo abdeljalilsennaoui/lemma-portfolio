@@ -34,7 +34,7 @@ separately, what I built.
 | Framework | [Astro](https://astro.build) 7, static output |
 | Language | TypeScript, strict |
 | Styling | Tailwind CSS 4, design tokens as CSS custom properties |
-| Type | Computer Modern (display), IBM Plex Sans and Mono (text), all self-hosted |
+| Type | Charis SIL (Charter) for all text, self-hosted; the reader's own monospace for code |
 | Images | `astro:assets`, responsive WebP |
 | Hosting | GitHub Pages, deployed by GitHub Actions |
 
@@ -52,7 +52,7 @@ cookies, no third-party scripts and no requests to other origins.
 ├── scripts/                       Link checker and asset generators
 ├── src/
 │   ├── assets/
-│   │   ├── fonts/                 Subset display fonts and their licence
+│   │   ├── fonts/                 Maths symbol font and its licence   
 │   │   └── projects/<slug>/       Real screenshots, one folder per project
 │   ├── components/                Page sections and building blocks
 │   ├── config/site.ts             Brand name, identity, links — edit here to rename
@@ -97,7 +97,7 @@ machine first.
 | `npm run preview` | Serve the production build locally |
 | `npm run test:links` | Check every internal link, image and anchor in `dist/` |
 | `npm run verify` | `check`, then `build`, then `test:links` — what CI runs |
-| `npm run fonts` | Rebuild the subset display fonts |
+| `npm run fonts` | Rebuild the maths symbol font |
 | `npm run icons` | Rebuild `favicon.ico` and `apple-touch-icon.png` from `favicon.svg` |
 | `npm run og` | Rebuild the social image (needs Google Chrome) |
 
@@ -270,10 +270,11 @@ root, usually after a past `sudo npm`. Fix the ownership with
 
 ## Credits and licences
 
-- Computer Modern Unicode fonts, © Andrey V. Panov and the authors of the original fonts, under
-  the SIL Open Font License 1.1. The files in `src/assets/fonts/` are Latin subsets of CMU Serif,
-  served under the CSS family name "Lemma Serif"; the licence is alongside them.
-- IBM Plex, © IBM Corp., under the SIL Open Font License 1.1.
+- Charis SIL, © SIL International, under the SIL Open Font License 1.1. It is SIL's release of
+  Charter, the typeface Matthew Carter designed for Bitstream.
+- STIX Two Math, © the STIX Fonts Project Authors, under the SIL Open Font License 1.1. The file
+  in `src/assets/fonts/` is a subset holding a few mathematical symbols, served under the CSS
+  family name "Lemma Math"; the licence is alongside it.
 - Screenshots are from my own repositories.
 
 The content of this site — text, images and the LEMMA by AJS identity — is © Abdeljalil
