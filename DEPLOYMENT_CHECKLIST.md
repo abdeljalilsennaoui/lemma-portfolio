@@ -23,8 +23,11 @@
 - [x] **Résumé** — not published, by choice. `links.resume` stays `null`.
 - [x] **Email** — the site shows `hello@lemmabyajs.com`, which Porkbun forwards to a private
       inbox. No personal address is published.
-- [ ] **Screenshots for CampusGuide and SUMMS** — both show an architecture diagram until real
-      screenshots are added. See "Replacing portfolio images" in the README.
+- [x] **Pictures for CampusGuide** — three frames from the test recordings in the team wiki.
+      They are 800 px wide; replace them if sharper originals turn up.
+- [ ] **Pictures for SUMMS** — none exist in its repository, which has no wiki. It shows an
+      architecture diagram until real screenshots are supplied. See "Replacing portfolio
+      images" in the README.
 - [x] **Quebec enterprise register** — `lemma` and `ajs` searched by hand on 12 October 2026. No
       name combines the two. See `docs/BRAND_NAME_RESEARCH.md`.
 

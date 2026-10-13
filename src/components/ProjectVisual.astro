@@ -31,6 +31,7 @@ const isCover = variant === 'cover';
         loading={isCover || project.order === 1 ? 'eager' : 'lazy'}
         fetchpriority={isCover ? 'high' : undefined}
         class="shot"
+        style={`max-width: ${project.cover.src.width}px`}
       />
     ) : (
       <LayerDiagram diagram={project.architecture.diagram} locale={locale} compact={!isCover} />
@@ -47,9 +48,12 @@ const isCover = variant === 'cover';
     padding: clamp(1.25rem, 4vw, 2.5rem);
   }
 
+  /* Never wider than the file itself: a small screenshot sits centred on the
+     panel instead of being stretched soft. */
   .shot {
     display: block;
     width: 100%;
     height: auto;
+    margin-inline: auto;
   }
 </style>

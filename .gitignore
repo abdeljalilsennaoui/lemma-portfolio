@@ -17,3 +17,7 @@ npm-debug.log*
 # editors and operating systems
 .DS_Store
 .idea/
+
+# local tool output and temporary previews
+.playwright-mcp/
+font-previews/
