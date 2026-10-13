@@ -1,14 +1,17 @@
 import { t } from '../../i18n';
 import type { Project } from '../../types/content';
+import campusMap from '../../assets/projects/campus-guide/campus-map.png';
+import buildingInfo from '../../assets/projects/campus-guide/building-info.png';
+import buildingOutlines from '../../assets/projects/campus-guide/building-outlines.png';
 
 const counted = t(
   'Counted on the main branch, April 2026',
   'Compté sur la branche main, avril 2026',
 );
 
-// No screenshot of the running app is published in the team repository, so
-// this project shows its architecture diagram instead of a cover image. To add
-// real screenshots, see "Replacing portfolio images" in the README.
+// The pictures are frames from the acceptance-test recordings in the team's
+// wiki (06 Testing Plan and Report). Each shows the app on an emulator beside
+// the test run that drives it. They are 800 px wide because the recordings are.
 export const campusGuide: Project = {
   slug: 'campus-guide',
   order: 2,
@@ -71,6 +74,42 @@ export const campusGuide: Project = {
     {
       group: t('Build and CI', 'Build et intégration continue'),
       items: ['Gradle (Kotlin DSL)', 'GitHub Actions', 'JaCoCo', 'SonarQube Cloud', 'Android Lint'],
+    },
+  ],
+
+  cover: {
+    src: campusMap,
+    alt: t(
+      'Android Studio. On the left, a terminal running the instrumented test class ViewCampusMapsUITest, with three of three tests completed and none failed. On the right, a Pixel 9a emulator showing the CampusGuide map of the Sir George Williams campus: red markers on the buildings, a search bar, buttons for the SGW and Loyola campuses, and tabs for Map, Directions, Calendar and POI.',
+      "Android Studio. À gauche, un terminal exécute la classe de tests instrumentés ViewCampusMapsUITest : trois tests sur trois terminés, aucun échec. À droite, un émulateur Pixel 9a affiche la carte du campus Sir George Williams dans CampusGuide : des marqueurs rouges sur les pavillons, une barre de recherche, des boutons pour les campus SGW et Loyola, et les onglets Map, Directions, Calendar et POI.",
+    ),
+    caption: t(
+      'The campus map on an emulator, beside the UI test run that drives it. A frame from a test recording in the project wiki.',
+      "La carte du campus sur un émulateur, à côté de l'exécution des tests d'interface qui la pilotent. Image tirée d'un enregistrement de test du wiki du projet.",
+    ),
+  },
+  gallery: [
+    {
+      src: buildingInfo,
+      alt: t(
+        'The emulator shows a sheet that has slid up over the map for the J.W. McConnell Building, code LB: its address, 1400 De Maisonneuve Blvd. W.; its accessibility features, an accessible entrance and an accessible elevator; its opening hours for weekdays and weekends; and a “View More Details” button. The terminal beside it is running BuildingInfoPopupUITest.',
+        "L'émulateur affiche une fiche qui s'est glissée par-dessus la carte pour le pavillon J.W. McConnell, code LB : son adresse, 1400 De Maisonneuve Blvd. W.; ses caractéristiques d'accessibilité, soit une entrée et un ascenseur accessibles; ses heures d'ouverture en semaine et la fin de semaine; et un bouton « View More Details ». Le terminal voisin exécute BuildingInfoPopupUITest.",
+      ),
+      caption: t(
+        'Tapping a building opens its details: address, accessibility and opening hours. A frame from the recording of that feature’s UI tests.',
+        "Toucher un pavillon ouvre sa fiche : adresse, accessibilité et heures d'ouverture. Image tirée de l'enregistrement des tests d'interface de cette fonction.",
+      ),
+    },
+    {
+      src: buildingOutlines,
+      alt: t(
+        'The emulator shows the map zoomed in on the streets around Concordia University downtown. Each campus building is filled in with a red tint and carries a marker, and the SGW campus button is selected.',
+        "L'émulateur affiche la carte, agrandie sur les rues qui entourent l'Université Concordia au centre-ville. Chaque pavillon du campus est rempli d'une teinte rouge et porte un marqueur, et le bouton du campus SGW est sélectionné.",
+      ),
+      caption: t(
+        'Campus buildings drawn as shaded outlines over the map, from GeoJSON polygons. A frame from the same recording.',
+        "Les pavillons du campus, dessinés en surimpression sur la carte à partir de polygones GeoJSON. Image tirée du même enregistrement.",
+      ),
     },
   ],
 

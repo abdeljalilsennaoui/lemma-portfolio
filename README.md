@@ -157,9 +157,10 @@ replace one, overwrite the file and keep its name, or add a new file and change 
 update its `alt` text (what the image shows, for someone who cannot see it) and its `caption`.
 Images are resized and converted to WebP at build time, so commit the original PNG.
 
-A project with no `cover` shows its architecture diagram instead, labelled as a diagram.
-CampusGuide and SUMMS are in that state because their repositories do not contain screenshots of
-the running application. To give one a real cover:
+A project with no `cover` shows its architecture diagram instead, labelled as a diagram. SUMMS
+is in that state because its repository contains design diagrams but no picture of the running
+application. CampusGuide uses frames from the acceptance-test recordings in its team wiki. To
+give a project a real cover:
 
 ```ts
 import map from '../../assets/projects/campus-guide/map.png';
