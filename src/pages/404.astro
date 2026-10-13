@@ -32,9 +32,13 @@ import { href } from '../utils/paths';
   .not-found {
     display: grid;
     gap: 2.5rem;
-    max-width: 40rem;
-    margin-inline: 0;
     padding-block: clamp(3rem, 10vw, 7rem);
+  }
+
+  /* The section keeps the page's width so it lines up with the header; the
+     text inside it is held to a readable measure. */
+  .not-found > * {
+    max-width: 40rem;
   }
 
   .code {
@@ -46,10 +50,10 @@ import { href } from '../utils/paths';
 
   h1 {
     font-family: var(--font-serif);
-    font-style: italic;
     font-size: clamp(2.25rem, 6vw, 3.5rem);
-    font-weight: 400;
-    line-height: 1.05;
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.015em;
   }
 
   p {

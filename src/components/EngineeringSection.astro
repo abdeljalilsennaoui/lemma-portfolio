@@ -127,7 +127,6 @@ function resolve(evidence: Evidence) {
 
   .principles strong {
     font-family: var(--font-serif);
-    font-size: 1.15em;
     font-weight: 700;
     color: var(--text);
   }
@@ -159,10 +158,11 @@ function resolve(evidence: Evidence) {
 
   .cite a {
     display: inline-block;
-    /* A 24px-wide target, pulled in so the brackets still sit close. */
+    /* A target at least 24px wide, pulled in so the brackets still sit close.
+       The side padding keeps a long label clear of them. */
     min-width: 1.5rem;
-    margin-inline: -0.25rem;
-    padding-block: 0.3rem;
+    margin-inline: -0.2rem;
+    padding: 0.3rem 0.25rem;
     text-align: center;
     color: var(--text);
     text-decoration: underline;
