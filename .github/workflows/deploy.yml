@@ -7,11 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Only what GitHub Pages deployment needs.
+# Read-only by default. Only the deploy job, which never runs for a pull
+# request, gets the rights to publish.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # One deployment at a time; a newer push waits for the running one.
 concurrency:
@@ -63,6 +62,9 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
