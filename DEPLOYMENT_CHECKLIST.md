@@ -19,7 +19,7 @@
 
 ## Still to supply
 
-- [ ] **LinkedIn URL** — set `links.linkedin` in `src/config/site.ts`. It is hidden until then.
+- [x] **LinkedIn URL** — `links.linkedin` in `src/config/site.ts`.
 - [x] **Résumé** — not published, by choice. `links.resume` stays `null`.
 - [x] **Email** — the site shows `hello@lemmabyajs.com`, which Porkbun forwards to a private
       inbox. No personal address is published.
@@ -32,9 +32,9 @@
       The screenshots are under 900 px wide; replace them if larger originals turn up.
 - [ ] **More pictures for the study assistant** — it has one screenshot. The other three study
       modes (flashcards, quiz, question answering) are not pictured.
-- [ ] **GDG Concordia** — the role (VP Admin) and the 2026 events were read from the chapter's
-      public page on 13 November 2026. Confirm the wording in `src/data/community.ts` and
-      `src/i18n/ui.ts`, and add anything specific you ran yourself.
+- [x] **GDG Concordia** — the role (VP Admin) and the events were read from the chapter's
+      public pages on 13 November 2026. The two workshops I helped run are marked in
+      `src/data/community.ts`.
 - [x] **Quebec enterprise register** — `lemma` and `ajs` searched by hand on 12 October 2026. No
       name combines the two. See `docs/BRAND_NAME_RESEARCH.md`.
 

@@ -54,8 +54,7 @@ export const links: {
   // A forwarding address at the domain, set up at Porkbun. Keep personal
   // addresses out of this file; set to `null` to hide the link.
   email: 'hello@lemmabyajs.com',
-  // Not verified yet. Set to the full profile URL to show it.
-  linkedin: null,
+  linkedin: 'https://www.linkedin.com/in/abdeljalilsennaoui/',
   // Hidden by choice. To show one, put the PDF in `public/` and set this to its
   // path, e.g. '/resume.pdf'.
   resume: null,

@@ -19,7 +19,8 @@ const strings = ui.community;
 
 const dateFormat = new Intl.DateTimeFormat(languageTag[locale], {
   day: 'numeric',
-  month: 'long',
+  month: 'short',
+  year: 'numeric',
   timeZone: 'UTC',
 });
 const numberFormat = new Intl.NumberFormat(languageTag[locale]);
@@ -67,8 +68,16 @@ const fill = (text: string) =>
                   <time datetime={event.date}>{dateFormat.format(new Date(event.date))}</time>
                 </th>
                 <td>
-                  <span class="event-name">{event.name}</span>
+                  <a class="link event-name" href={event.url} rel="noopener">
+                    {event.name}
+                  </a>
                   {event.partners && <span class="event-partners">, {event.partners[locale]}</span>}
+                  {event.helpedRun && (
+                    <span class="event-mine">
+                      <span class="tombstone" aria-hidden="true" />
+                      {strings.helpedRun[locale]}
+                    </span>
+                  )}
                 </td>
               </tr>
             ))
@@ -134,8 +143,22 @@ const fill = (text: string) =>
   }
 
   .events tbody th {
-    width: 8.5rem;
+    width: 7.5rem;
     white-space: nowrap;
+  }
+
+  /* The events I helped run carry the mark and say so. */
+  .event-mine {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+    color: var(--text);
+  }
+
+  .event-mine .tombstone {
+    width: 0.4375rem;
+    height: 0.4375rem;
   }
 
   .event-name {

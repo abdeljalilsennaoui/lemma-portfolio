@@ -16,15 +16,25 @@ interface Props {
   sizes: string;
   /** Load at once and with high priority: for the figure at the top. */
   eager?: boolean;
+  /**
+   * Pairs this figure with the same picture on another page, so it travels
+   * between them when the reader follows the link.
+   */
+  transitionName?: string;
 }
 
-const { figure, number, locale, sizes, eager = false } = Astro.props;
+const { figure, number, locale, sizes, eager = false, transitionName } = Astro.props;
 const label = `${ui.work.figure[locale]} ${number}`;
 const full = await getImage({ src: figure.src, width: Math.min(figure.src.width, 2400), format: 'webp' });
 ---
 
 <figure class="zoom-figure" id={`figure-${number}`}>
-  <a class="frame" href={full.src} data-zoom>
+  <a
+    class="frame"
+    href={full.src}
+    data-zoom
+    style={transitionName ? `view-transition-name: ${transitionName}` : undefined}
+  >
     <Image
       src={figure.src}
       alt={figure.alt[locale]}

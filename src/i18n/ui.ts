@@ -26,7 +26,7 @@ export const ui = {
     lemma: t('Lemma', 'Lemme'),
     proof: t('Proof', 'Démonstration'),
     proofBody: t(
-      'I’m Abdeljalil Sennaoui, a Software Engineering co-op student at Concordia University in Montréal. Each of the four projects below states a problem, gives a construction, and ends in a result you can check:',
+      'I’m Abdeljalil Sennaoui, a Software Engineering co-op student at Concordia University in Montreal. Each of the four projects below states a problem, gives a construction, and ends in a result you can check:',
       "Je m'appelle Abdeljalil Sennaoui et je suis étudiant coop en génie logiciel à l'Université Concordia, à Montréal. Chacun des quatre projets ci-dessous énonce un problème, propose une construction et se termine par un résultat vérifiable :",
     ),
     ledgerTitle: t('Results, by project', 'Résultats, par projet'),
@@ -46,7 +46,7 @@ export const ui = {
     program: t('Program', 'Programme'),
     programValue: t('Software Engineering, co-op', 'Génie logiciel, régime coop'),
     basedIn: t('Based in', 'Établi à'),
-    basedInValue: t('Montréal, Québec', 'Montréal (Québec)'),
+    basedInValue: t('Montreal, Quebec', 'Montréal (Québec)'),
     openTo: t('Open to', 'Ouvert aux'),
     openToValue: t('Internships and co-op terms', 'Stages et placements coop'),
   },
@@ -94,20 +94,21 @@ export const ui = {
     ),
     paragraphs: [
       t(
-        'Outside class I’m on the executive team of GDG on Campus at Concordia, the university’s Google Developer Group. It is a student community that runs workshops, hack nights and talks, often with the other chapters in Montréal. Its public page counted {members} members in {asOf}.',
+        'Outside class I’m on the executive team of GDG on Campus at Concordia, the university’s Google Developer Group. It is a student community that runs workshops, hack nights and talks, often with the other chapters in Montreal. Its public page counted {members} members in {asOf}.',
         "En dehors des cours, je fais partie de l'équipe exécutive de GDG on Campus à Concordia, le Google Developer Group de l'université. C'est une communauté étudiante qui organise des ateliers, des soirées de programmation et des conférences, souvent avec les autres sections de Montréal. Sa page publique comptait {members} membres en {asOf}.",
       ),
       t(
-        'I joined in fall 2025 and I’m the chapter’s VP Admin. I help plan and run the chapter’s events, and I take part in the hack nights and coding jams myself.',
-        "Je m'y suis joint à l'automne 2025 et j'y occupe le poste de VP Administration. J'aide à planifier et à tenir les activités de la section, et je participe moi-même aux soirées de programmation et aux marathons de code.",
+'I joined in fall 2025 and I’m the chapter’s VP Admin. I helped run two of its workshops. Build your first AI Agent, in November 2025, was a hands-on session on building an agent from scratch with MCP and Google’s Agent Development Kit; its event page counted 121 RSVPs. Build with AI 2026, in March, was put on with the McGill and Polytechnique chapters. I also take part in the hack nights and coding jams myself.',
+        "Je m'y suis joint à l'automne 2025 et j'y occupe le poste de VP Administration. J'ai aidé à tenir deux de ses ateliers. Build your first AI Agent, en novembre 2025, était une séance pratique où l'on bâtissait un agent à partir de zéro avec MCP et l'Agent Development Kit de Google; sa page comptait 121 inscriptions. Build with AI 2026, en mars, a été organisé avec les sections de McGill et de Polytechnique. Je participe aussi moi-même aux soirées de programmation et aux marathons de code.",
       ),
     ],
     chapterPage: t('Chapter page', 'Page de la section'),
     eventsHead: t('Event', 'Activité'),
+    helpedRun: t('I helped run this one', 'J’ai aidé à tenir celle-ci'),
     dateHead: t('Date', 'Date'),
     eventsCaption: t(
-      'What the chapter put on in 2026, from its public page. This is the work of the whole executive team, of which I am one member.',
-      "Les activités de la section en 2026, d'après sa page publique. C'est le travail de toute l'équipe exécutive, dont je suis l'un des membres.",
+'Chapter events since I joined, each linked to its public page. The rest are the work of the executive team as a whole.',
+      "Les activités de la section depuis mon arrivée, chacune reliée à sa page publique. Les autres sont le travail de l'équipe exécutive dans son ensemble.",
     ),
   },
 
@@ -125,8 +126,8 @@ export const ui = {
     ),
     paragraphs: [
       t(
-        'I’m Abdeljalil Sennaoui, a Software Engineering student at Concordia University in Montreal. I like the parts of software that have right answers: rules that must hold, tests that prove they do, and systems that keep working when something around them fails.',
-        "Je m'appelle Abdeljalil Sennaoui et j'étudie en génie logiciel à l'Université Concordia, à Montréal. J'aime les parties du logiciel qui ont de bonnes réponses : des règles qui doivent tenir, des tests qui le prouvent, et des systèmes qui continuent de fonctionner quand quelque chose flanche autour d'eux.",
+        'I like the parts of software that have right answers: rules that must hold, and tests that prove they do. I also like a system that keeps working when something around it fails.',
+        "J'aime les parties du logiciel qui ont de bonnes réponses : des règles qui doivent tenir, et des tests qui le prouvent. J'aime aussi qu'un système continue de fonctionner quand quelque chose flanche autour de lui.",
       ),
       t(
         'My interests are back-end and full-stack development, software testing and QA automation, and software architecture. Most of what I build ends up with a pipeline around it, because I trust a result more once a machine has checked it.',

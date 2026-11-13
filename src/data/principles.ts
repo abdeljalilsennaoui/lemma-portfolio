@@ -20,8 +20,8 @@ export const principles: Principle[] = [
   {
     name: t('Clear architecture', 'Architecture claire'),
     statement: t(
-      'Each part should have one job and a boundary you can point to. A pattern earns its place by removing a real problem.',
-      "Chaque partie doit avoir un seul rôle et une frontière que l'on peut montrer du doigt. Un patron mérite sa place lorsqu'il élimine un vrai problème.",
+      'Each part should have one job and a boundary you can point to. I add a pattern only where it removes a problem the code already has.',
+      "Chaque partie doit avoir un seul rôle et une frontière que l'on peut montrer du doigt. Je n'ajoute un patron que là où il règle un problème que le code a déjà.",
     ),
   },
   {

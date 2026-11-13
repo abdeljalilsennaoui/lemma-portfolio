@@ -27,7 +27,7 @@ const items = [
     <Wordmark locale={locale} />
 
     <nav aria-label={ui.nav.label[locale]} class="hidden lg:block">
-      <ul class="flex items-center gap-7">
+      <ul class="flex items-center gap-7" data-spy>
         {
           items.map((item) => (
             <li>
@@ -190,6 +190,8 @@ const items = [
     position: sticky;
     top: 0;
     z-index: 40;
+    /* Named so it holds still while the page beneath it changes. */
+    view-transition-name: site-header;
     background: var(--bg);
     border-bottom: 1px solid transparent;
     transition: border-color 200ms ease;
@@ -212,7 +214,8 @@ const items = [
     transition: text-decoration-color 150ms ease;
   }
 
-  .nav-link:hover {
+  .nav-link:hover,
+  .nav-link[aria-current] {
     text-decoration-color: var(--mark);
   }
 

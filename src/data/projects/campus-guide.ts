@@ -201,8 +201,8 @@ export const campusGuide: Project = {
         "Un diagramme de composants intitulé « Concordia Campus Guide – Component Diagram ». Des écrans Compose et des ViewModels, dans une couche de présentation, appellent des cas d'utilisation d'une couche domaine, qui appellent des dépôts d'une couche de données; des adaptateurs d'une couche d'intégration joignent le SDK Google Maps, l'API de données ouvertes de Concordia, les API Routes et Places de Google et le fournisseur de localisation. Le stockage local comprend un DataStore et une base Room.",
       ),
       caption: t(
-        'The team’s component diagram from the first sprint, from the project wiki. The layered figure in the architecture section shows the source tree as it stands on the main branch.',
-        "Le diagramme de composants de l'équipe au premier sprint, tiré du wiki du projet. Le schéma en couches de la section sur l'architecture montre l'arborescence du code telle qu'elle est sur la branche main.",
+        'The team’s component diagram from the first sprint, from the project wiki.',
+        "Le diagramme de composants de l'équipe au premier sprint, tiré du wiki du projet.",
       ),
     },
   ],

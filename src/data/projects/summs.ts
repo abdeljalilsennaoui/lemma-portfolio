@@ -68,7 +68,7 @@ export const summs: Project = {
   cover: {
     src: map,
     alt: t(
-      'The map page of the application, whose interface is titled CityFlow. A navigation bar offers Home, Book, My Bookings, Ride Share, Map, Parking and Transit, with a “Commuter” role badge and a sign-out button. Under it, origin and destination fields and buttons to route, reset, pick either point on the map, and show rentals, transit or parking. A side panel has tabs for the route, parking and two bookings, with the origin set to “Downtown Montreal hub”. The rest is a dark map of downtown Montréal dotted with transit stop markers.',
+      'The map page of the application, whose interface is titled CityFlow. A navigation bar offers Home, Book, My Bookings, Ride Share, Map, Parking and Transit, with a “Commuter” role badge and a sign-out button. Under it, origin and destination fields and buttons to route, reset, pick either point on the map, and show rentals, transit or parking. A side panel has tabs for the route, parking and two bookings, with the origin set to “Downtown Montreal hub”. The rest is a dark map of downtown Montreal dotted with transit stop markers.',
       "La page de la carte de l'application, dont l'interface porte le nom CityFlow. Une barre de navigation propose Home, Book, My Bookings, Ride Share, Map, Parking et Transit, avec un badge de rôle « Commuter » et un bouton de déconnexion. En dessous, des champs d'origine et de destination et des boutons pour tracer un itinéraire, réinitialiser, choisir l'un ou l'autre point sur la carte et afficher les locations, le transport en commun ou le stationnement. Un panneau latéral comporte des onglets pour l'itinéraire, le stationnement et deux réservations, avec l'origine fixée à « Downtown Montreal hub ». Le reste est une carte sombre du centre-ville de Montréal, parsemée de marqueurs d'arrêts.",
     ),
     caption: t(
@@ -80,7 +80,7 @@ export const summs: Project = {
     {
       src: transitRoute,
       alt: t(
-        'A dark map of Montréal between the Plateau and downtown. A route runs from a point A near Papineau station to a point B near Place-des-Arts: a dotted walking segment, then two bus legs drawn as white lines and labelled 361 and 356.',
+        'A dark map of Montreal between the Plateau and downtown. A route runs from a point A near Papineau station to a point B near Place-des-Arts: a dotted walking segment, then two bus legs drawn as white lines and labelled 361 and 356.',
         "Une carte sombre de Montréal, entre le Plateau et le centre-ville. Un itinéraire relie un point A, près de la station Papineau, à un point B, près de Place-des-Arts : un segment de marche en pointillé, puis deux trajets d'autobus tracés en blanc et étiquetés 361 et 356.",
       ),
       caption: t(
@@ -102,7 +102,7 @@ export const summs: Project = {
     {
       src: route,
       alt: t(
-        'The dark map of downtown Montréal with a single white route line from a point A near McGill station, up and around past the Université du Québec à Montréal, to a point B between Saint-Laurent and Place-d’Armes stations.',
+        'The dark map of downtown Montreal with a single white route line from a point A near McGill station, up and around past the Université du Québec à Montréal, to a point B between Saint-Laurent and Place-d’Armes stations.',
         "La carte sombre du centre-ville de Montréal avec un seul tracé blanc, d'un point A près de la station McGill, qui monte et contourne l'Université du Québec à Montréal, jusqu'à un point B situé entre les stations Saint-Laurent et Place-d'Armes.",
       ),
       caption: t(

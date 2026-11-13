@@ -16,6 +16,12 @@ import { defaultLocale, languageTag, locales, type Locale } from '../i18n';
 import { ui } from '../i18n/ui';
 import { absolute, asset, href } from '../utils/paths';
 
+// Pages of this site are fetched ahead when the reader points at a link to
+// one, so the click that follows has nothing left to wait for.
+const speculationRules = {
+  prefetch: [{ where: { href_matches: href('/*') }, eagerness: 'moderate' }],
+};
+
 interface Props {
   locale: Locale;
   /** Path of this page without base or language prefix, e.g. "/work/summs/". */
@@ -25,6 +31,10 @@ interface Props {
   description?: string;
   /** Social image, as a path with base. Defaults to the site image. */
   image?: string;
+  /** Its size and description, when it is not the site image. */
+  imageWidth?: number;
+  imageHeight?: number;
+  imageAlt?: string;
   ogType?: 'website' | 'article';
   noindex?: boolean;
 }
@@ -35,6 +45,9 @@ const {
   title,
   description = seo.description[locale],
   image = asset(seo.ogImage),
+  imageWidth = 1200,
+  imageHeight = 630,
+  imageAlt = `${brand.name} — ${person.name}`,
   ogType = 'website',
   noindex = false,
 } = Astro.props;
@@ -121,9 +134,9 @@ const jsonLd = {
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={languageTag[locale].replace('-', '_')} />
     <meta property="og:image" content={absolute(image, Astro.site)} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${brand.name} — ${person.name}`} />
+    <meta property="og:image:width" content={String(imageWidth)} />
+    <meta property="og:image:height" content={String(imageHeight)} />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
 
     <meta name="theme-color" content="#eef2e4" media="(prefers-color-scheme: light)" />
@@ -158,6 +171,7 @@ const jsonLd = {
     </script>
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+    <script type="speculationrules" is:inline set:html={JSON.stringify(speculationRules)} />
   </head>
   <body>
     <a
@@ -171,5 +185,44 @@ const jsonLd = {
       <slot />
     </main>
     <Footer locale={locale} />
+
+    <script>
+      // "You are here": marks the link, in any list tagged `data-spy`, whose
+      // section is the one being read. Used by the header on the home page
+      // and by the contents list of a case study.
+      const pairs: { link: HTMLAnchorElement; target: HTMLElement }[] = [];
+      for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-spy] a[href*="#"]')) {
+        const url = new URL(link.href);
+        if (url.pathname !== window.location.pathname) continue;
+        const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+        if (target) pairs.push({ link, target });
+      }
+
+      if (pairs.length > 0) {
+        let queued = false;
+        const mark = () => {
+          queued = false;
+          // The current section is the last one whose top has passed a line a
+          // third of the way down the window.
+          const line = window.innerHeight / 3;
+          let current: HTMLElement | undefined;
+          for (const { target } of pairs) {
+            if (target.getBoundingClientRect().top <= line) current = target;
+          }
+          for (const { link, target } of pairs) {
+            if (target === current) link.setAttribute('aria-current', 'location');
+            else link.removeAttribute('aria-current');
+          }
+        };
+        const queue = () => {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(mark);
+        };
+        mark();
+        window.addEventListener('scroll', queue, { passive: true });
+        window.addEventListener('resize', queue, { passive: true });
+      }
+    </script>
   </body>
 </html>

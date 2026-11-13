@@ -426,3 +426,108 @@
     color: var(--text);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Moving between pages
+
+   Where the browser supports it, a link to another page of the site
+   cross-fades instead of flashing, the header stays where it is, and a
+   project's picture travels from its place on the home page to the top of its
+   case study. It is an answer to the reader's click, and it is off for
+   readers who ask for reduced motion.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+::view-transition-group(*) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
+/* ---------------------------------------------------------------------------
+   Print
+
+   On paper there is one theme: ink on white, no grid. The blackboard band at
+   the foot of the page is set as ordinary text so that the contact details
+   are legible, and controls that do nothing on paper are left out.
+--------------------------------------------------------------------------- */
+@media print {
+  :root,
+  :root[data-theme='dark'],
+  .board {
+    color-scheme: light;
+    --bg: #fff;
+    --panel: #fff;
+    --line: #bbb;
+    --line-strong: #777;
+    --text: #000;
+    --muted: #333;
+    --mark: #000;
+    --mark-ink: #fff;
+    --hl: transparent;
+    --grid-minor: transparent;
+    --grid-major: transparent;
+  }
+
+  html {
+    font-size: 11pt;
+  }
+
+  body {
+    background: none;
+  }
+
+  .site-header {
+    position: static !important;
+  }
+
+  .site-header nav,
+  .site-header button,
+  .site-header ul,
+  .hero-actions,
+  .thumbs,
+  .entry-links .button,
+  .toc,
+  .pager,
+  .back,
+  .relation-switch,
+  dialog {
+    display: none !important;
+  }
+
+  .margin-stick {
+    position: static !important;
+  }
+
+  .hl {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5pt;
+  }
+
+  figure,
+  tr,
+  .ledger li,
+  .statement {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* A printed link is only useful with its address. */
+  .entry-repo[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+  }
+}

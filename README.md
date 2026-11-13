@@ -40,7 +40,21 @@ The site is laid out as the two surfaces an engineering student does mathematics
 - **The tombstone** (∎) still closes a proof and stands in for the full stop of the wordmark.
 
 The only motion that is not a response to the reader is the highlighter crossing the four
-results when the home page loads. It is switched off for readers who ask for reduced motion.
+results when the home page loads. Following a link to another page cross-fades, and a project's
+picture travels from the home page to the top of its case study, in browsers that support
+cross-document view transitions. Both are switched off for readers who ask for reduced motion.
+
+Other things the reader may not notice, by design:
+
+- Pointing at a link to another page of the site fetches it ahead of the click (speculation
+  rules), so the page change has nothing left to wait for.
+- The header on the home page and the contents list of a case study mark the section being
+  read.
+- A case study shared elsewhere shows that project's own picture in the link preview.
+- Printing a page gives ink on white with no grid, and the contact details in plain text.
+
+The production build scores 100 in all four Lighthouse categories on mobile (measured on
+13 November 2026 against `npm run preview`).
 
 Every figure quoted on the site is either taken from the project's own repository or counted
 there, and each results table names its source. Team projects say what the team built and,
@@ -57,8 +71,9 @@ separately, what I built.
 | Images | `astro:assets`, responsive WebP |
 | Hosting | GitHub Pages, deployed by GitHub Actions |
 
-There is no client-side framework. The JavaScript on a page is three small inline scripts: the
-theme switch, the mobile menu, the matrix and graph interactions, and the figure lightbox. There are no analytics, no
+There is no client-side framework. The JavaScript on a page is a few small inline scripts: the
+theme switch, the mobile menu, the current-section marker, the matrix and graph interactions,
+and the figure lightbox. There are no analytics, no
 cookies, no third-party scripts and no requests to other origins.
 
 ## Directory structure
@@ -215,7 +230,7 @@ All three are in `src/config/site.ts`:
 
 ```ts
 email: 'hello@lemmabyajs.com', // forwards to a private inbox; null hides it
-linkedin: null, // set to the full profile URL to show it
+linkedin: 'https://www.linkedin.com/in/abdeljalilsennaoui/', // null hides it
 resume: null,   // put the PDF in public/ and set to '/resume.pdf'
 ```
 
