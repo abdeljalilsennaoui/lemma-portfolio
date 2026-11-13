@@ -199,8 +199,8 @@ the first three small, under the cover, and the case study shows all of them in 
 pictures" section, where each opens at full size.
 
 A project with no `cover` shows its architecture diagram instead, labelled as a diagram. Every
-project has a cover today. The SUMMS pictures are screenshots I took of the running application
-in winter 2026, followed by the team's own design diagrams from the project report. CampusGuide
+project has a cover today. The SUMMS pictures are screenshots of the running application from
+winter 2026, followed by the team's own design diagrams from the project report. CampusGuide
 uses frames from the acceptance-test recordings in its team wiki, and the insurance billing
 pictures are the ones its UI test suite generates. To
 give a project a real cover:

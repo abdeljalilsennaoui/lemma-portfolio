@@ -62,9 +62,9 @@ export const summs: Project = {
     label: 'abdeljalilsennaoui/SOEN343-Project-W26',
   },
 
-  // The screenshots are ones I took of the running application in winter
-  // 2026; the repository itself holds none. They are small because they were
-  // saved small. The diagrams after them are the team's own, from its report.
+  // The screenshots show the running application in winter 2026; the
+  // repository itself holds none. They are small because they were saved
+  // small. The diagrams after them are the team's own, from its report.
   cover: {
     src: map,
     alt: t(
