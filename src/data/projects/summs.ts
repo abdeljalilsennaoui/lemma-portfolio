@@ -1,13 +1,20 @@
 import { t } from '../../i18n';
 import type { Project } from '../../types/content';
+import map from '../../assets/projects/summs/map.png';
+import transitRoute from '../../assets/projects/summs/transit-route.png';
+import transitSteps from '../../assets/projects/summs/transit-steps.png';
+import route from '../../assets/projects/summs/route.png';
+import contextDiagram from '../../assets/projects/summs/context-diagram.png';
+import architectureDiagram from '../../assets/projects/summs/architecture-diagram.png';
+import statePattern from '../../assets/projects/summs/state-pattern.jpg';
+import commandPattern from '../../assets/projects/summs/command-pattern.jpg';
+import domainModel from '../../assets/projects/summs/domain-model.png';
 
 const architectureDocs = t(
   'Architecture documents in the repository',
   "Documents d'architecture du dépôt",
 );
 
-// The repository holds design diagrams but no screenshot of the running app,
-// so this project shows its architecture diagram instead of a cover image.
 export const summs: Project = {
   slug: 'summs',
   order: 3,
@@ -18,12 +25,20 @@ export const summs: Project = {
     "Une plateforme Web qui réunit vélopartage, autopartage, trottinettes, stationnement et information sur le transport en commun dans un seul parcours de réservation, où chaque requête suit la même chaîne MVC rigoureuse.",
   ),
 
+  proof: {
+    figure: t('298', '298'),
+    claim: t(
+      'back-end test cases, eight design patterns',
+      'cas de test côté serveur, huit patrons de conception',
+    ),
+  },
+
   context: {
     kind: 'team',
     label: t('Team of 6, university course project', 'Équipe de 6, projet de cours universitaire'),
     teamSize: 6,
   },
-  period: t('February – April 2026', 'Février – avril 2026'),
+  period: t('February to April 2026', 'Février à avril 2026'),
   disciplines: ['backend', 'frontend', 'architecture', 'testing', 'cicd', 'data'],
 
   stack: ['React', 'Node.js', 'Express', 'Firestore', 'Firebase Auth', 'Jest', 'Supertest', 'GitHub Actions'],
@@ -47,6 +62,111 @@ export const summs: Project = {
     label: 'abdeljalilsennaoui/SOEN343-Project-W26',
   },
 
+  // The screenshots are ones I took of the running application in winter
+  // 2026; the repository itself holds none. They are small because they were
+  // saved small. The diagrams after them are the team's own, from its report.
+  cover: {
+    src: map,
+    alt: t(
+      'The map page of the application, whose interface is titled CityFlow. A navigation bar offers Home, Book, My Bookings, Ride Share, Map, Parking and Transit, with a “Commuter” role badge and a sign-out button. Under it, origin and destination fields and buttons to route, reset, pick either point on the map, and show rentals, transit or parking. A side panel has tabs for the route, parking and two bookings, with the origin set to “Downtown Montreal hub”. The rest is a dark map of downtown Montréal dotted with transit stop markers.',
+      "La page de la carte de l'application, dont l'interface porte le nom CityFlow. Une barre de navigation propose Home, Book, My Bookings, Ride Share, Map, Parking et Transit, avec un badge de rôle « Commuter » et un bouton de déconnexion. En dessous, des champs d'origine et de destination et des boutons pour tracer un itinéraire, réinitialiser, choisir l'un ou l'autre point sur la carte et afficher les locations, le transport en commun ou le stationnement. Un panneau latéral comporte des onglets pour l'itinéraire, le stationnement et deux réservations, avec l'origine fixée à « Downtown Montreal hub ». Le reste est une carte sombre du centre-ville de Montréal, parsemée de marqueurs d'arrêts.",
+    ),
+    caption: t(
+      'The map page, signed in as a commuter, with the transit layer on. The team named the product CityFlow. I built the first version of this page and its booking flow; a teammate added the transit layer.',
+      "La page de la carte, avec une session d'usager et la couche de transport en commun activée. L'équipe a nommé le produit CityFlow. J'ai réalisé la première version de cette page et son parcours de réservation; un autre membre de l'équipe y a ajouté la couche de transport en commun.",
+    ),
+  },
+  gallery: [
+    {
+      src: transitRoute,
+      alt: t(
+        'A dark map of Montréal between the Plateau and downtown. A route runs from a point A near Papineau station to a point B near Place-des-Arts: a dotted walking segment, then two bus legs drawn as white lines and labelled 361 and 356.',
+        "Une carte sombre de Montréal, entre le Plateau et le centre-ville. Un itinéraire relie un point A, près de la station Papineau, à un point B, près de Place-des-Arts : un segment de marche en pointillé, puis deux trajets d'autobus tracés en blanc et étiquetés 361 et 356.",
+      ),
+      caption: t(
+        'A transit route drawn on the map: a walk, then bus lines 361 and 356. Transit routing was built by a teammate.',
+        "Un itinéraire en transport en commun tracé sur la carte : de la marche, puis les lignes d'autobus 361 et 356. Le calcul des itinéraires en transport en commun est l'œuvre d'un autre membre de l'équipe.",
+      ),
+    },
+    {
+      src: transitSteps,
+      alt: t(
+        'The navigation panel for that route, from “Your live location” to Sherbrooke / Du Parc. A transit summary reads 26 min, 2.8 km, 2 lines. Below, the steps in order: a 7-minute walk of 0.4 km; bus 361 for 4 stops, 2 minutes and 0.8 km; a 1-minute walk; bus 356 for 5 stops, 5 minutes and 1.4 km; and a last 1-minute walk of 89 m to the destination.',
+        "Le panneau de navigation de cet itinéraire, de « Your live location » jusqu'à Sherbrooke / Du Parc. Un sommaire indique 26 min, 2,8 km et 2 lignes. En dessous, les étapes dans l'ordre : 7 minutes de marche sur 0,4 km; l'autobus 361 pour 4 arrêts, 2 minutes et 0,8 km; 1 minute de marche; l'autobus 356 pour 5 arrêts, 5 minutes et 1,4 km; et une dernière minute de marche, sur 89 m, jusqu'à la destination.",
+      ),
+      caption: t(
+        'The same route as steps in the side panel: 26 minutes, 2.8 km, two bus lines.',
+        "Le même itinéraire, étape par étape, dans le panneau latéral : 26 minutes, 2,8 km, deux lignes d'autobus.",
+      ),
+    },
+    {
+      src: route,
+      alt: t(
+        'The dark map of downtown Montréal with a single white route line from a point A near McGill station, up and around past the Université du Québec à Montréal, to a point B between Saint-Laurent and Place-d’Armes stations.',
+        "La carte sombre du centre-ville de Montréal avec un seul tracé blanc, d'un point A près de la station McGill, qui monte et contourne l'Université du Québec à Montréal, jusqu'à un point B situé entre les stations Saint-Laurent et Place-d'Armes.",
+      ),
+      caption: t(
+        'A route between two points picked on the map downtown.',
+        'Un itinéraire entre deux points choisis sur la carte, au centre-ville.',
+      ),
+    },
+    {
+      src: contextDiagram,
+      alt: t(
+        'A context diagram with SUMMS in a circle at the centre. Around it: commuters, mobility providers, city administrators and a system administrator, and the outside systems it talks to: Firebase Auth, Google Firestore, the Google Maps API, the STM GTFS feed, the Overpass API and a mocked payment gateway. Labelled arrows show what passes each way.',
+        "Un diagramme de contexte avec SUMMS dans un cercle au centre. Autour : les usagers, les fournisseurs de mobilité, les administrateurs municipaux et un administrateur du système, ainsi que les systèmes externes avec lesquels il échange : Firebase Auth, Google Firestore, l'API Google Maps, le flux GTFS de la STM, l'API Overpass et une passerelle de paiement simulée. Des flèches étiquetées indiquent ce qui circule dans chaque sens.",
+      ),
+      caption: t(
+        'The system in its context: four kinds of user and six outside services. From the team’s Phase II report.',
+        "Le système dans son contexte : quatre types d'utilisateurs et six services externes. Tiré du rapport de phase II de l'équipe.",
+      ),
+    },
+    {
+      src: architectureDiagram,
+      alt: t(
+        'An architecture diagram in boxes. A controller box holds the mobility controller and presenter. An interactor box holds mobility requests, the request handler, responses, the mobility service, entities and the data gateway. Below are commuter and admin presenters with their view models and views, and a database box with the mobility data mapper and the SUMMS database.',
+        "Un schéma d'architecture en boîtes. Une boîte « contrôleur » contient le contrôleur et le présentateur de mobilité. Une boîte « interacteur » contient les requêtes de mobilité, le gestionnaire de requêtes, les réponses, le service de mobilité, les entités et la passerelle de données. En dessous, les présentateurs « usager » et « administrateur » avec leurs modèles de vue et leurs vues, et une boîte « base de données » avec le mappeur de données et la base SUMMS.",
+      ),
+      caption: t(
+        'The team’s architecture diagram: the request chain drawn with its presenters and views.',
+        "Le schéma d'architecture de l'équipe : la chaîne de requêtes dessinée avec ses présentateurs et ses vues.",
+      ),
+    },
+    {
+      src: statePattern,
+      alt: t(
+        'A class diagram of the State pattern. MobilityService calls a BookingStateMachine, which holds a BookingState. The abstract state declares toActive, toComplete and toFailed; four concrete states, Draft, Active, Complete and Failed, each implement only the transitions they allow.',
+        "Un diagramme de classes du patron État. MobilityService appelle une BookingStateMachine, qui détient un BookingState. L'état abstrait déclare toActive, toComplete et toFailed; quatre états concrets, Draft, Active, Complete et Failed, ne mettent chacun en œuvre que les transitions qu'ils autorisent.",
+      ),
+      caption: t(
+        'The booking state machine, which I implemented. A draft can become active or failed, an active booking can complete, and nothing else is a legal move.',
+        "La machine à états des réservations, que j'ai mise en œuvre. Un brouillon peut devenir actif ou échoué, une réservation active peut se terminer, et aucun autre déplacement n'est permis.",
+      ),
+    },
+    {
+      src: commandPattern,
+      alt: t(
+        'A class diagram of the Command pattern. A MobilityRequestHandler looks up a command in a CommandRegistry and calls execute on it. Six example commands, among them GetVehiclesCommand and CreateBookingDraftCommand, each hold a MobilityService receiver and call one of its methods.',
+        "Un diagramme de classes du patron Commande. Un MobilityRequestHandler trouve une commande dans un CommandRegistry et appelle sa méthode execute. Six commandes données en exemple, dont GetVehiclesCommand et CreateBookingDraftCommand, détiennent chacune un récepteur MobilityService et appellent l'une de ses méthodes.",
+      ),
+      caption: t(
+        'The Command pattern as the report draws it: one handler, a registry, and a command class per request type.',
+        "Le patron Commande tel que le rapport le dessine : un seul gestionnaire, un registre et une classe de commande par type de requête.",
+      ),
+    },
+    {
+      src: domainModel,
+      alt: t(
+        'A domain model in UML: bookings, payments and payment receipts, mobility options, vehicles, mobility service providers, parking facilities and spots, cities, trips, users and analytics events, joined by associations with multiplicities, with the enumerations listed down the right-hand side.',
+        "Un modèle du domaine en UML : réservations, paiements et reçus de paiement, options de mobilité, véhicules, fournisseurs de services de mobilité, stationnements et places, villes, trajets, utilisateurs et événements d'analyse, reliés par des associations avec leurs multiplicités; les énumérations sont listées du côté droit.",
+      ),
+      caption: t(
+        'The domain model from the team’s report.',
+        "Le modèle du domaine tiré du rapport de l'équipe.",
+      ),
+    },
+  ],
+
   overview: [
     t(
       'SUMMS is a platform for urban mobility services. A commuter searches for a bike, car or scooter, books it, pays and completes the ride; a mobility provider manages a fleet; city and system administrators read analytics. Parking and transit information sit alongside. It was built by a team of six for a software architecture and design course, so the brief was as much about how the system is structured as about what it does.',
@@ -67,16 +187,16 @@ export const summs: Project = {
 
   goals: [
     t(
-      'Route every request through one chain — controller, request handler, command, service, data gateway — with no shortcuts.',
-      'Faire passer chaque requête par une seule chaîne — contrôleur, gestionnaire de requêtes, commande, service, passerelle de données — sans raccourci.',
+      'Route every request through one chain (controller, request handler, command, service, data gateway) with no shortcuts.',
+      'Faire passer chaque requête par une seule chaîne (contrôleur, gestionnaire de requêtes, commande, service, passerelle de données), sans raccourci.',
     ),
     t(
       'Use design patterns where they remove a real problem, and document what each one is for.',
       "Recourir aux patrons de conception là où ils éliminent un vrai problème, et documenter l'utilité de chacun.",
     ),
     t(
-      'Keep external services — maps, parking, transit, payment — behind interfaces with mock implementations, so the system runs and tests without them.',
-      'Placer les services externes — cartes, stationnement, transport en commun, paiement — derrière des interfaces dotées de versions simulées, pour que le système fonctionne et se teste sans eux.',
+      'Keep external services (maps, parking, transit, payment) behind interfaces with mock implementations, so the system runs and tests without them.',
+      'Placer les services externes (cartes, stationnement, transport en commun, paiement) derrière des interfaces dotées de versions simulées, pour que le système fonctionne et se teste sans eux.',
     ),
     t(
       'Restrict what each of the four roles can see and do, on the server and in the interface.',
@@ -226,8 +346,8 @@ export const summs: Project = {
     {
       title: t('Documentation that drifts from the code', 'Une documentation qui s’éloigne du code'),
       body: t(
-        'The class diagram and pattern documents are part of the deliverable, and they fell behind as features landed. Before the final submission I went through them against the implementation — command counts, event lists, gateway implementations — and corrected each mismatch in its own commit.',
-        "Le diagramme de classes et les documents sur les patrons font partie du livrable, et ils ont pris du retard à mesure que les fonctions arrivaient. Avant la remise finale, je les ai confrontés à l'implémentation — nombre de commandes, listes d'événements, passerelles réelles — et j'ai corrigé chaque écart dans un commit distinct.",
+        'The class diagram and pattern documents are part of the deliverable, and they fell behind as features landed. Before the final submission I went through them against the implementation (command counts, event lists, gateway implementations) and corrected each mismatch in its own commit.',
+        "Le diagramme de classes et les documents sur les patrons font partie du livrable, et ils ont pris du retard à mesure que les fonctions arrivaient. Avant la remise finale, je les ai confrontés à l'implémentation (nombre de commandes, listes d'événements, passerelles réelles) et j'ai corrigé chaque écart dans un commit distinct.",
       ),
     },
   ],

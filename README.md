@@ -15,13 +15,32 @@ proof.
 
 ## What is on the site
 
-- **Home** — a statement, a matrix of projects against the disciplines they exercised (also
-  viewable as a graph), four selected projects, an about section, engineering principles and
-  skills with evidence, and contact details.
-- **Case studies** — one page per project: overview, problem, goals, technologies, architecture,
-  my responsibilities, engineering decisions, testing, challenges, results, and links.
+- **Home** — a title block that says who this is, a claim and its proof (one counted result per
+  project), four selected projects with their figures, my role at GDG on Campus Concordia, an
+  about section, engineering principles and skills with evidence, and contact details.
+- **Case studies** — one page per project: overview, a gallery of figures that open at full
+  size, problem, goals, technologies, architecture, my responsibilities, engineering decisions,
+  testing, challenges, results, and links.
 - **English and French**, with a language switch that keeps you on the same page.
-- **Two themes**, blackboard (default) and paper.
+- **Two themes**, the pad and the board. The site starts in whichever matches the reader's
+  system setting and remembers a choice made with the switch.
+
+## The design
+
+The site is laid out as the two surfaces an engineering student does mathematics on.
+
+- **The pad** (light) is an engineer's computation pad: green-tinted paper with a grid, a ruled
+  title block at the top, and a margin column down the left. Section titles and lemma numbers
+  sit in the margin, the way a problem number does, and stay in view while their section
+  scrolls. The work goes in the body beside them.
+- **The board** (dark) is the blackboard: the same layout in chalk.
+- **The highlighter** marks the one figure that matters in a result, and nothing else. On the
+  board it becomes a line of yellow chalk. A project's result is also shown in a box, as the
+  answer to a worked problem is.
+- **The tombstone** (∎) still closes a proof and stands in for the full stop of the wordmark.
+
+The only motion that is not a response to the reader is the highlighter crossing the four
+results when the home page loads. It is switched off for readers who ask for reduced motion.
 
 Every figure quoted on the site is either taken from the project's own repository or counted
 there, and each results table names its source. Team projects say what the team built and,
@@ -39,7 +58,7 @@ separately, what I built.
 | Hosting | GitHub Pages, deployed by GitHub Actions |
 
 There is no client-side framework. The JavaScript on a page is three small inline scripts: the
-theme switch, the mobile menu, and the matrix and graph interactions. There are no analytics, no
+theme switch, the mobile menu, the matrix and graph interactions, and the figure lightbox. There are no analytics, no
 cookies, no third-party scripts and no requests to other origins.
 
 ## Directory structure
@@ -58,7 +77,8 @@ cookies, no third-party scripts and no requests to other origins.
 │   ├── config/site.ts             Brand name, identity, links — edit here to rename
 │   ├── data/
 │   │   ├── projects/              One file per project, plus index.ts
-│   │   ├── disciplines.ts         Columns of the hero matrix
+│   │   ├── community.ts           GDG on Campus Concordia: role and chapter events
+│   │   ├── disciplines.ts         Columns of the coverage matrix
 │   │   ├── principles.ts          Engineering principles
 │   │   └── skills.ts              Skills and where each is evidenced
 │   ├── i18n/                      Languages and interface copy
@@ -140,14 +160,16 @@ Only state what the project's repository can back up, and say where a number com
 ## Adding a new project
 
 1. Copy an existing file in `src/data/projects/` to `my-project.ts` and rewrite its content. Set
-   `slug` (the URL segment), `order` (its position and lemma number) and `disciplines` (which
-   columns of the hero matrix it fills).
+   `slug` (the URL segment), `order` (its position and lemma number), `disciplines` (which
+   columns of the coverage matrix it fills) and `proof` (the one counted result shown on the
+   home page; it must repeat a row of `results`).
 2. Add it to the list in `src/data/projects/index.ts`.
 3. If it has screenshots, put them in `src/assets/projects/<slug>/` and import them at the top of
    the file, as the existing projects do.
 
-That is all. The gallery entry, the case study pages in both languages, the hero matrix, the
-previous and next links and the sitemap are generated from the list. To cite the project as
+That is all. The gallery entry, the case study pages in both languages, its line in the proof
+at the top of the home page, the coverage matrix, the previous and next links and the sitemap
+are generated from the list. To cite the project as
 evidence for a skill, add it in `src/data/skills.ts`.
 
 ## Replacing portfolio images
@@ -157,9 +179,15 @@ replace one, overwrite the file and keep its name, or add a new file and change 
 update its `alt` text (what the image shows, for someone who cannot see it) and its `caption`.
 Images are resized and converted to WebP at build time, so commit the original PNG.
 
-A project with no `cover` shows its architecture diagram instead, labelled as a diagram. SUMMS
-is in that state because its repository contains design diagrams but no picture of the running
-application. CampusGuide uses frames from the acceptance-test recordings in its team wiki. To
+Further pictures go in the project's `gallery`, in the same shape as `cover`. The home page shows
+the first three small, under the cover, and the case study shows all of them in its "In
+pictures" section, where each opens at full size.
+
+A project with no `cover` shows its architecture diagram instead, labelled as a diagram. Every
+project has a cover today. The SUMMS pictures are screenshots I took of the running application
+in winter 2026, followed by the team's own design diagrams from the project report. CampusGuide
+uses frames from the acceptance-test recordings in its team wiki, and the insurance billing
+pictures are the ones its UI test suite generates. To
 give a project a real cover:
 
 ```ts
@@ -173,6 +201,13 @@ cover: {
 ```
 
 Use only real screenshots of the real application.
+
+## Updating the community section
+
+The role at GDG on Campus Concordia and the list of chapter events are in
+`src/data/community.ts`; the two paragraphs are in `src/i18n/ui.ts` under `community`. The role
+and the events are copied from the chapter's public page, which the section links to. Add an
+event by adding a line to `events`, and update `members` when you re-read the page.
 
 ## Adding the LinkedIn link, a résumé or an email address
 

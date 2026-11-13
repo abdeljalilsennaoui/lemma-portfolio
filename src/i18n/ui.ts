@@ -10,6 +10,7 @@ export const ui = {
   nav: {
     label: t('Main', 'Principale'),
     work: t('Work', 'Projets'),
+    community: t('Community', 'Communauté'),
     about: t('About', 'À propos'),
     engineering: t('Engineering', 'Ingénierie'),
     contact: t('Contact', 'Contact'),
@@ -25,17 +26,29 @@ export const ui = {
     lemma: t('Lemma', 'Lemme'),
     proof: t('Proof', 'Démonstration'),
     proofBody: t(
-      'Software designed, built and tested by Abdeljalil Sennaoui. Each of the four projects below states a problem, gives a construction, and shows the evidence that it holds.',
-      "Des logiciels conçus, développés et testés par Abdeljalil Sennaoui. Chacun des quatre projets ci-dessous énonce un problème, propose une construction et montre les preuves qu'elle tient.",
+      'I’m Abdeljalil Sennaoui, a Software Engineering co-op student at Concordia University in Montréal. Each of the four projects below states a problem, gives a construction, and ends in a result you can check:',
+      "Je m'appelle Abdeljalil Sennaoui et je suis étudiant coop en génie logiciel à l'Université Concordia, à Montréal. Chacun des quatre projets ci-dessous énonce un problème, propose une construction et se termine par un résultat vérifiable :",
     ),
+    ledgerTitle: t('Results, by project', 'Résultats, par projet'),
     endOfProof: t('End of proof', 'Fin de la démonstration'),
-    explore: t('Explore projects', 'Explorer les projets'),
-    github: t('View GitHub', 'Voir GitHub'),
+    explore: t('See the four projects', 'Voir les quatre projets'),
+    email: t('Email me', 'M’écrire'),
     footnote: t(
-      'In mathematics, a lemma is a proven result used as a step toward a larger theorem.',
-      'En mathématiques, un lemme est un résultat démontré qui sert d’étape vers un théorème plus vaste.',
+      'In mathematics, a lemma is a proven result used as a step toward a larger theorem. LEMMA by AJS is the name I publish my work under.',
+      'En mathématiques, un lemme est un résultat démontré qui sert d’étape vers un théorème plus vaste. LEMMA by AJS est le nom sous lequel je publie mon travail.',
     ),
     footnoteLabel: t('Note', 'Note'),
+  },
+
+  titleBlock: {
+    label: t('About this sheet', 'À propos de cette feuille'),
+    name: t('Name', 'Nom'),
+    program: t('Program', 'Programme'),
+    programValue: t('Software Engineering, co-op', 'Génie logiciel, régime coop'),
+    basedIn: t('Based in', 'Établi à'),
+    basedInValue: t('Montréal, Québec', 'Montréal (Québec)'),
+    openTo: t('Open to', 'Ouvert aux'),
+    openToValue: t('Internships and co-op terms', 'Stages et placements coop'),
   },
 
   relation: {
@@ -66,6 +79,36 @@ export const ui = {
     figure: t('Figure', 'Figure'),
     table: t('Table', 'Tableau'),
     opensInNewTab: t('opens in a new tab', 'ouvre un nouvel onglet'),
+    result: t('Result', 'Résultat'),
+    builtWith: t('Built with', 'Réalisé avec'),
+    /** `{n}` is replaced with the number of figures not shown on the card. */
+    moreFigures: t('{n} more in the case study', '{n} de plus dans l’étude de cas'),
+    allFigures: t('All figures', 'Toutes les figures'),
+  },
+
+  community: {
+    title: t('Community', 'Communauté'),
+    intro: t(
+      'What I do when it is not for a grade.',
+      'Ce que je fais quand ce n’est pas noté.',
+    ),
+    paragraphs: [
+      t(
+        'Outside class I’m on the executive team of GDG on Campus at Concordia, the university’s Google Developer Group. It is a student community that runs workshops, hack nights and talks, often with the other chapters in Montréal. Its public page counted {members} members in {asOf}.',
+        "En dehors des cours, je fais partie de l'équipe exécutive de GDG on Campus à Concordia, le Google Developer Group de l'université. C'est une communauté étudiante qui organise des ateliers, des soirées de programmation et des conférences, souvent avec les autres sections de Montréal. Sa page publique comptait {members} membres en {asOf}.",
+      ),
+      t(
+        'I joined in fall 2025 and I’m the chapter’s VP Admin. I help plan and run the chapter’s events, and I take part in the hack nights and coding jams myself.',
+        "Je m'y suis joint à l'automne 2025 et j'y occupe le poste de VP Administration. J'aide à planifier et à tenir les activités de la section, et je participe moi-même aux soirées de programmation et aux marathons de code.",
+      ),
+    ],
+    chapterPage: t('Chapter page', 'Page de la section'),
+    eventsHead: t('Event', 'Activité'),
+    dateHead: t('Date', 'Date'),
+    eventsCaption: t(
+      'What the chapter put on in 2026, from its public page. This is the work of the whole executive team, of which I am one member.',
+      "Les activités de la section en 2026, d'après sa page publique. C'est le travail de toute l'équipe exécutive, dont je suis l'un des membres.",
+    ),
   },
 
   about: {
@@ -99,6 +142,7 @@ export const ui = {
       studies: t('Studies', 'Études'),
       studiesValue: t('Software Engineering, Concordia University', 'Génie logiciel, Université Concordia'),
       location: t('Based in', 'Établi à'),
+      community: t('Community', 'Communauté'),
       links: t('Links', 'Liens'),
     },
     resume: t('Résumé (PDF)', 'Curriculum vitæ (PDF)'),
@@ -110,6 +154,7 @@ export const ui = {
       'How I work, and what I have worked with. Each skill links to a place where you can see it in use.',
       "Ma façon de travailler, et les outils que j'ai employés. Chaque compétence renvoie à un endroit où on peut la voir à l'œuvre.",
     ),
+    coverage: t('Coverage', 'Couverture'),
     principles: t('Principles', 'Principes'),
     skills: t('Skills', 'Compétences'),
     evidenceHint: t(
@@ -152,6 +197,7 @@ export const ui = {
     },
     sections: {
       overview: t('Overview', 'Aperçu'),
+      gallery: t('In pictures', 'En images'),
       problem: t('Problem', 'Problème'),
       goals: t('Goals', 'Objectifs'),
       technologies: t('Technologies', 'Technologies'),
@@ -169,6 +215,9 @@ export const ui = {
       source: t('Source', 'Source'),
     },
     limitations: t('What this does not show', 'Ce que cela ne démontre pas'),
+    result: t('Result', 'Résultat'),
+    enlarge: t('Enlarge', 'Agrandir'),
+    close: t('Close', 'Fermer'),
     noDemo: t(
       'There is no hosted demo for this project. The repository explains how to run it.',
       "Ce projet n'a pas de démo hébergée. Le dépôt explique comment l'exécuter.",

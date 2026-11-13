@@ -14,7 +14,11 @@ export const brand = {
   wordmark: 'lemma',
   /** Secondary signature shown beside the wordmark. */
   signature: 'BY AJS',
-  headline: t('Built on logic.', 'Bâti sur la logique.'),
+  /** The claim at the top of the home page, and on the social image. */
+  headline: t(
+    'I build software, then I try to break it.',
+    "Je construis des logiciels, puis j'essaie de les casser.",
+  ),
   descriptor: t(
     'Independent software engineering studio',
     'Studio indépendant de génie logiciel',

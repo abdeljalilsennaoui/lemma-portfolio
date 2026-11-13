@@ -1,25 +1,38 @@
 ---
 import ProjectEntry from './ProjectEntry.astro';
-import SectionHeading from './SectionHeading.astro';
 import { projects } from '../data/projects';
 import type { Locale } from '../i18n';
 import { ui } from '../i18n/ui';
 
 interface Props {
   locale: Locale;
-  number: number;
 }
 
-const { locale, number } = Astro.props;
+const { locale } = Astro.props;
 ---
 
-<section id="work" class="shell section" aria-labelledby="work-title">
-  <SectionHeading id="work-title" number={number} title={ui.work.title[locale]} intro={ui.work.intro[locale]} />
+<section id="work" class="shell" aria-labelledby="work-title">
+  <div class="sheet sheet-rule heading">
+    <div class="margin-note">
+      <h2 id="work-title" class="margin-key">{ui.work.title[locale]}</h2>
+    </div>
+    <div class="sheet-body">
+      <p class="intro">{ui.work.intro[locale]}</p>
+    </div>
+  </div>
   {projects.map((project) => <ProjectEntry project={project} locale={locale} />)}
 </section>
 
 <style>
-  .section {
-    padding-top: clamp(4rem, 9vw, 7rem);
+  /* The heading row is short: it only introduces the entries below it. */
+  .heading > .sheet-body {
+    padding-bottom: 0;
+  }
+
+  .intro {
+    max-width: 34rem;
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--muted);
   }
 </style>

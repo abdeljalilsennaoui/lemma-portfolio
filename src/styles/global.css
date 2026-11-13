@@ -21,18 +21,37 @@
 /* ---------------------------------------------------------------------------
    Design tokens
 
-   Two themes share one set of names.
+   The site is the two surfaces an engineering student does mathematics on,
+   and the two themes share one set of names.
 
-   Blackboard (default): chalk on a green board, with yellow chalk for the
-   proof mark.
+   Pad (default): an engineer's computation pad. Green-tinted paper with a
+   five-to-the-inch grid, dark ink, and a yellow highlighter for the answer.
 
-   Paper (`data-theme="light"`): ink on paper, with board green as the mark.
-   The header, hero, contact band and every figure stay on the board.
+   Board (`data-theme="dark"`): the blackboard. Chalk on green, with yellow
+   chalk where the pad uses the highlighter.
 
-   Components reference the tokens only. `.board` re-declares them, so
-   anything placed inside a board panel is chalk-coloured in either theme.
+   Components reference the tokens only. `.board` re-declares the board set,
+   so the contact band at the foot of the page is a blackboard in either
+   theme.
 --------------------------------------------------------------------------- */
-:root,
+:root {
+  color-scheme: light;
+  --bg: #eef2e4;
+  --panel: #f8faf3;
+  --line: #c6d2ba;
+  --line-strong: #7b9082;
+  --text: #14241d;
+  --muted: #45564b;
+  /* The solid mark: the tombstone, rules that carry meaning, focus rings. */
+  --mark: #1c6b4c;
+  --mark-ink: #f8faf3;
+  /* The highlighter. Only ever a fill behind ink, never a text colour. */
+  --hl: #f5d547;
+  --grid-minor: rgb(28 107 76 / 0.045);
+  --grid-major: rgb(28 107 76 / 0.09);
+}
+
+:root[data-theme='dark'],
 .board {
   --bg: #0f3a2e;
   --panel: #0b2f25;
@@ -42,34 +61,18 @@
   --muted: #b7c6bb;
   --mark: #f4cf45;
   --mark-ink: #10231c;
+  --hl: #f4cf45;
+  --grid-minor: rgb(244 242 232 / 0.035);
+  --grid-major: rgb(244 242 232 / 0.07);
 }
 
-:root {
+:root[data-theme='dark'] {
   color-scheme: dark;
 }
 
-:root[data-theme='light'] {
-  color-scheme: light;
-  --bg: #f5f6f1;
-  --panel: #ffffff;
-  --line: #d2d9cf;
-  --line-strong: #8d9c91;
-  --text: #10231c;
-  --muted: #47584e;
-  --mark: #14553f;
-  --mark-ink: #f5f6f1;
-}
-
-/* On paper, a board panel is the page's dark element; on the blackboard it
-   is a slightly deeper inset. */
 .board {
   background: var(--bg);
   color: var(--text);
-}
-
-:root:not([data-theme='light']) .board-inset {
-  --bg: #0b2f25;
-  --panel: #082620;
 }
 
 @theme inline {
@@ -120,6 +123,19 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
+    /* The pad's grid: light lines every cell, a heavier one every fifth. */
+    background-image:
+      linear-gradient(var(--grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid-minor) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+    background-size:
+      calc(var(--cell) * 5) calc(var(--cell) * 5),
+      calc(var(--cell) * 5) calc(var(--cell) * 5),
+      var(--cell) var(--cell),
+      var(--cell) var(--cell);
+    background-position: center top;
+    --cell: 1.25rem;
   }
 
   ::selection {
@@ -168,10 +184,112 @@
 @layer components {
   /* Page gutter and measure. */
   .shell {
+    --margin-col: 12rem;
     width: 100%;
-    max-width: 76rem;
+    max-width: 78rem;
     margin-inline: auto;
     padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  /* The pad's layout. A narrow margin column on the left holds what a
+     student writes in the margin (the problem number, a label); the work
+     goes in the body beside it. One rule runs down between them, unbroken,
+     because the vertical space lives inside the two columns as padding. */
+  .sheet {
+    --sheet-pad: clamp(2.75rem, 6vw, 4.75rem);
+    display: grid;
+  }
+
+  .sheet > * {
+    min-width: 0;
+  }
+
+  .sheet > .margin-note {
+    padding-top: var(--sheet-pad);
+  }
+
+  .sheet > .sheet-body {
+    padding-block: 1.5rem var(--sheet-pad);
+  }
+
+  .margin-note {
+    font-size: var(--text-sm);
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .margin-key {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.4vw, 2.125rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  /* A new section starts the way a new sheet does: with a rule across it. */
+  .sheet-rule {
+    border-top: 1.5px solid var(--text);
+  }
+
+  @media (min-width: 64rem) {
+    .sheet {
+      grid-template-columns: var(--margin-col) minmax(0, 1fr);
+    }
+
+    .sheet > .margin-note {
+      padding-right: 1.5rem;
+    }
+
+    .sheet > .sheet-body {
+      padding-top: var(--sheet-pad);
+      padding-left: 2.5rem;
+      border-left: 1px solid var(--mark);
+    }
+
+    .margin-key {
+      font-size: 1.5rem;
+    }
+
+    /* The label stays in view while its section scrolls past. */
+    .margin-stick {
+      position: sticky;
+      top: 6.25rem;
+    }
+  }
+
+  /* The highlighter: a stroke behind the figure that matters. On the board
+     it is a line of yellow chalk under it instead. */
+  .hl {
+    --hl-size: 80%;
+    --hl-at: 60%;
+    padding-inline: 0.2em;
+    margin-inline: -0.2em;
+    background: linear-gradient(var(--hl), var(--hl)) left var(--hl-at) / 100% var(--hl-size) no-repeat;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    font-weight: 700;
+  }
+
+  :root[data-theme='dark'] .hl,
+  .board .hl {
+    --hl-size: 2px;
+    --hl-at: 100%;
+  }
+
+  /* The boxed answer at the end of a worked problem. */
+  .answer {
+    display: inline-block;
+    padding: 0.5rem 0.875rem;
+    border: 1.5px solid var(--text);
+    background: var(--panel);
+    line-height: 1.4;
+  }
+
+  /* A figure pasted onto the sheet. */
+  .frame {
+    border: 1px solid var(--line-strong);
+    background: var(--panel);
   }
 
   /* Text links. */
@@ -197,6 +315,7 @@
     min-height: 3rem;
     padding: 0.625rem 1.375rem;
     border: 1.5px solid var(--text);
+    background: var(--panel);
     font-size: var(--text-sm);
     font-weight: 400;
     line-height: 1.2;
@@ -213,12 +332,26 @@
   }
 
   .button-primary {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  :root[data-theme='dark'] .button-primary,
+  .board .button-primary {
     border-color: var(--mark);
     background: var(--mark);
     color: var(--mark-ink);
   }
 
   .button-primary:hover {
+    border-color: var(--mark);
+    background: var(--mark);
+    color: var(--mark-ink);
+  }
+
+  :root[data-theme='dark'] .button-primary:hover,
+  .board .button-primary:hover {
     border-color: var(--text);
     background: var(--text);
     color: var(--bg);

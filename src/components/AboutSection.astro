@@ -1,23 +1,21 @@
 ---
 import Icon from './Icon.astro';
-import SectionHeading from './SectionHeading.astro';
+import Section from './Section.astro';
 import { brand, links, person } from '../config/site';
+import { gdg } from '../data/community';
 import type { Locale } from '../i18n';
 import { ui } from '../i18n/ui';
-import { asset } from '../utils/paths';
+import { asset, href } from '../utils/paths';
 
 interface Props {
   locale: Locale;
-  number: number;
 }
 
-const { locale, number } = Astro.props;
+const { locale } = Astro.props;
 const strings = ui.about;
 ---
 
-<section id="about" class="shell section" aria-labelledby="about-title">
-  <SectionHeading id="about-title" number={number} title={strings.title[locale]} />
-
+<Section id="about" title={strings.title[locale]}>
   <div class="about">
     <div class="about-body">
       <p class="statement">
@@ -45,6 +43,12 @@ const strings = ui.about;
         <tr>
           <th scope="row">{strings.facts.location[locale]}</th>
           <td>{person.location[locale]}</td>
+        </tr>
+        <tr>
+          <th scope="row">{strings.facts.community[locale]}</th>
+          <td>
+            <a class="link" href={href('/#community', locale)}>{gdg.role[locale]}, {gdg.shortName}</a>
+          </td>
         </tr>
         <tr>
           <th scope="row">{strings.facts.links[locale]}</th>
@@ -81,17 +85,16 @@ const strings = ui.about;
       </tbody>
     </table>
   </div>
-</section>
+</Section>
 
 <style>
-  .section {
-    padding-top: clamp(4rem, 9vw, 7rem);
-  }
-
   .about {
     display: grid;
     gap: 3rem;
-    padding-top: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .about > * {
+    min-width: 0;
   }
 
   .about-body {
@@ -124,6 +127,11 @@ const strings = ui.about;
 
   .about-facts {
     align-self: start;
+    background: var(--panel);
+  }
+
+  .about-facts :is(th, td) {
+    padding-left: 0.875rem;
   }
 
   .about-facts th {
@@ -143,10 +151,10 @@ const strings = ui.about;
     overflow-wrap: anywhere;
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 72rem) {
     .about {
-      grid-template-columns: 7fr 5fr;
-      gap: 5rem;
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+      gap: 3.5rem;
     }
   }
 </style>

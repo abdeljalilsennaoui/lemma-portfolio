@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import ProjectVisual from './ProjectVisual.astro';
 import type { Locale } from '../i18n';
@@ -7,8 +8,9 @@ import type { Project } from '../types/content';
 import { href } from '../utils/paths';
 
 /**
- * One project in the gallery, stated the way a paper states a result:
- * "Lemma 2 (CampusGuide). An Android app for …"
+ * One project in the gallery, worked the way a problem is on the pad: its
+ * number and context in the margin, the statement, the figures, and the
+ * answer in a box at the end.
  */
 interface Props {
   project: Project;
@@ -16,53 +18,104 @@ interface Props {
 }
 
 const { project, locale } = Astro.props;
+const strings = ui.work;
 const caseStudy = href(`/work/${project.slug}/`, locale);
 const headingId = `work-${project.slug}`;
 // Month names take a capital in English but not in French.
 const period = locale === 'fr' ? project.period.fr.toLowerCase() : project.period.en;
+
+// Up to three further figures are shown small under the main one; the rest
+// are counted, and all of them are in the case study.
+const gallery = project.gallery ?? [];
+const thumbs = gallery.slice(0, 3);
+const remaining = gallery.length - thumbs.length;
+// The cover is Figure 1 of the case study, so the gallery starts at 2.
+const firstThumbFigure = 2;
 ---
 
-<article class="entry" aria-labelledby={headingId}>
-  <div class="entry-text">
+<article class="sheet entry" aria-labelledby={headingId}>
+  <div class="margin-note">
+    <div class="margin-stick">
+      <p class="margin-key">{strings.lemma[locale]}&nbsp;{project.order}</p>
+      <p class="entry-context">{project.context.label[locale]}</p>
+      <p>{period}</p>
+    </div>
+  </div>
+
+  <div class="sheet-body">
     <div class="statement">
-      <h3 id={headingId} class="theorem-label">
-        {ui.work.lemma[locale]}&nbsp;{project.order} <span class="statement-name">(<a href={caseStudy}>{project.title}</a>).</span>
-      </h3>{' '}
+      <h3 id={headingId}><a href={caseStudy}>{project.title}</a>.</h3>{' '}
       <p class="theorem-body">{project.summary[locale]}</p>
     </div>
 
+    <!-- Clicking the picture opens the case study too. It is a pointer
+         convenience only: the title and the button are the real links. -->
+    <figure class="entry-visual" data-open={caseStudy}>
+      <ProjectVisual project={project} locale={locale} />
+      <figcaption class="caption">
+        <span class="caption-label">{strings.figure[locale]}&nbsp;1.</span>{' '}
+        {project.cover ? project.cover.caption[locale] : project.architecture.diagram.caption[locale]}
+      </figcaption>
+    </figure>
+
+    {
+      thumbs.length > 0 && (
+        <ul class="thumbs">
+          {thumbs.map((figure, index) => (
+            <li>
+              <a class="thumb frame" href={`${caseStudy}#gallery`} title={figure.caption[locale]}>
+                <Image
+                  src={figure.src}
+                  alt=""
+                  widths={[240, 480]}
+                  sizes="(min-width: 40rem) 14rem, 30vw"
+                  loading="lazy"
+                />
+                <span class="sr-only">
+                  {strings.figure[locale]} {firstThumbFigure + index}, {project.title}: {figure.caption[locale]}
+                </span>
+              </a>
+            </li>
+          ))}
+          <li class="thumbs-more">
+            <a class="link" href={`${caseStudy}#gallery`}>
+              {remaining > 0
+                ? strings.moreFigures[locale].replace('{n}', String(remaining))
+                : strings.allFigures[locale]}
+              <span class="sr-only">: {project.title}</span>
+            </a>
+          </li>
+        </ul>
+      )
+    }
+
     <dl class="entry-facts">
       <div>
-        <dt>{ui.caseStudy.meta.context[locale]}</dt>
-        <dd>{project.context.label[locale]}, {period}</dd>
+        <dt>{strings.result[locale]}</dt>
+        <dd>
+          <span class="answer">
+            <span class="hl">{project.proof.figure[locale]}</span>{' '}
+            {project.proof.claim[locale]}
+          </span>
+        </dd>
       </div>
       <div>
-        <dt>{ui.caseStudy.sections.technologies[locale]}</dt>
+        <dt>{strings.builtWith[locale]}</dt>
         <dd>{project.stack.join(', ')}</dd>
       </div>
     </dl>
 
     <p class="entry-links">
-      <a class="link" href={caseStudy}>
-        {ui.work.caseStudy[locale]}<span class="sr-only">: {project.title}</span>
+      <a class="button button-primary" href={caseStudy}>
+        {strings.caseStudy[locale]}<span class="sr-only">: {project.title}</span>
       </a>
       <a class="link entry-repo" href={project.repository.url} target="_blank" rel="noopener">
         <Icon name="github" size={16} />
-        {ui.work.repository[locale]}<span class="sr-only">: {project.title} ({ui.work.opensInNewTab[locale]})</span>
+        {strings.repository[locale]}<span class="sr-only">: {project.title} ({strings.opensInNewTab[locale]})</span>
         <Icon name="external" size={14} />
       </a>
     </p>
   </div>
-
-  <!-- Clicking the picture opens the case study too. It is a pointer
-       convenience only: the title and the text link are the real links. -->
-  <figure class="entry-visual" data-open={caseStudy}>
-    <ProjectVisual project={project} locale={locale} variant="card" />
-    <figcaption class="caption">
-      <span class="caption-label">{ui.work.figure[locale]}&nbsp;{project.order}.</span>{' '}
-      {project.cover ? project.cover.caption[locale] : project.architecture.diagram.caption[locale]}
-    </figcaption>
-  </figure>
 </article>
 
 <script>
@@ -74,20 +127,22 @@ const period = locale === 'fr' ? project.period.fr.toLowerCase() : project.perio
 </script>
 
 <style>
-  .entry {
-    display: grid;
-    gap: 2.25rem;
-    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  /* Entries follow one another down the same sheet, parted by a light rule
+     in the body. */
+  .entry + .entry > .sheet-body {
+    background: linear-gradient(var(--line-strong), var(--line-strong)) right top / calc(100% - 2.5rem) 1px no-repeat;
   }
 
-  .entry + .entry {
-    border-top: 1px solid var(--line);
+  .entry-context {
+    margin-top: 0.5rem;
   }
 
-  /* Label, name and claim run on as one paragraph, as in a paper. */
+  /* Name and claim run on as one paragraph, as in a paper: a bold run-in
+     head, then the statement in italics. */
   .statement {
+    max-width: 46rem;
     font-size: clamp(1.4375rem, 2.5vw, 1.75rem);
-    line-height: 1.32;
+    line-height: 1.3;
   }
 
   .statement h3,
@@ -95,11 +150,11 @@ const period = locale === 'fr' ? project.period.fr.toLowerCase() : project.perio
     display: inline;
   }
 
-  .statement-name {
-    font-weight: 400;
+  .statement h3 {
+    font-weight: 700;
   }
 
-  .statement-name a {
+  .statement h3 a {
     text-decoration: underline;
     text-decoration-color: var(--line-strong);
     text-decoration-thickness: 1px;
@@ -107,52 +162,13 @@ const period = locale === 'fr' ? project.period.fr.toLowerCase() : project.perio
     transition: text-decoration-color 150ms ease;
   }
 
-  .statement-name a:hover {
+  .statement h3 a:hover {
     text-decoration-color: var(--mark);
     text-decoration-thickness: 2px;
   }
 
-  .entry-facts {
-    margin-top: 1.75rem;
-    font-size: var(--text-sm);
-  }
-
-  .entry-facts > div {
-    display: grid;
-    grid-template-columns: 6.75rem 1fr;
-    gap: 1rem;
-    padding-block: 0.5rem;
-    border-top: 1px solid var(--line);
-  }
-
-  .entry-facts > div:last-child {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .entry-facts dt {
-    color: var(--muted);
-  }
-
-  .entry-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 1.75rem;
-    margin-top: 1rem;
-    font-size: var(--text-sm);
-  }
-
-  .entry-links a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.75rem;
-  }
-
-  .entry-repo {
-    gap: 0.4375rem;
-  }
-
   .entry-visual {
-    align-self: start;
+    margin-top: 1.75rem;
     min-width: 0;
   }
 
@@ -161,20 +177,121 @@ const period = locale === 'fr' ? project.period.fr.toLowerCase() : project.perio
   }
 
   .entry-visual :global(.plate) {
-    outline: 2px solid transparent;
-    outline-offset: 0;
-    transition: outline-color 200ms ease;
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
   }
 
   .entry-visual:hover :global(.plate) {
-    outline-color: var(--mark);
+    border-color: var(--mark);
+    box-shadow: 0 0 0 1px var(--mark);
   }
 
-  @media (min-width: 64rem) {
-    .entry {
-      grid-template-columns: 5fr 7fr;
-      gap: 4rem;
+  /* Further figures, small. Four across: three pictures and the count. */
+  .thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.625rem;
+    margin-top: 1.25rem;
+    font-size: var(--text-sm);
+  }
+
+  .thumb {
+    display: block;
+    padding: 0.25rem;
+    transition: border-color 150ms ease;
+  }
+
+  .thumb:hover {
+    border-color: var(--mark);
+  }
+
+  .thumb :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: left top;
+  }
+
+  .thumbs-more {
+    grid-column: 1 / -1;
+  }
+
+  .thumbs-more a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .entry-facts {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+    font-size: var(--text-sm);
+  }
+
+  .entry-facts dt {
+    margin-bottom: 0.375rem;
+    color: var(--muted);
+  }
+
+  .answer {
+    font-size: var(--text-base);
+  }
+
+  .entry-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.75rem;
+    margin-top: 1.75rem;
+    font-size: var(--text-sm);
+  }
+
+  .entry-repo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    min-height: 2.75rem;
+  }
+
+  @media (min-width: 40rem) {
+    .thumbs {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .thumbs-more {
+      grid-column: auto;
+      align-self: center;
+      padding-left: 0.5rem;
+    }
+
+    .entry-facts {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 2.5rem;
       align-items: start;
+    }
+  }
+
+  @media (max-width: 63.99rem) {
+    .entry + .entry > .sheet-body {
+      background: none;
+    }
+
+    .entry + .entry {
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .entry .margin-stick {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 1rem;
+    }
+
+    .entry-context {
+      margin-top: 0;
     }
   }
 </style>

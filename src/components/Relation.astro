@@ -6,8 +6,8 @@ import { ui } from '../i18n/ui';
 import { href } from '../utils/paths';
 
 /**
- * The hero visual: the relation R ⊆ P × D between projects and the
- * disciplines they exercised, drawn from the project data.
+ * The relation R ⊆ P × D between projects and the disciplines they
+ * exercised, drawn from the project data. Shown in the Engineering section.
  *
  * It is shown first as an adjacency matrix of squares — a filled square is
  * the same mark that ends a proof — and, on request, as the bipartite graph
@@ -220,7 +220,7 @@ const edges = left.flatMap(({ project, y: y1 }) =>
     margin-left: 0.25rem;
   }
 
-  /* Two text tabs; the current one is underlined in chalk. */
+  /* Two text tabs; the current one is underlined. */
   .relation-switch {
     display: inline-flex;
     gap: 1.25rem;
@@ -337,27 +337,6 @@ const edges = left.flatMap(({ project, y: y1 }) =>
   .cell[data-on] {
     border-color: var(--mark);
     background: var(--mark);
-  }
-
-  /* The one orchestrated moment on the page: the squares are chalked in. */
-  @media (prefers-reduced-motion: no-preference) {
-    .cell[data-on] {
-      animation: chalk 380ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-      animation-delay: calc(450ms + var(--n) * 55ms);
-    }
-
-    @keyframes chalk {
-      from {
-        background: transparent;
-        border-color: var(--line-strong);
-        transform: scale(0.82);
-      }
-      to {
-        background: var(--mark);
-        border-color: var(--mark);
-        transform: none;
-      }
-    }
   }
 
   .relation-matrix[data-active] td:not([data-lit]) .cell {

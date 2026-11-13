@@ -1,0 +1,36 @@
+---
+/**
+ * A section of the home page, laid out the way a sheet of the pad is: its
+ * title in the margin, where it stays in view while the section scrolls, and
+ * the work in the body beside it.
+ */
+interface Props {
+  id: string;
+  title: string;
+  /** One sentence under the title. */
+  intro?: string;
+}
+
+const { id, title, intro } = Astro.props;
+---
+
+<section id={id} class="shell" aria-labelledby={`${id}-title`}>
+  <div class="sheet sheet-rule">
+    <div class="margin-note">
+      <div class="margin-stick">
+        <h2 id={`${id}-title`} class="margin-key">{title}</h2>
+        {intro && <p class="intro">{intro}</p>}
+      </div>
+    </div>
+    <div class="sheet-body">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    margin-top: 0.625rem;
+    max-width: 30rem;
+  }
+</style>

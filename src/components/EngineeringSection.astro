@@ -1,5 +1,6 @@
 ---
-import SectionHeading from './SectionHeading.astro';
+import Relation from './Relation.astro';
+import Section from './Section.astro';
 import { principles } from '../data/principles';
 import { getProject } from '../data/projects';
 import { skillGroups } from '../data/skills';
@@ -10,10 +11,9 @@ import { href } from '../utils/paths';
 
 interface Props {
   locale: Locale;
-  number: number;
 }
 
-const { locale, number } = Astro.props;
+const { locale } = Astro.props;
 const strings = ui.engineering;
 
 // Turn an evidence pointer into a citation: "L2" for a case study on this
@@ -33,9 +33,7 @@ function resolve(evidence: Evidence) {
 }
 ---
 
-<section id="engineering" class="shell section" aria-labelledby="engineering-title">
-  <SectionHeading id="engineering-title" number={number} title={strings.title[locale]} intro={strings.intro[locale]} />
-
+<Section id="engineering" title={strings.title[locale]} intro={strings.intro[locale]}>
   <div class="engineering">
     <div>
       <h3 class="subheading">{strings.principles[locale]}</h3>
@@ -92,22 +90,28 @@ function resolve(evidence: Evidence) {
         </tbody>
       </table>
       <p class="caption">
-        <span class="caption-label">{ui.work.table[locale]}&nbsp;1.</span>{' '}
+        <span class="caption-label">{ui.work.table[locale]}&nbsp;2.</span>{' '}
         {strings.evidenceHint[locale]}
       </p>
     </div>
+
+    <div>
+      <h3 class="subheading">{strings.coverage[locale]}</h3>
+      <div class="coverage">
+        <Relation locale={locale} />
+      </div>
+    </div>
   </div>
-</section>
+</Section>
 
 <style>
-  .section {
-    padding-top: clamp(4rem, 9vw, 7rem);
-  }
-
   .engineering {
     display: grid;
     gap: 3.5rem;
-    padding-top: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .engineering > * {
+    min-width: 0;
   }
 
   .subheading {
@@ -119,10 +123,19 @@ function resolve(evidence: Evidence) {
 
   .principles {
     display: grid;
-    gap: 1.125rem;
+    gap: 1.125rem 3rem;
     margin-top: 1.25rem;
-    max-width: 30rem;
     color: var(--muted);
+  }
+
+  .principles li {
+    max-width: 30rem;
+  }
+
+  @media (min-width: 48rem) {
+    .principles {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .principles strong {
@@ -132,6 +145,16 @@ function resolve(evidence: Evidence) {
   }
 
   .skills {
+    margin-top: 1.25rem;
+    background: var(--panel);
+  }
+
+  .skills :is(th, td) {
+    padding-left: 0.875rem;
+  }
+
+  .coverage {
+    max-width: 40rem;
     margin-top: 1.25rem;
   }
 
@@ -208,10 +231,4 @@ function resolve(evidence: Evidence) {
     }
   }
 
-  @media (min-width: 64rem) {
-    .engineering {
-      grid-template-columns: 5fr 7fr;
-      gap: 4rem;
-    }
-  }
 </style>

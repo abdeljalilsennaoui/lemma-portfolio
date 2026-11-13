@@ -3,6 +3,13 @@ import type { Project } from '../../types/content';
 import invoiceConsole from '../../assets/projects/insurance-billing-qa/invoice-console.png';
 import paymentRejected from '../../assets/projects/insurance-billing-qa/payment-rejected.png';
 import agentConsole from '../../assets/projects/insurance-billing-qa/agent-console.png';
+import accountSummary from '../../assets/projects/insurance-billing-qa/account-summary.png';
+import paymentSchedule from '../../assets/projects/insurance-billing-qa/payment-schedule.png';
+import transactionLedger from '../../assets/projects/insurance-billing-qa/transaction-ledger.png';
+import accountSummaryFrench from '../../assets/projects/insurance-billing-qa/account-summary-french.png';
+import billingAssistant from '../../assets/projects/insurance-billing-qa/billing-assistant.png';
+import cucumberReport from '../../assets/projects/insurance-billing-qa/cucumber-report.png';
+import coverageReport from '../../assets/projects/insurance-billing-qa/coverage-report.png';
 
 const readme = t(
   'Repository README, version 1.2.0',
@@ -18,6 +25,14 @@ export const insuranceBillingQa: Project = {
     'End-to-end test automation for a simulated insurance billing platform: a Spring Boot application, and the seven levels of testing that hold it to its rules.',
     "Automatisation de tests de bout en bout pour une plateforme simulée de facturation d'assurance : une application Spring Boot et les sept niveaux de tests qui la tiennent à ses règles.",
   ),
+
+  proof: {
+    figure: t('600', '600'),
+    claim: t(
+      'automated tests, all passing',
+      'tests automatisés, tous réussis',
+    ),
+  },
 
   context: {
     kind: 'solo',
@@ -100,12 +115,89 @@ export const insuranceBillingQa: Project = {
         "La console de l'agent. Elle affiche le même fragment de gabarit que les écrans de l'assuré, et des tests à trois niveaux vérifient que les deux concordent.",
       ),
     },
+    {
+      src: accountSummary,
+      alt: t(
+        'The policyholder’s account summary for account ACCT-100002. A billing panel shows the next payment date, a next payment of $90.87, a total balance of $1,137.00, and one insufficient-funds event and one returned payment to date. A second panel shows a monthly plan paid by pre-authorised debit, with the institution, branch and account numbers masked.',
+        "Le sommaire du compte ACCT-100002 d'une assurée. Un premier panneau indique la date du prochain paiement, un prochain paiement de 90,87 $, un solde total de 1 137,00 $, ainsi qu'une insuffisance de fonds et un paiement retourné à ce jour. Un second panneau indique un plan mensuel payé par débit préautorisé; les numéros d'institution, de succursale et de compte y sont masqués.",
+      ),
+      caption: t(
+        'The account summary. The two counters, insufficient funds and returned payments, are deliberately separate, and the bank details are masked because no field holds a full account number.',
+        "Le sommaire du compte. Les deux compteurs, provisions insuffisantes et paiements retournés, sont volontairement distincts, et les coordonnées bancaires sont masquées parce qu'aucun champ ne contient un numéro de compte complet.",
+      ),
+    },
+    {
+      src: paymentSchedule,
+      alt: t(
+        'The payment schedule of a policy term in force from Aug 15, 2026 to Aug 15, 2027: twelve numbered installments, each with a scheduled date, a due date, premium, tax, fee and amount due. The first is marked reversed, the second billed and the other ten scheduled.',
+        "Le calendrier de paiement d'un terme de police en vigueur du 15 août 2026 au 15 août 2027 : douze versements numérotés, chacun avec sa date prévue, sa date d'échéance, la prime, la taxe, les frais et le montant dû. Le premier est marqué comme annulé, le deuxième comme facturé et les dix autres comme prévus.",
+      ),
+      caption: t(
+        'A term’s installment schedule. The twelve amounts must sum back to the term exactly, so the rounding remainder lands on the first payment: $83.37 of premium where the others carry $83.33.',
+        "Le calendrier des versements d'un terme. Les douze montants doivent redonner exactement le total du terme; le reste d'arrondi se retrouve donc sur le premier paiement : 83,37 $ de prime, contre 83,33 $ pour les autres.",
+      ),
+    },
+    {
+      src: transactionLedger,
+      alt: t(
+        'The transaction history of the same term, newest first: a returned payment fee of $25.00, a returned payment of $90.87, a payment of −$90.87 and the new business entry of $1,112.00. Each row splits its amount into premium, tax, fees and suspense, and ends with a running balance; the top one reads $1,137.00.',
+        "L'historique des transactions du même terme, de la plus récente à la plus ancienne : des frais de paiement retourné de 25,00 $, un paiement retourné de 90,87 $, un paiement de −90,87 $ et l'écriture d'affaire nouvelle de 1 112,00 $. Chaque ligne répartit son montant entre prime, taxes, frais et suspens, et se termine par un solde cumulatif; celui du haut indique 1 137,00 $.",
+      ),
+      caption: t(
+        'The append-only ledger after a payment bounced: the payment, its reversal and the fee are three separate rows, and the running balance is derived from them, not stored.',
+        "Le grand livre en ajout seul après le retour d'un paiement : le paiement, son annulation et les frais sont trois lignes distinctes, et le solde cumulatif en est dérivé plutôt que stocké.",
+      ),
+    },
+    {
+      src: accountSummaryFrench,
+      alt: t(
+        'The account summary screen in French, for account ACCT-100001: “Sommaire du compte”, with amounts written the French-Canadian way, such as “132,80 $” and “1 328,00 $”, and the date as “30 sept. 2026”.',
+        "L'écran du sommaire du compte en français, pour le compte ACCT-100001 : « Sommaire du compte », avec des montants écrits à la manière canadienne-française, comme « 132,80 $ » et « 1 328,00 $ », et la date sous la forme « 30 sept. 2026 ».",
+      ),
+      caption: t(
+        'The same screen in French. A unit test fails the build if the English and French message bundles ever stop having the same keys.',
+        "Le même écran en français. Un test unitaire fait échouer le build dès que les fichiers de messages anglais et français n'ont plus les mêmes clés.",
+      ),
+    },
+    {
+      src: billingAssistant,
+      alt: t(
+        'A term summary with a panel titled “Ask about this bill”, noted as “Answers are replayed from recorded exchanges, not produced live.” The question “Why is my balance 1,328.00?” has an answer that walks through the premium, tax, fees and two payments, followed by “Where this answer came from”: the billing account and the billing ledger it read.',
+        "Le sommaire d'un terme accompagné d'un panneau intitulé « Ask about this bill », avec la mention « Answers are replayed from recorded exchanges, not produced live. » À la question « Why is my balance 1,328.00? », la réponse détaille la prime, la taxe, les frais et deux paiements, puis indique sous « Where this answer came from » le compte de facturation et le grand livre consultés.",
+      ),
+      caption: t(
+        'The billing assistant. Its answers are replayed from recorded exchanges, not generated live, and each one names the records it read.',
+        "L'assistant de facturation. Ses réponses sont rejouées à partir d'échanges enregistrés, et non produites en direct, et chacune nomme les enregistrements consultés.",
+      ),
+    },
+    {
+      src: cucumberReport,
+      alt: t(
+        'A Cucumber report on a dark background: “100% (24 / 24) passed” in 0.7 seconds, listing two feature files, installment_payment_api.feature and invoice_payment_api.feature.',
+        'Un rapport Cucumber sur fond sombre : « 100% (24 / 24) passed » en 0,7 seconde, avec deux fichiers de fonctionnalités, installment_payment_api.feature et invoice_payment_api.feature.',
+      ),
+      caption: t(
+        'The Cucumber report for the API scenarios of one run: 24 of 24 passed. The UI scenarios have their own report.',
+        "Le rapport Cucumber des scénarios d'API d'une exécution : 24 réussis sur 24. Les scénarios d'interface ont leur propre rapport.",
+      ),
+    },
+    {
+      src: coverageReport,
+      alt: t(
+        'A JaCoCo coverage report titled “Billing Application”: a table of eight packages with bars for missed instructions and branches. The total row reads 97% of instructions and 87% of branches covered, with 21 of 1,311 lines missed.',
+        "Un rapport de couverture JaCoCo intitulé « Billing Application » : un tableau de huit paquets avec des barres pour les instructions et les branches manquées. La ligne de total indique 97 % des instructions et 87 % des branches couvertes, et 21 lignes manquées sur 1 311.",
+      ),
+      caption: t(
+        'The JaCoCo report behind the coverage figure: 21 of 1,311 lines missed, which is the 98.4% quoted in the results.',
+        'Le rapport JaCoCo derrière le chiffre de couverture : 21 lignes manquées sur 1 311, soit les 98,4 % cités dans les résultats.',
+      ),
+    },
   ],
 
   overview: [
     t(
-      'The repository has two halves that are deliberately kept apart. One is the system under test: a Spring Boot billing application with customers, policies, invoices, installment schedules and an append-only transaction ledger, exposed through a REST API, a contract-first SOAP service and a web console in English and French. The other is the automation that exercises it at seven levels — unit, integration, API, UI, BDD, smoke and performance — and the pipeline that runs it on every pull request.',
-      "Le dépôt comporte deux moitiés volontairement séparées. La première est le système testé : une application de facturation Spring Boot qui gère clients, polices, factures, calendriers de versements et un grand livre de transactions en ajout seul, exposée par une API REST, un service SOAP défini par contrat et une console Web en anglais et en français. La seconde est l'automatisation qui la met à l'épreuve à sept niveaux — unitaire, intégration, API, interface, BDD, tests de fumée et performance — ainsi que le pipeline qui l'exécute à chaque demande de tirage.",
+      'The repository has two halves that are deliberately kept apart. One is the system under test: a Spring Boot billing application with customers, policies, invoices, installment schedules and an append-only transaction ledger, exposed through a REST API, a contract-first SOAP service and a web console in English and French. The other is the automation that exercises it at seven levels (unit, integration, API, UI, BDD, smoke and performance), and the pipeline that runs it on every pull request.',
+      "Le dépôt comporte deux moitiés volontairement séparées. La première est le système testé : une application de facturation Spring Boot qui gère clients, polices, factures, calendriers de versements et un grand livre de transactions en ajout seul, exposée par une API REST, un service SOAP défini par contrat et une console Web en anglais et en français. La seconde est l'automatisation qui la met à l'épreuve à sept niveaux (unitaire, intégration, API, interface, BDD, tests de fumée et performance), ainsi que le pipeline qui l'exécute à chaque demande de tirage.",
     ),
     t(
       'I built both halves. The billing domain is simulated; the automation, the pipeline and the defects found along the way are real.',
@@ -119,7 +211,7 @@ export const insuranceBillingQa: Project = {
       "Il est facile de démontrer l'automatisation des tests sur une page jouet, et difficile de bien la pratiquer sur un vrai système. Les difficultés sont justement celles qu'une petite démo masque : à qui appartiennent les données de test, comment attendre un navigateur sans temporisation fixe, comment un pipeline démarre et arrête une véritable application, et comment les chiffres de la documentation restent exacts à mesure que la suite grandit.",
     ),
     t(
-      'I wanted a system whose rules have right answers. Money has to reconcile to the cent, invoices move through states, and a payment can be refused for a legitimate reason — so every test asserts something that matters.',
+      'I wanted a system whose rules have right answers. Money has to reconcile to the cent, invoices move through states, and a payment can be refused for a legitimate reason, so every test asserts something that matters.',
       "Je voulais un système dont les règles ont de bonnes réponses. Les montants doivent concorder au cent près, les factures passent d'un état à l'autre, et un paiement peut être refusé pour une raison légitime : chaque test vérifie donc quelque chose qui compte.",
     ),
   ],
@@ -150,12 +242,12 @@ export const insuranceBillingQa: Project = {
         "Un build Maven multi-module. billing-app est l'application. qa-api-tests, qa-ui-tests et qa-bdd-tests sont les modules d'automatisation, accompagnés d'une suite de fumée Cypress et d'un plan JMeter.",
       ),
       t(
-        'The automation modules have no dependency on the application code. They reach it only over HTTP and through the rendered page. If both sides shared an enum, renaming a constant would change the test and the application together, and the suite would stay green while the contract had quietly broken.',
-        "Les modules d'automatisation ne dépendent aucunement du code de l'application. Ils ne l'atteignent que par HTTP et par la page affichée. Si les deux côtés partageaient une énumération, renommer une constante modifierait le test et l'application du même coup, et la suite resterait au vert alors que le contrat aurait été rompu en silence.",
+        'The automation modules have no dependency on the application code. They reach it only over HTTP and through the rendered page. If both sides shared an enum, renaming a constant would change the test and the application together, and the suite would stay green after the contract had broken.',
+        "Les modules d'automatisation ne dépendent aucunement du code de l'application. Ils ne l'atteignent que par HTTP et par la page affichée. Si les deux côtés partageaient une énumération, renommer une constante modifierait le test et l'application du même coup, et la suite resterait au vert alors que le contrat aurait été rompu.",
       ),
       t(
-        'Framework code — API clients, page objects, test data builders — lives in each module’s src/main/java and the tests in src/test/java. That lets the BDD module reuse the clients and page objects as ordinary library classes, so its step definitions contain no automation logic at all.',
-        "Le code du cadre de test — clients d'API, objets de page, générateurs de données — se trouve dans le src/main/java de chaque module, et les tests dans src/test/java. Le module BDD réutilise ainsi les clients et les objets de page comme de simples classes de bibliothèque, si bien que ses définitions d'étapes ne contiennent aucune logique d'automatisation.",
+        'Framework code (API clients, page objects, test data builders) lives in each module’s src/main/java and the tests in src/test/java. That lets the BDD module reuse the clients and page objects as ordinary library classes, so its step definitions contain no automation logic at all.',
+        "Le code du cadre de test (clients d'API, objets de page, générateurs de données) se trouve dans le src/main/java de chaque module, et les tests dans src/test/java. Le module BDD réutilise ainsi les clients et les objets de page comme de simples classes de bibliothèque, si bien que ses définitions d'étapes ne contiennent aucune logique d'automatisation.",
       ),
     ],
     diagram: {
@@ -231,8 +323,8 @@ export const insuranceBillingQa: Project = {
     {
       title: t('Billing rules live on the entity', "Les règles de facturation vivent dans l'entité"),
       body: t(
-        'A guard in a service is bypassed by any other caller that reaches the entity; a guard inside Invoice.applyPayment is not. It also makes the rules testable as plain JUnit with no Spring context. The rules are checked cheapest-first — amount, invoice state, policy state, then overpayment — and a test pins that order. The cost is an entity that is larger than an anaemic model.',
-        "Une vérification placée dans un service est contournée par tout autre appelant qui atteint l'entité; une vérification à l'intérieur de Invoice.applyPayment ne l'est pas. Les règles deviennent aussi testables en simple JUnit, sans contexte Spring. Elles sont évaluées de la moins coûteuse à la plus coûteuse — montant, état de la facture, état de la police, puis trop-perçu — et un test fige cet ordre. Le prix à payer : une entité plus volumineuse qu'un modèle anémique.",
+        'A guard in a service is bypassed by any other caller that reaches the entity; a guard inside Invoice.applyPayment is not. It also makes the rules testable as plain JUnit with no Spring context. The rules are checked cheapest first (amount, invoice state, policy state, then overpayment), and a test pins that order. The cost is an entity that is larger than an anaemic model.',
+        "Une vérification placée dans un service est contournée par tout autre appelant qui atteint l'entité; une vérification à l'intérieur de Invoice.applyPayment ne l'est pas. Les règles deviennent aussi testables en simple JUnit, sans contexte Spring. Elles sont évaluées de la moins coûteuse à la plus coûteuse (montant, état de la facture, état de la police, puis trop-perçu), et un test fige cet ordre. Le prix à payer : une entité plus volumineuse qu'un modèle anémique.",
       ),
     },
     {
@@ -302,8 +394,8 @@ export const insuranceBillingQa: Project = {
     {
       title: t('Healthy before the data existed', 'En bon état avant que les données existent'),
       body: t(
-        'Seeding ran after the web server had started, so the application accepted requests and reported healthy with an empty database — exactly the window every suite lands in: wait for health, read an invoice, get an intermittent 404. Seeding moved to bean initialisation, on a separate bean so that it still goes through the transactional proxy.',
-        "L'initialisation des données s'exécutait après le démarrage du serveur Web : l'application acceptait donc des requêtes et se déclarait en bon état avec une base vide — précisément la fenêtre où arrive chaque suite : attendre l'état de santé, lire une facture, obtenir un 404 intermittent. L'initialisation a été déplacée à la création des beans, dans un bean distinct afin de passer malgré tout par le mandataire transactionnel.",
+        'Seeding ran after the web server had started, so the application accepted requests and reported healthy with an empty database. That is exactly the window every suite lands in: wait for health, read an invoice, get an intermittent 404. Seeding moved to bean initialisation, on a separate bean so that it still goes through the transactional proxy.',
+        "L'initialisation des données s'exécutait après le démarrage du serveur Web : l'application acceptait donc des requêtes et se déclarait en bon état avec une base vide. C'est précisément la fenêtre où arrive chaque suite : attendre l'état de santé, lire une facture, obtenir un 404 intermittent. L'initialisation a été déplacée à la création des beans, dans un bean distinct afin de passer malgré tout par le mandataire transactionnel.",
       ),
     },
     {
@@ -316,8 +408,8 @@ export const insuranceBillingQa: Project = {
     {
       title: t('Two wrong ways to wait for a navigation', "Deux mauvaises façons d'attendre une navigation"),
       body: t(
-        'Waiting for a condition on the destination page returned immediately, because the same element was already on screen. Waiting for an old element to go stale was correct in principle and failed on the CI runner, where Chrome sometimes raises a different error mid-navigation. The version that holds sets a marker on window before the action and waits for it to be gone with the document fully loaded. At no point was the answer a sleep or a retry.',
-        "Attendre une condition sur la page de destination revenait immédiatement, puisque le même élément était déjà à l'écran. Attendre qu'un ancien élément devienne périmé était juste en principe, mais échouait sur l'exécuteur d'intégration continue, où Chrome lève parfois une autre erreur en pleine navigation. La version qui tient pose un marqueur sur window avant l'action, puis attend sa disparition et le chargement complet du document. À aucun moment la réponse n'a été une temporisation ou une nouvelle tentative.",
+        'Waiting for a condition on the destination page returned immediately, because the same element was already on screen. Waiting for an old element to go stale was correct in principle and failed on the CI runner, where Chrome sometimes raises a different error mid-navigation. The version that holds sets a marker on window before the action and waits for it to be gone with the document fully loaded. None of the three versions used a sleep or a retry.',
+        "Attendre une condition sur la page de destination revenait immédiatement, puisque le même élément était déjà à l'écran. Attendre qu'un ancien élément devienne périmé était juste en principe, mais échouait sur l'exécuteur d'intégration continue, où Chrome lève parfois une autre erreur en pleine navigation. La version qui tient pose un marqueur sur window avant l'action, puis attend sa disparition et le chargement complet du document. Aucune des trois versions n'a eu recours à une temporisation ou à une nouvelle tentative.",
       ),
     },
   ],

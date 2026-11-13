@@ -15,18 +15,19 @@ const { locale, route } = Astro.props;
 
 const items = [
   { label: ui.nav.work[locale], target: '/#work' },
+  { label: ui.nav.community[locale], target: '/#community' },
   { label: ui.nav.about[locale], target: '/#about' },
   { label: ui.nav.engineering[locale], target: '/#engineering' },
   { label: ui.nav.contact[locale], target: '/#contact' },
 ];
 ---
 
-<header class="site-header board" data-header>
+<header class="site-header" data-header>
   <div class="shell flex h-[4.5rem] items-center justify-between gap-6">
     <Wordmark locale={locale} />
 
-    <nav aria-label={ui.nav.label[locale]} class="hidden md:block">
-      <ul class="flex items-center gap-8">
+    <nav aria-label={ui.nav.label[locale]} class="hidden lg:block">
+      <ul class="flex items-center gap-7">
         {
           items.map((item) => (
             <li>
@@ -90,7 +91,7 @@ const items = [
   </div>
 
   <!-- Without JavaScript this list simply stays visible on small screens. -->
-  <nav id="mobile-menu" class="mobile-menu md:hidden" aria-label={ui.nav.label[locale]} data-menu>
+  <nav id="mobile-menu" class="mobile-menu lg:hidden" aria-label={ui.nav.label[locale]} data-menu>
     <ul class="shell flex flex-col pb-4">
       {
         items.map((item) => (
@@ -124,11 +125,12 @@ const items = [
 <script>
   const root = document.documentElement;
 
-  // Theme switch: dark by default, the choice is remembered on this device.
+  // Theme switch: the pad or the board. It starts from the reader's system
+  // setting, and a choice made here is remembered on this device.
   const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
   if (themeToggle) {
     const syncLabel = () => {
-      const isDark = root.dataset.theme !== 'light';
+      const isDark = root.dataset.theme === 'dark';
       themeToggle.setAttribute(
         'aria-label',
         (isDark ? themeToggle.dataset.labelLight : themeToggle.dataset.labelDark) ?? '',
@@ -137,7 +139,7 @@ const items = [
     themeToggle.hidden = false;
     syncLabel();
     themeToggle.addEventListener('click', () => {
-      const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
       root.dataset.theme = next;
       try {
         localStorage.setItem('theme', next);
@@ -184,17 +186,17 @@ const items = [
 </script>
 
 <style>
-  /* The header is a strip of blackboard in both themes. */
   .site-header {
     position: sticky;
     top: 0;
     z-index: 40;
+    background: var(--bg);
     border-bottom: 1px solid transparent;
     transition: border-color 200ms ease;
   }
 
   .site-header[data-scrolled] {
-    border-bottom-color: var(--line);
+    border-bottom-color: var(--line-strong);
   }
 
   .nav-link {
@@ -278,8 +280,8 @@ const items = [
 
   /* Show the icon for the theme you would switch to. The icons are child
      components, so these selectors have to be global. */
-  :global(:root[data-theme='light'] .theme-icon-sun),
-  :global(:root:not([data-theme='light']) .theme-icon-moon) {
+  :global(:root:not([data-theme='dark']) .theme-icon-sun),
+  :global(:root[data-theme='dark'] .theme-icon-moon) {
     display: none;
   }
 
@@ -288,7 +290,7 @@ const items = [
     display: none;
   }
 
-  @media (min-width: 48rem) {
+  @media (min-width: 64rem) {
     .menu-button {
       display: none;
     }

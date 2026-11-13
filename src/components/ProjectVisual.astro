@@ -5,43 +5,39 @@ import type { Locale } from '../i18n';
 import type { Project } from '../types/content';
 
 /**
- * The picture for a project, always shown on a board panel: its real
- * screenshot when it has one, and its architecture diagram — drawn in chalk,
- * and captioned as a diagram — when it does not.
+ * The picture for a project on the home page, framed on the sheet: its real screenshot when
+ * it has one, and its architecture diagram, captioned as a diagram, when it
+ * does not.
  */
 interface Props {
   project: Project;
   locale: Locale;
-  /** `card` in the gallery, `cover` at the top of a case study. */
-  variant: 'card' | 'cover';
 }
 
-const { project, locale, variant } = Astro.props;
-const isCover = variant === 'cover';
+const { project, locale } = Astro.props;
 ---
 
-<div class:list={['plate board board-inset', { 'plate-diagram': !project.cover }]}>
+<div class:list={['plate frame', { 'plate-diagram': !project.cover }]}>
   {
     project.cover ? (
       <Image
         src={project.cover.src}
         alt={project.cover.alt[locale]}
         widths={[480, 800, 1200, 1600]}
-        sizes={isCover ? '(min-width: 76rem) 68rem, 88vw' : '(min-width: 64rem) 38rem, 88vw'}
-        loading={isCover || project.order === 1 ? 'eager' : 'lazy'}
-        fetchpriority={isCover ? 'high' : undefined}
+        sizes="(min-width: 78rem) 58rem, 92vw"
+        loading={project.order === 1 ? 'eager' : 'lazy'}
         class="shot"
         style={`max-width: ${project.cover.src.width}px`}
       />
     ) : (
-      <LayerDiagram diagram={project.architecture.diagram} locale={locale} compact={!isCover} />
+      <LayerDiagram diagram={project.architecture.diagram} locale={locale} compact />
     )
   }
 </div>
 
 <style>
   .plate {
-    padding: clamp(0.75rem, 2.5vw, 1.5rem);
+    padding: clamp(0.375rem, 1vw, 0.625rem);
   }
 
   .plate-diagram {

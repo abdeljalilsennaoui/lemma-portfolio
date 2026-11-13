@@ -56,6 +56,12 @@ export interface Project {
   shortTitle: string;
   /** The one-line description shown on the card and under the title. */
   summary: Localized;
+  /**
+   * The boxed answer: the one counted result that stands for the project in
+   * the hero and on its card. `figure` is the number, `claim` what it counts.
+   * It must repeat a row of `results`, so it carries the same source.
+   */
+  proof: { figure: Localized; claim: Localized };
 
   context: {
     kind: 'solo' | 'team';

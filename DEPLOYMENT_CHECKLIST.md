@@ -23,11 +23,18 @@
 - [x] **Résumé** — not published, by choice. `links.resume` stays `null`.
 - [x] **Email** — the site shows `hello@lemmabyajs.com`, which Porkbun forwards to a private
       inbox. No personal address is published.
-- [x] **Pictures for CampusGuide** — three frames from the test recordings in the team wiki.
-      They are 800 px wide; replace them if sharper originals turn up.
-- [ ] **Pictures for SUMMS** — none exist in its repository, which has no wiki. It shows an
-      architecture diagram until real screenshots are supplied. See "Replacing portfolio
-      images" in the README.
+- [x] **Pictures for CampusGuide** — three frames from the test recordings in the team wiki
+      (800 px wide; replace them if sharper originals turn up), five Figma mockups from the
+      wiki's UI design page for the stories I implemented, the SonarQube quality gate and the
+      team's component diagram.
+- [x] **Pictures for SUMMS** — four screenshots of the running application from winter 2026
+      (the map page, a transit route, its steps, a route), plus the team's design diagrams.
+      The screenshots are under 900 px wide; replace them if larger originals turn up.
+- [ ] **More pictures for the study assistant** — it has one screenshot. The other three study
+      modes (flashcards, quiz, question answering) are not pictured.
+- [ ] **GDG Concordia** — the role (VP Admin) and the 2026 events were read from the chapter's
+      public page on 13 November 2026. Confirm the wording in `src/data/community.ts` and
+      `src/i18n/ui.ts`, and add anything specific you ran yourself.
 - [x] **Quebec enterprise register** — `lemma` and `ajs` searched by hand on 12 October 2026. No
       name combines the two. See `docs/BRAND_NAME_RESEARCH.md`.
 

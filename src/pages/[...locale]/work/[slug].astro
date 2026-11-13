@@ -1,8 +1,8 @@
 ---
-import { Image } from 'astro:assets';
 import Icon from '../../../components/Icon.astro';
 import LayerDiagram from '../../../components/LayerDiagram.astro';
-import ProjectVisual from '../../../components/ProjectVisual.astro';
+import Lightbox from '../../../components/Lightbox.astro';
+import ZoomFigure from '../../../components/ZoomFigure.astro';
 import { projects } from '../../../data/projects';
 import { defaultLocale, locales, localeFromParam } from '../../../i18n';
 import { ui } from '../../../i18n/ui';
@@ -32,13 +32,16 @@ const index = projects.findIndex((candidate) => candidate.slug === project.slug)
 const previous = projects[index - 1];
 const next = projects[index + 1];
 
-// Figures are numbered in reading order: the cover, then the architecture
-// diagram when it is not already the cover, then the gallery.
-const diagramFigure = project.cover ? 2 : 1;
-const firstGalleryFigure = diagramFigure + 1;
+// Figures are numbered in reading order: the cover (the architecture diagram
+// when there is no screenshot), then the gallery, then the architecture
+// diagram when it was not already the cover.
+const gallery = project.gallery ?? [];
+const firstGalleryFigure = 2;
+const diagramFigure = project.cover ? firstGalleryFigure + gallery.length : 1;
 
 const sections = [
   { id: 'overview', label: strings.sections.overview[locale] },
+  ...(gallery.length > 0 ? [{ id: 'gallery', label: strings.sections.gallery[locale] }] : []),
   { id: 'problem', label: strings.sections.problem[locale] },
   { id: 'goals', label: strings.sections.goals[locale] },
   { id: 'technologies', label: strings.sections.technologies[locale] },
@@ -73,6 +76,13 @@ const sections = [
 
       <dl class="case-meta">
         <div>
+          <dt>{strings.result[locale]}</dt>
+          <dd>
+            <span class="hl">{project.proof.figure[locale]}</span>{' '}
+            {project.proof.claim[locale]}
+          </dd>
+        </div>
+        <div>
           <dt>{strings.meta.context[locale]}</dt>
           <dd>{project.context.label[locale]}</dd>
         </div>
@@ -93,13 +103,29 @@ const sections = [
       </dl>
     </header>
 
-    <figure class="case-cover">
-      <ProjectVisual project={project} locale={locale} variant="cover" />
-      <figcaption class="caption">
-        <span class="caption-label">{figureLabel}&nbsp;1.</span>{' '}
-        {project.cover ? project.cover.caption[locale] : project.architecture.diagram.caption[locale]}
-      </figcaption>
-    </figure>
+    <div class="case-cover">
+      {
+        project.cover ? (
+          <ZoomFigure
+            figure={project.cover}
+            number={1}
+            locale={locale}
+            sizes="(min-width: 78rem) 72rem, 92vw"
+            eager
+          />
+        ) : (
+          <figure>
+            <div class="frame figure-diagram">
+              <LayerDiagram diagram={project.architecture.diagram} locale={locale} />
+            </div>
+            <figcaption class="caption">
+              <span class="caption-label">{figureLabel}&nbsp;1.</span>{' '}
+              {project.architecture.diagram.caption[locale]}
+            </figcaption>
+          </figure>
+        )
+      }
+    </div>
 
     <div class="case-layout">
       <nav class="toc" aria-label={strings.contents[locale]}>
@@ -120,6 +146,24 @@ const sections = [
           <h2 id="overview-title">{strings.sections.overview[locale]}</h2>
           {project.overview.map((paragraph) => <p>{paragraph[locale]}</p>)}
         </section>
+
+        {
+          gallery.length > 0 && (
+            <section id="gallery" class="wide" aria-labelledby="gallery-title">
+              <h2 id="gallery-title">{strings.sections.gallery[locale]}</h2>
+              <div class="gallery">
+                {gallery.map((figure, galleryIndex) => (
+                  <ZoomFigure
+                    figure={figure}
+                    number={firstGalleryFigure + galleryIndex}
+                    locale={locale}
+                    sizes="(min-width: 78rem) 30rem, (min-width: 48rem) 44vw, 92vw"
+                  />
+                ))}
+              </div>
+            </section>
+          )
+        }
 
         <section id="problem" aria-labelledby="problem-title">
           <h2 id="problem-title">{strings.sections.problem[locale]}</h2>
@@ -156,7 +200,7 @@ const sections = [
             // Projects without a screenshot already show this diagram as Figure 1.
             project.cover && (
               <figure class="figure">
-                <div class="board board-inset figure-diagram">
+                <div class="frame figure-diagram">
                   <LayerDiagram diagram={project.architecture.diagram} locale={locale} />
                 </div>
                 <figcaption class="caption">
@@ -204,27 +248,6 @@ const sections = [
                 <h3>{challenge.title[locale]}</h3>
                 <p>{challenge.body[locale]}</p>
               </div>
-            ))
-          }
-          {
-            project.gallery?.map((figure, galleryIndex) => (
-              <figure class="figure">
-                <div class="board board-inset figure-shot">
-                  <Image
-                    src={figure.src}
-                    alt={figure.alt[locale]}
-                    widths={[480, 800, 1200]}
-                    sizes="(min-width: 64rem) 44rem, 88vw"
-                    loading="lazy"
-                  />
-                </div>
-                <figcaption class="caption">
-                  <span class="caption-label">
-                    {figureLabel}&nbsp;{firstGalleryFigure + galleryIndex}.
-                  </span>{' '}
-                  {figure.caption[locale]}
-                </figcaption>
-              </figure>
             ))
           }
         </section>
@@ -338,6 +361,7 @@ const sections = [
       }
     </nav>
   </article>
+  <Lightbox locale={locale} />
 </Base>
 
 <style>
@@ -383,23 +407,30 @@ const sections = [
     line-height: 1.38;
   }
 
+  /* The same ruled block as the top of the home page, here for the project. */
   .case-meta {
     display: grid;
     margin-top: 2.5rem;
-    border-top: 2px solid var(--text);
-    border-bottom: 2px solid var(--text);
+    border: 1.5px solid var(--text);
+    background: var(--panel);
     font-size: var(--text-sm);
+    line-height: 1.4;
   }
 
   .case-meta > div {
-    display: grid;
-    grid-template-columns: 6.5rem 1fr;
-    gap: 1rem;
-    padding-block: 0.75rem;
+    padding: 0.625rem 0.875rem 0.75rem;
   }
 
   .case-meta > div + div {
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .case-meta dt {
+    font-size: var(--text-2xs);
+  }
+
+  .case-meta dd {
+    margin-top: 0.125rem;
   }
 
   .case-meta dt {
@@ -464,12 +495,29 @@ const sections = [
 
   .case-body {
     min-width: 0;
-    max-width: 46rem;
   }
 
   .case-body > section {
+    max-width: 46rem;
     padding-block: clamp(2rem, 5vw, 3rem);
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--line-strong);
+  }
+
+  /* The picture gallery may run wider than the text measure. */
+  .case-body > section.wide {
+    max-width: none;
+  }
+
+  .gallery {
+    display: grid;
+    gap: 2rem 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  @media (min-width: 48rem) {
+    .gallery {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .case-body > section:first-child {
@@ -555,16 +603,6 @@ const sections = [
     padding: clamp(1.25rem, 4vw, 2.5rem);
   }
 
-  .figure-shot {
-    padding: clamp(0.75rem, 2.5vw, 1.25rem);
-  }
-
-  .figure-shot img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
   .results {
     margin-top: 1.5rem;
   }
@@ -586,6 +624,7 @@ const sections = [
   .qed {
     display: flex;
     justify-content: flex-end;
+    max-width: 46rem;
   }
 
   .qed .tombstone {
@@ -638,17 +677,26 @@ const sections = [
 
   @media (min-width: 40rem) {
     .case-meta {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr;
     }
 
-    .case-meta > div {
-      grid-template-columns: 1fr;
-      gap: 0.125rem;
-      padding: 0.875rem 1.5rem 0.875rem 0;
+    .case-meta > div:nth-child(2) {
+      border-top: 0;
+    }
+
+    .case-meta > div:nth-child(even) {
+      border-left: 1px solid var(--line-strong);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .case-meta {
+      grid-template-columns: 1.4fr 1.2fr 0.9fr 1.5fr;
     }
 
     .case-meta > div + div {
       border-top: 0;
+      border-left: 1px solid var(--line-strong);
     }
   }
 
@@ -702,16 +750,22 @@ const sections = [
   }
 
   @media (min-width: 64rem) {
+    /* The contents list sits in the margin, as section titles do at home. */
     .case-layout {
-      grid-template-columns: 13rem minmax(0, 1fr);
-      gap: 5rem;
+      grid-template-columns: var(--margin-col) minmax(0, 1fr);
+      gap: 0;
       align-items: start;
+    }
+
+    .case-body {
+      padding-left: 2.5rem;
+      border-left: 1px solid var(--mark);
     }
 
     .toc {
       position: sticky;
       top: 6.5rem;
-      padding: 0;
+      padding: 0 1.5rem 0 0;
       border: 0;
     }
 

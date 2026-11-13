@@ -3,6 +3,13 @@ import type { Project } from '../../types/content';
 import campusMap from '../../assets/projects/campus-guide/campus-map.png';
 import buildingInfo from '../../assets/projects/campus-guide/building-info.png';
 import buildingOutlines from '../../assets/projects/campus-guide/building-outlines.png';
+import mockupCampusSwitching from '../../assets/projects/campus-guide/mockup-campus-switching.png';
+import mockupCrossCampusRoute from '../../assets/projects/campus-guide/mockup-cross-campus-route.png';
+import mockupStepByStep from '../../assets/projects/campus-guide/mockup-step-by-step.png';
+import mockupShuttleStops from '../../assets/projects/campus-guide/mockup-shuttle-stops.png';
+import mockupNextClass from '../../assets/projects/campus-guide/mockup-next-class.png';
+import qualityGate from '../../assets/projects/campus-guide/quality-gate.png';
+import componentDiagram from '../../assets/projects/campus-guide/component-diagram.png';
 
 const counted = t(
   'Counted on the main branch, April 2026',
@@ -22,12 +29,20 @@ export const campusGuide: Project = {
     "Une application Android pour s'orienter sur les deux campus de Concordia : itinéraires extérieurs et intérieurs, navette, et trajet vers le prochain cours.",
   ),
 
+  proof: {
+    figure: t('831', '831'),
+    claim: t(
+      'unit tests, on a team of eleven',
+      'tests unitaires, dans une équipe de onze',
+    ),
+  },
+
   context: {
     kind: 'team',
     label: t('Team of 11, university course project', 'Équipe de 11, projet de cours universitaire'),
     teamSize: 11,
   },
-  period: t('January – April 2026', 'Janvier – avril 2026'),
+  period: t('January to April 2026', 'Janvier à avril 2026'),
   disciplines: ['android', 'frontend', 'testing', 'cicd'],
 
   stack: [
@@ -109,6 +124,85 @@ export const campusGuide: Project = {
       caption: t(
         'Campus buildings drawn as shaded outlines over the map, from GeoJSON polygons. A frame from the same recording.',
         "Les pavillons du campus, dessinés en surimpression sur la carte à partir de polygones GeoJSON. Image tirée du même enregistrement.",
+      ),
+    },
+    // Mockups from the team's wiki (05 User Interface Design), drawn by a
+    // teammate in Figma. These five are the stories I went on to implement.
+    {
+      src: mockupCampusSwitching,
+      alt: t(
+        'A page from the mockup document for user stories US-1.1, view the SGW and Loyola campus maps, and US-1.3, switch between them. A phone screen shows the Loyola campus map covered in red building pins, with a search bar on top, SGW and LOY toggle buttons near the bottom and a navigation bar under them. Callouts around the screen explain each control; several are tagged “Accessibility” or “Navigation”.',
+        "Une page du document de maquettes pour les récits utilisateur US-1.1, afficher les cartes des campus SGW et Loyola, et US-1.3, passer de l'un à l'autre. Un écran de téléphone montre la carte du campus Loyola couverte de repères rouges, avec une barre de recherche en haut, des boutons SGW et LOY vers le bas et une barre de navigation en dessous. Des annotations autour de l'écran expliquent chaque commande; plusieurs portent l'étiquette « Accessibility » ou « Navigation ».",
+      ),
+      caption: t(
+        'The mockup for the campus maps and the SGW and Loyola toggle, drawn by a teammate in Figma, with a callout for every control. I built the toggle it describes.',
+        "La maquette des cartes de campus et du sélecteur SGW et Loyola, dessinée dans Figma par un membre de l'équipe, avec une annotation pour chaque commande. J'ai réalisé le sélecteur qu'elle décrit.",
+      ),
+    },
+    {
+      src: mockupCrossCampusRoute,
+      alt: t(
+        'A mockup of the directions panel for a route from “Your location” to the Central Building (CC). A tag reads “This is a cross-campus route”. Under “Choose your travel mode” the walking icon is selected, and the route is given as via Rue Sherbrooke O, 1 hr 33 min, 6.6 km, with Go and Cancel buttons. Below, a map shows the route as a purple line between the two campuses.',
+        "Une maquette du panneau d'itinéraire pour un trajet de « Your location » au pavillon central (CC). Une étiquette indique « This is a cross-campus route ». Sous « Choose your travel mode », l'icône de marche est sélectionnée, et l'itinéraire est donné par la rue Sherbrooke O, 1 h 33 min, 6,6 km, avec des boutons Go et Cancel. En dessous, une carte montre le trajet en violet entre les deux campus.",
+      ),
+      caption: t(
+        'The mockup for cross-campus routing (US-2.5): the panel says outright that the route crosses campuses. I implemented this story.',
+        "La maquette des itinéraires d'un campus à l'autre (US-2.5) : le panneau indique en toutes lettres que le trajet change de campus. J'ai mis en œuvre ce récit.",
+      ),
+    },
+    {
+      src: mockupStepByStep,
+      alt: t(
+        'A mockup of step-by-step directions from Faubourg Ste-Catherine (FB) to the Concordia shuttle bus stop: 6 minutes, 400 m. The steps read “Head toward Rue Guy”, “Turn left onto Rue Guy” and “Turn right onto Blvd. De Maisonneuve Ouest”, each with a distance and an arrow icon, followed by Go and Cancel buttons. A map below draws the walk as a dotted blue line ending at a shuttle pin. Callouts explain each part.',
+        "Une maquette d'un itinéraire étape par étape, de Faubourg Ste-Catherine (FB) à l'arrêt de la navette de Concordia : 6 minutes, 400 m. Les étapes indiquent « Head toward Rue Guy », « Turn left onto Rue Guy » et « Turn right onto Blvd. De Maisonneuve Ouest », chacune avec une distance et une flèche, suivies des boutons Go et Cancel. Une carte, en dessous, trace la marche en pointillé bleu jusqu'à un repère de navette. Des annotations expliquent chaque partie.",
+      ),
+      caption: t(
+        'The mockup for the step-by-step directions panel (US-2.7). Its acceptance criteria are printed above it: steps in order, and a way back to the map without losing the route. I built this panel.',
+        "La maquette du panneau d'itinéraire étape par étape (US-2.7). Ses critères d'acceptation sont imprimés au-dessus : des étapes dans l'ordre, et un retour à la carte sans perdre l'itinéraire. J'ai réalisé ce panneau.",
+      ),
+    },
+    {
+      src: mockupShuttleStops,
+      alt: t(
+        'A mockup for user story US-3.1, view shuttle stops on the map. The Sir George Williams map shows red building pins and, beside the Henry F. Hall Building, a blue square pin with a bus icon and the word “Shuttle”. A callout reads “Shuttle location pin with icon and text support.”',
+        "Une maquette pour le récit utilisateur US-3.1, afficher les arrêts de navette sur la carte. La carte du campus Sir George Williams montre des repères rouges pour les pavillons et, près du pavillon Henry F. Hall, un repère carré bleu avec une icône d'autobus et le mot « Shuttle ». Une annotation indique « Shuttle location pin with icon and text support. »",
+      ),
+      caption: t(
+        'The mockup for shuttle stops (US-3.1): a blue square with an icon and a word, so that it does not depend on colour to stand apart from the building pins. I built the stop markers.',
+        "La maquette des arrêts de navette (US-3.1) : un carré bleu avec une icône et un mot, pour qu'il se distingue des repères de pavillons sans dépendre de la couleur. J'ai réalisé les marqueurs d'arrêt.",
+      ),
+    },
+    {
+      src: mockupNextClass,
+      alt: t(
+        'A mockup for user story US-4B.4, determine the next class based on the current time. A daily schedule for April 10th 2026 lists three classes. Two that have passed are greyed out with disabled buttons. The third, SOEN 321 – U LECTURE, is labelled “Upcoming class”, outlined in red, and has an enabled “Directions to classroom” button. Accessibility callouts note that the upcoming class is marked by text and pattern as well as colour.',
+        "Une maquette pour le récit utilisateur US-4B.4, déterminer le prochain cours selon l'heure. Un horaire quotidien du 10 avril 2026 présente trois cours. Deux cours déjà passés sont grisés, avec des boutons désactivés. Le troisième, SOEN 321 – U LECTURE, porte la mention « Upcoming class », est encadré de rouge et offre un bouton « Directions to classroom » actif. Des annotations d'accessibilité précisent que le prochain cours est signalé par du texte et un motif en plus de la couleur.",
+      ),
+      caption: t(
+        'The mockup for the next class (US-4B.4): past classes are disabled and the upcoming one carries the button. I built the directions to the next class.',
+        "La maquette du prochain cours (US-4B.4) : les cours passés sont désactivés et le prochain porte le bouton. J'ai réalisé l'itinéraire vers le prochain cours.",
+      ),
+    },
+    {
+      src: qualityGate,
+      alt: t(
+        'The SonarQube Cloud summary for ConcordiaCampusGuide on the main branch: quality gate “Passed”. Under New Code it lists 31 new issues, 0 accepted issues, 92.81% coverage on 176 new lines to cover against a required 80%, 0.0% duplications and 0 security hotspots.',
+        "Le sommaire SonarQube Cloud de ConcordiaCampusGuide pour la branche main : seuil de qualité « Passed ». Sous New Code figurent 31 nouveaux problèmes, 0 problème accepté, une couverture de 92,81 % sur 176 nouvelles lignes à couvrir pour un minimum exigé de 80 %, 0,0 % de duplication et 0 point sensible de sécurité.",
+      ),
+      caption: t(
+        'The quality gate on 8 February 2026, after the second sprint, from the project wiki. I wired JaCoCo into this report. It is one sprint’s reading of new code, not a final measurement: the wiki records between 82.6% and 92.8% from sprint to sprint.',
+        "Le seuil de qualité au 8 février 2026, après le deuxième sprint, d'après le wiki du projet. C'est moi qui ai relié JaCoCo à ce rapport. Il s'agit de la lecture d'un sprint sur le nouveau code, et non d'une mesure finale : le wiki consigne entre 82,6 % et 92,8 % d'un sprint à l'autre.",
+      ),
+    },
+    {
+      src: componentDiagram,
+      alt: t(
+        'A component diagram titled “Concordia Campus Guide – Component Diagram”. Compose screens and view models in a presentation layer call use cases in a domain layer, which call repositories in a data layer; adapters in an integration layer reach the Google Maps SDK, the Concordia Open Data API, the Google Routes and Places APIs and the fused location provider. Local storage holds a DataStore and a Room database.',
+        "Un diagramme de composants intitulé « Concordia Campus Guide – Component Diagram ». Des écrans Compose et des ViewModels, dans une couche de présentation, appellent des cas d'utilisation d'une couche domaine, qui appellent des dépôts d'une couche de données; des adaptateurs d'une couche d'intégration joignent le SDK Google Maps, l'API de données ouvertes de Concordia, les API Routes et Places de Google et le fournisseur de localisation. Le stockage local comprend un DataStore et une base Room.",
+      ),
+      caption: t(
+        'The team’s component diagram from the first sprint, from the project wiki. The layered figure in the architecture section shows the source tree as it stands on the main branch.',
+        "Le diagramme de composants de l'équipe au premier sprint, tiré du wiki du projet. Le schéma en couches de la section sur l'architecture montre l'arborescence du code telle qu'elle est sur la branche main.",
       ),
     },
   ],
@@ -266,8 +360,8 @@ export const campusGuide: Project = {
     {
       title: t('Fast unit tests over heavyweight ones', 'Des tests unitaires rapides plutôt que lourds'),
       body: t(
-        'Early coverage came from Robolectric tests that started whole activities. They were slow and ran the suite out of memory. I deleted 203 of them and replaced the approach: logic extracted into methods that plain unit tests can reach, and instrumented tests for what genuinely needs the Compose runtime.',
-        "La couverture initiale reposait sur des tests Robolectric qui démarraient des activités entières. Ils étaient lents et épuisaient la mémoire de la suite. J'en ai supprimé 203 et changé d'approche : la logique est extraite dans des méthodes à la portée de simples tests unitaires, et des tests instrumentés couvrent ce qui exige réellement l'environnement d'exécution de Compose.",
+        'Early coverage came from Robolectric tests that started whole activities. They were slow and ran the suite out of memory. I deleted 203 of them and replaced the approach: logic extracted into methods that plain unit tests can reach, and instrumented tests for what needs the Compose runtime.',
+        "La couverture initiale reposait sur des tests Robolectric qui démarraient des activités entières. Ils étaient lents et épuisaient la mémoire de la suite. J'en ai supprimé 203 et changé d'approche : la logique est extraite dans des méthodes à la portée de simples tests unitaires, et des tests instrumentés couvrent ce qui exige l'environnement d'exécution de Compose.",
       ),
     },
     {
@@ -280,8 +374,8 @@ export const campusGuide: Project = {
     {
       title: t('Measure the code that can be measured', 'Mesurer le code qui peut être mesuré'),
       body: t(
-        'Composable layout code and map rendering cannot be exercised by unit tests. I excluded those layers from the coverage calculation, so the quality gate reports on logic that unit tests can actually reach, and documented the reasoning in the repository’s testing guide.',
-        "Le code de mise en page des composables et l'affichage de la carte ne peuvent pas être exercés par des tests unitaires. J'ai exclu ces couches du calcul de couverture, pour que le seuil de qualité porte sur la logique réellement atteignable par des tests unitaires, et j'ai consigné ce raisonnement dans le guide de test du dépôt.",
+        'Composable layout code and map rendering cannot be exercised by unit tests. I excluded those layers from the coverage calculation, so the quality gate reports on logic that unit tests can reach, and documented the reasoning in the repository’s testing guide.',
+        "Le code de mise en page des composables et l'affichage de la carte ne peuvent pas être exercés par des tests unitaires. J'ai exclu ces couches du calcul de couverture, pour que le seuil de qualité porte sur la logique atteignable par des tests unitaires, et j'ai consigné ce raisonnement dans le guide de test du dépôt.",
       ),
     },
   ],
@@ -308,8 +402,8 @@ export const campusGuide: Project = {
     {
       title: t('A test suite that ran out of memory', 'Une suite de tests à court de mémoire'),
       body: t(
-        'As coverage tests accumulated, the suite began failing with out-of-memory errors and tests interfered with each other through static mocks and shared coroutine scopes. Raising the heap bought time; the real fix was removing the heavyweight tests, replacing static mocks with injectable hooks, and stopping coroutine scopes from leaking between tests.',
-        "À mesure que les tests de couverture s'accumulaient, la suite s'est mise à échouer faute de mémoire, et les tests se perturbaient entre eux par des simulacres statiques et des portées de coroutines partagées. Augmenter la mémoire allouée a fait gagner du temps; la vraie solution a consisté à retirer les tests lourds, à remplacer les simulacres statiques par des points d'injection et à empêcher les portées de coroutines de déborder d'un test à l'autre.",
+        'As coverage tests accumulated, the suite began failing with out-of-memory errors and tests interfered with each other through static mocks and shared coroutine scopes. Raising the heap bought time; what fixed it was removing the heavyweight tests, replacing static mocks with injectable hooks, and stopping coroutine scopes from leaking between tests.',
+        "À mesure que les tests de couverture s'accumulaient, la suite s'est mise à échouer faute de mémoire, et les tests se perturbaient entre eux par des simulacres statiques et des portées de coroutines partagées. Augmenter la mémoire allouée a fait gagner du temps; la solution a consisté à retirer les tests lourds, à remplacer les simulacres statiques par des points d'injection et à empêcher les portées de coroutines de déborder d'un test à l'autre.",
       ),
     },
     {

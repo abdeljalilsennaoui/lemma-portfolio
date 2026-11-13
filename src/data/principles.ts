@@ -34,8 +34,8 @@ export const principles: Principle[] = [
   {
     name: t('Honest measurement', 'Mesure honnête'),
     statement: t(
-      'A figure is either measured or it is labelled as not measured. A green run only means something if it tested what was actually built.',
-      "Un chiffre est soit mesuré, soit signalé comme non mesuré. Une exécution au vert ne veut dire quelque chose que si elle a testé ce qui a réellement été construit.",
+      'A figure is either measured or it is labelled as not measured. A green run only means something if it tested what was built.',
+      "Un chiffre est soit mesuré, soit signalé comme non mesuré. Une exécution au vert ne veut dire quelque chose que si elle a testé ce qui a été construit.",
     ),
   },
   {

@@ -1,0 +1,110 @@
+---
+import Icon from './Icon.astro';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+
+/**
+ * One dialog per page that shows any `[data-zoom]` figure at full size.
+ * It closes with the button, the Escape key, or a click outside the picture,
+ * and returns focus to the figure that opened it.
+ */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<dialog class="lightbox" data-lightbox>
+  <form method="dialog">
+    <button class="lightbox-close" aria-label={ui.caseStudy.close[locale]}>
+      <Icon name="close" />
+    </button>
+  </form>
+  <img alt="" data-lightbox-image />
+  <p class="lightbox-caption" data-lightbox-caption></p>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const image = dialog?.querySelector<HTMLImageElement>('[data-lightbox-image]');
+  const caption = dialog?.querySelector<HTMLElement>('[data-lightbox-caption]');
+
+  if (dialog && image && caption && typeof dialog.showModal === 'function') {
+    for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-zoom]')) {
+      link.addEventListener('click', (event) => {
+        // Leave modified clicks alone: open in a new tab still works.
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        const figure = link.closest('figure');
+        image.src = link.href;
+        image.alt = link.querySelector('img')?.alt ?? '';
+        caption.textContent = figure?.querySelector('figcaption')?.textContent?.trim().replace(/\s+/g, ' ') ?? '';
+        dialog.showModal();
+      });
+    }
+
+    // A click on the backdrop lands on the dialog element itself.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', () => image.removeAttribute('src'));
+  }
+</script>
+
+<style>
+  .lightbox {
+    width: min(96vw, 100rem);
+    max-width: none;
+    max-height: 94dvh;
+    margin: auto;
+    padding: 0.75rem;
+    border: 1.5px solid var(--text);
+    background: var(--panel);
+    color: var(--text);
+    overflow: auto;
+  }
+
+  .lightbox::backdrop {
+    background: rgb(8 28 22 / 0.82);
+  }
+
+  .lightbox img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .lightbox-caption {
+    max-width: 52rem;
+    margin: 0.75rem auto 0.25rem;
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .lightbox form {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: flex-end;
+    height: 0;
+  }
+
+  .lightbox-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1.5px solid var(--text);
+    background: var(--panel);
+    color: var(--text);
+  }
+
+  .lightbox-close:hover {
+    background: var(--text);
+    color: var(--bg);
+  }
+</style>

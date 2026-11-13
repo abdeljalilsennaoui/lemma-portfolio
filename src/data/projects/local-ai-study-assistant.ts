@@ -14,6 +14,14 @@ export const localAiStudyAssistant: Project = {
     "Un outil d'étude qui transforme des PDF de cours en résumés, fiches, quiz et réponses appuyées sur leurs sources, grâce à un modèle de langage qui s'exécute entièrement sur l'ordinateur de l'étudiant.",
   ),
 
+  proof: {
+    figure: t('71', '71'),
+    claim: t(
+      'test functions, model runs on your machine',
+      'fonctions de test, modèle exécuté sur votre machine',
+    ),
+  },
+
   context: {
     kind: 'solo',
     label: t('Solo project', 'Projet individuel'),
@@ -56,8 +64,8 @@ export const localAiStudyAssistant: Project = {
       "L'assistant reçoit des PDF de cours ou des notes collées et produit quatre choses : un résumé structuré, des fiches de révision, un quiz à choix multiples et des réponses aux questions sur la matière, accompagnées des passages dont elles sont tirées. Le modèle de langage est servi par Ollama sur la même machine : aucun document n'en sort. Il n'y a ni clé d'API, ni service infonuagique, ni base de données, ni suivi.",
     ),
     t(
-      'I wrote the retrieval pipeline myself instead of using a framework — extraction, cleaning, chunking, ranking — so that I can explain and test every stage.',
-      "J'ai écrit moi-même la chaîne de recherche documentaire plutôt que d'employer un cadriciel — extraction, nettoyage, découpage, classement — afin de pouvoir expliquer et tester chaque étape.",
+      'I wrote the retrieval pipeline myself (extraction, cleaning, chunking, ranking) instead of using a framework, so that I can explain and test every stage.',
+      "J'ai écrit moi-même la chaîne de recherche documentaire (extraction, nettoyage, découpage, classement) plutôt que d'employer un cadriciel, afin de pouvoir expliquer et tester chaque étape.",
     ),
   ],
 
@@ -94,8 +102,8 @@ export const localAiStudyAssistant: Project = {
   architecture: {
     body: [
       t(
-        'The Streamlit file does presentation only. The logic lives in a package of small modules — document loading, text processing, retrieval, prompts, the Ollama client and response parsing — coordinated by a service layer.',
-        "Le fichier Streamlit ne s'occupe que de la présentation. La logique réside dans un paquet de petits modules — chargement des documents, traitement du texte, recherche, invites, client Ollama et analyse des réponses — coordonnés par une couche de service.",
+        'The Streamlit file does presentation only. The logic lives in a package of small modules (document loading, text processing, retrieval, prompts, the Ollama client and response parsing), coordinated by a service layer.',
+        "Le fichier Streamlit ne s'occupe que de la présentation. La logique réside dans un paquet de petits modules (chargement des documents, traitement du texte, recherche, invites, client Ollama et analyse des réponses), coordonnés par une couche de service.",
       ),
       t(
         'For question answering, documents are split into overlapping chunks of about 1,500 characters that end on paragraph or sentence boundaries where possible. A TF-IDF matrix is built over the chunks, the question is scored against each one by cosine similarity, and only the top few are sent to the model with instructions to answer from them alone. If nothing matches, the “not found” answer is returned without calling the model at all.',
@@ -178,8 +186,8 @@ export const localAiStudyAssistant: Project = {
     {
       title: t('No framework for a four-step pipeline', 'Pas de cadriciel pour une chaîne en quatre étapes'),
       body: t(
-        'Chunk, vectorise, rank, ground: four steps. Writing them directly keeps the dependency list short and means I can account for each one. The cost is a few convenience helpers I would otherwise have had for free.',
-        "Découper, vectoriser, classer, ancrer : quatre étapes. Les écrire directement garde la liste des dépendances courte et me permet de rendre compte de chacune. Le prix : quelques utilitaires pratiques que j'aurais autrement eus gratuitement.",
+        'The pipeline has four steps: chunk, vectorise, rank and ground. Writing them directly keeps the dependency list short and means I can account for each one. The cost is a few convenience helpers I would otherwise have had for free.',
+        "La chaîne compte quatre étapes : découper, vectoriser, classer et ancrer. Les écrire directement garde la liste des dépendances courte et me permet de rendre compte de chacune. Le prix : quelques utilitaires pratiques que j'aurais autrement eus gratuitement.",
       ),
     },
     {

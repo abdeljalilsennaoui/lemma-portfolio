@@ -1,5 +1,6 @@
 ---
 import AboutSection from '../../components/AboutSection.astro';
+import CommunitySection from '../../components/CommunitySection.astro';
 import ContactSection from '../../components/ContactSection.astro';
 import EngineeringSection from '../../components/EngineeringSection.astro';
 import Hero from '../../components/Hero.astro';
@@ -16,8 +17,9 @@ const locale = localeFromParam(Astro.params.locale);
 
 <Base locale={locale} route="/">
   <Hero locale={locale} />
-  <WorkSection locale={locale} number={1} />
-  <AboutSection locale={locale} number={2} />
-  <EngineeringSection locale={locale} number={3} />
-  <ContactSection locale={locale} number={4} />
+  <WorkSection locale={locale} />
+  <CommunitySection locale={locale} />
+  <AboutSection locale={locale} />
+  <EngineeringSection locale={locale} />
+  <ContactSection locale={locale} />
 </Base>

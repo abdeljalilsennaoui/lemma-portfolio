@@ -6,18 +6,19 @@ import { ui } from '../i18n/ui';
 
 interface Props {
   locale: Locale;
-  number: number;
 }
 
-const { locale, number } = Astro.props;
+const { locale } = Astro.props;
 const strings = ui.contact;
 ---
 
 <section id="contact" class="contact board" aria-labelledby="contact-title">
   <div class="shell">
-    <h2 id="contact-title"><span class="contact-number">{number}</span>{' '}{strings.title[locale]}</h2>
-
-    <div class="contact-grid">
+    <div class="sheet">
+      <div class="margin-note">
+        <h2 id="contact-title" class="margin-key">{strings.title[locale]}</h2>
+      </div>
+      <div class="sheet-body contact-grid">
       <p class="contact-body">{strings.body[locale]}</p>
 
       <ul class="contact-links">
@@ -51,38 +52,29 @@ const strings = ui.contact;
           )
         }
       </ul>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
+  /* The page ends at the blackboard, in either theme. On the board theme
+     there is no colour change to mark the band, so a rule does that job. */
   .contact {
-    margin-top: clamp(4rem, 9vw, 7rem);
-    padding-block: clamp(3.5rem, 8vw, 6rem);
+    background-image: none;
   }
 
-  /* On the blackboard theme the band has no colour change to mark it, so a
-     rule does that job. */
-  :global(:root:not([data-theme='light'])) .contact {
-    border-top: 2px solid var(--text);
-  }
-
-  h2 {
-    font-family: var(--font-serif);
-    font-size: clamp(2.125rem, 5vw, 3.125rem);
-    font-weight: 700;
-    line-height: 1.05;
-    letter-spacing: -0.01em;
-  }
-
-  .contact-number {
-    margin-right: 0.3em;
+  :global(:root[data-theme='dark']) .contact {
+    border-top: 1.5px solid var(--text);
   }
 
   .contact-grid {
     display: grid;
     gap: 2.5rem;
-    margin-top: clamp(1.75rem, 4vw, 2.75rem);
+  }
+
+  .contact-grid > * {
+    min-width: 0;
   }
 
   .contact-body {
@@ -95,6 +87,7 @@ const strings = ui.contact;
 
   .contact-links {
     display: grid;
+    align-self: start;
     align-content: start;
     border-top: 2px solid var(--text);
     border-bottom: 2px solid var(--text);
@@ -124,10 +117,10 @@ const strings = ui.contact;
     overflow-wrap: anywhere;
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 72rem) {
     .contact-grid {
-      grid-template-columns: 7fr 5fr;
-      gap: 5rem;
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+      gap: 3.5rem;
     }
   }
 </style>

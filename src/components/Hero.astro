@@ -1,14 +1,16 @@
 ---
 import Icon from './Icon.astro';
-import Relation from './Relation.astro';
-import { brand, links } from '../config/site';
+import { brand, links, person } from '../config/site';
+import { projects } from '../data/projects';
 import type { Locale } from '../i18n';
 import { ui } from '../i18n/ui';
 import { href } from '../utils/paths';
 
 /**
- * The hero is typeset as what the brand is named after: a lemma, its
- * statement, and a proof that ends in the tombstone.
+ * The top of the sheet. First the pad's title block, which answers who this
+ * is before anything else. Then a lemma and its proof, the form the site is
+ * named after: the claim is the headline, and the proof is the list of
+ * results, one per project, each a link to the working.
  */
 interface Props {
   locale: Locale;
@@ -16,39 +18,87 @@ interface Props {
 
 const { locale } = Astro.props;
 const strings = ui.hero;
+const block = ui.titleBlock;
 ---
 
-<section class="hero board" aria-labelledby="hero-title">
+<section class="hero" aria-labelledby="hero-title">
   <div class="shell">
-    <p class="hero-label theorem-label">
-      {strings.lemma[locale]}.<sup class="hero-mark" aria-hidden="true">1</sup>
-    </p>
-    <h1 id="hero-title" class="hero-title">{brand.headline[locale]}</h1>
+    <dl class="title-block" aria-label={block.label[locale]}>
+      <div>
+        <dt>{block.name[locale]}</dt>
+        <dd>{person.name}</dd>
+      </div>
+      <div>
+        <dt>{block.program[locale]}</dt>
+        <dd>{block.programValue[locale]}, {person.school.name[locale]}</dd>
+      </div>
+      <div>
+        <dt>{block.basedIn[locale]}</dt>
+        <dd>{block.basedInValue[locale]}</dd>
+      </div>
+      <div>
+        <dt>{block.openTo[locale]}</dt>
+        <dd>{block.openToValue[locale]}</dd>
+      </div>
+    </dl>
 
-    <div class="hero-grid">
-      <div class="hero-proof">
-        <p class="hero-body">
-          <span class="theorem-body">{strings.proof[locale]}.</span>
-          {strings.proofBody[locale]}
-          <span class="hero-qed">
-            <span class="tombstone" aria-hidden="true"></span><span class="sr-only">{strings.endOfProof[locale]}</span>
-          </span>
+    <div class="sheet">
+      <p class="margin-note claim-label">
+        <span class="margin-key">{strings.lemma[locale]}.</span>
+      </p>
+      <div class="sheet-body claim-body">
+        <h1 id="hero-title" class="hero-title">{brand.headline[locale]}</h1>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <p class="margin-note proof-label">
+        <span class="margin-key">{strings.proof[locale]}.</span>
+      </p>
+      <div class="sheet-body proof-body">
+        <p class="hero-body">{strings.proofBody[locale]}</p>
+
+        <ol class="ledger" aria-label={strings.ledgerTitle[locale]}>
+          {
+            projects.map((project, index) => (
+              <li>
+                <a href={href(`/work/${project.slug}/`, locale)}>
+                  <span class="ledger-id" aria-hidden="true">
+                    L{project.order}
+                  </span>
+                  <span class="ledger-name">{project.shortTitle}</span>
+                  <span class="ledger-leader" aria-hidden="true" />
+                  <span class="ledger-result">
+                    <span class="hl" style={`--i:${index}`}>
+                      {project.proof.figure[locale]}
+                    </span>{' '}
+                    {project.proof.claim[locale]}
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+
+        <p class="hero-qed">
+          <span class="tombstone" aria-hidden="true"></span><span class="sr-only">{strings.endOfProof[locale]}</span>
         </p>
+
         <p class="hero-actions">
           <a class="button button-primary" href={href('/#work', locale)}>{strings.explore[locale]}</a>
-          <a class="button" href={links.github} rel="me noopener">
-            <Icon name="github" />
-            {strings.github[locale]}
-          </a>
+          {
+            links.email && (
+              <a class="button" href={`mailto:${links.email}`}>
+                <Icon name="mail" />
+                {strings.email[locale]}
+              </a>
+            )
+          }
         </p>
-        <p id="lemma-note" class="hero-note">
-          <sup aria-hidden="true">1</sup>
+
+        <p class="hero-note">
           <span class="sr-only">{strings.footnoteLabel[locale]}: </span>{strings.footnote[locale]}
         </p>
-      </div>
-
-      <div class="hero-visual">
-        <Relation locale={locale} />
       </div>
     </div>
   </div>
@@ -56,120 +106,217 @@ const strings = ui.hero;
 
 <style>
   .hero {
-    padding-top: clamp(2rem, 6vw, 4.5rem);
-    padding-bottom: clamp(3.5rem, 8vw, 6.5rem);
+    padding-top: clamp(1.25rem, 3vw, 2rem);
   }
 
-  .hero-label {
-    font-size: clamp(1.375rem, 2.6vw, 2rem);
-    line-height: 1;
+  /* The ruled header of an engineering pad: name, course, place, and here
+     what the reader most needs to know. The first cell is as wide as the
+     margin, so its edge lines up with the rule that runs down the page. */
+  .title-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1.5px solid var(--text);
+    background: var(--panel);
+    font-size: var(--text-sm);
+    line-height: 1.35;
   }
 
-  .hero-mark {
-    margin-left: 0.1em;
-    font-size: 0.55em;
-    font-weight: 400;
+  .title-block > div {
+    padding: 0.625rem 0.875rem 0.75rem;
+    border-top: 1px solid var(--line-strong);
+    border-left: 1px solid var(--line-strong);
+  }
+
+  .title-block > div:nth-child(-n + 2) {
+    border-top: 0;
+  }
+
+  .title-block > div:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .title-block dt {
+    font-size: var(--text-2xs);
     color: var(--muted);
   }
 
+  .title-block dd {
+    margin-top: 0.125rem;
+    font-weight: 700;
+  }
+
+  /* The claim and its proof read as one block, so the usual sheet padding is
+     closed up between them. */
+  .sheet > .claim-label,
+  .sheet > .claim-body {
+    padding-top: clamp(2rem, 5vw, 3.5rem);
+    padding-bottom: 0;
+  }
+
+  .sheet > .proof-label,
+  .sheet > .proof-body {
+    padding-top: clamp(1.25rem, 3vw, 2.25rem);
+  }
+
+  .proof-label .margin-key {
+    font-style: italic;
+    font-weight: 400;
+  }
+
   .hero-title {
-    margin-top: 0.25rem;
+    max-width: 11.5em;
     font-family: var(--font-serif);
     font-weight: 700;
-    font-size: clamp(2.75rem, 7vw, 5.875rem);
-    line-height: 1.04;
-    letter-spacing: -0.02em;
-  }
-
-  .hero-grid {
-    display: grid;
-    gap: 3.5rem;
-    margin-top: clamp(2.5rem, 6vw, 4.5rem);
-  }
-
-  .hero-grid > * {
-    min-width: 0;
+    font-size: clamp(2.625rem, 6.6vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.022em;
   }
 
   .hero-body {
-    max-width: 31rem;
+    max-width: 39rem;
     font-size: var(--text-lg);
-    line-height: 1.55;
-    color: var(--text);
+    line-height: 1.5;
   }
 
-  .hero-body .theorem-body {
-    margin-right: 0.25em;
+  /* The proof itself: one counted result per project, set like the list of
+     results at the front of a paper. Each row is a link to the working. */
+  .ledger {
+    margin-top: 1.75rem;
+    border-top: 2px solid var(--text);
+    border-bottom: 2px solid var(--text);
+    background: var(--panel);
+  }
+
+  .ledger li + li {
+    border-top: 1px solid var(--line);
+  }
+
+  .ledger a {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: 0.125rem 0.5rem;
+    padding: 0.875rem 0.875rem;
+    line-height: 1.35;
+  }
+
+  .ledger-id {
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .ledger-name {
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.22em;
+    transition: text-decoration-color 150ms ease;
+  }
+
+  .ledger a:hover .ledger-name {
+    text-decoration-color: var(--mark);
+  }
+
+  .ledger-leader {
+    display: none;
+  }
+
+  .ledger-result {
+    grid-column: 2;
+    color: var(--muted);
+  }
+
+  .ledger-result .hl {
+    color: var(--text);
   }
 
   /* As in a typeset proof, the mark sits at the end of the last line. */
   .hero-qed {
-    float: right;
-    margin-top: 0.45em;
-    margin-left: 0.75rem;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.875rem;
     line-height: 1;
   }
 
   .hero-qed .tombstone {
-    width: 0.7em;
-    height: 0.7em;
+    width: 0.8125rem;
+    height: 0.8125rem;
   }
 
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-    margin-top: 2.5rem;
-    clear: both;
+    margin-top: 1.25rem;
   }
 
-  /* A footnote, the way a paper sets one: a short rule, then small type. */
   .hero-note {
-    max-width: 26rem;
-    margin-top: 3rem;
-    padding-top: 0.75rem;
+    max-width: 34rem;
+    margin-top: 2.25rem;
     font-size: var(--text-xs);
     line-height: 1.5;
     color: var(--muted);
-    background: linear-gradient(var(--line-strong), var(--line-strong)) top left / 6rem 1px no-repeat;
   }
 
-  .hero-note sup {
-    margin-right: 0.2em;
+  @media (min-width: 40rem) {
+    .ledger a {
+      grid-template-columns: 2.25rem auto minmax(1.5rem, 1fr) auto;
+      align-items: baseline;
+      gap: 0 0.5rem;
+    }
+
+    /* Dot leaders carry the eye from a project to its result. */
+    .ledger-leader {
+      display: block;
+      align-self: end;
+      height: 0.35em;
+      margin-bottom: 0.3em;
+      background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.25px) left bottom / 0.5rem 0.35em
+        repeat-x;
+    }
+
+    .ledger-result {
+      grid-column: auto;
+      max-width: 30rem;
+      text-align: right;
+    }
   }
 
   @media (min-width: 64rem) {
-    .hero-grid {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-      gap: 5rem;
-      align-items: start;
+    .title-block {
+      grid-template-columns: var(--margin-col) 1.5fr 1fr 1fr;
+    }
+
+    .title-block > div,
+    .title-block > div:nth-child(odd) {
+      border-top: 0;
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .title-block > div:first-child {
+      border-left: 0;
+    }
+
+    .sheet > .proof-label {
+      /* Sits on the first line of the proof, not above it. */
+      padding-top: calc(clamp(1.25rem, 3vw, 2.25rem) + 0.1rem);
     }
   }
 
-  /* The statement arrives, then the matrix fills in (see Relation.astro). */
+  /* The one orchestrated moment on the page: the results are highlighted,
+     one after another, the way you would mark them with a pen. */
   @media (prefers-reduced-motion: no-preference) {
-    .hero-label,
-    .hero-title,
-    .hero-proof {
-      animation: settle 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    .ledger .hl {
+      animation: swipe 520ms cubic-bezier(0.3, 0.7, 0.2, 1) both;
+      animation-delay: calc(350ms + var(--i) * 170ms);
     }
 
-    .hero-title {
-      animation-delay: 70ms;
-    }
-
-    .hero-proof {
-      animation-delay: 180ms;
-    }
-
-    @keyframes settle {
+    @keyframes swipe {
       from {
-        opacity: 0;
-        transform: translateY(0.75rem);
+        background-size: 0% var(--hl-size);
       }
       to {
-        opacity: 1;
-        transform: none;
+        background-size: 100% var(--hl-size);
       }
     }
   }

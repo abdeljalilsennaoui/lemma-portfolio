@@ -1,0 +1,72 @@
+---
+import { Image, getImage } from 'astro:assets';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import type { Figure } from '../types/content';
+
+/**
+ * A numbered figure that can be enlarged. The picture is a link to its
+ * full-size file, so it works without JavaScript; with it, the link opens in
+ * the page's lightbox instead (see `Lightbox.astro`).
+ */
+interface Props {
+  figure: Figure;
+  number: number;
+  locale: Locale;
+  sizes: string;
+  /** Load at once and with high priority: for the figure at the top. */
+  eager?: boolean;
+}
+
+const { figure, number, locale, sizes, eager = false } = Astro.props;
+const label = `${ui.work.figure[locale]} ${number}`;
+const full = await getImage({ src: figure.src, width: Math.min(figure.src.width, 2400), format: 'webp' });
+---
+
+<figure class="zoom-figure" id={`figure-${number}`}>
+  <a class="frame" href={full.src} data-zoom>
+    <Image
+      src={figure.src}
+      alt={figure.alt[locale]}
+      widths={[480, 800, 1200, 1600]}
+      sizes={sizes}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : undefined}
+      style={`max-width: ${figure.src.width}px`}
+    />
+    <span class="sr-only">({ui.caseStudy.enlarge[locale]}: {label})</span>
+  </a>
+  <figcaption class="caption">
+    <span class="caption-label">{label}.</span>{' '}
+    <span data-caption>{figure.caption[locale]}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .zoom-figure {
+    min-width: 0;
+  }
+
+  a {
+    display: block;
+    padding: clamp(0.375rem, 1vw, 0.625rem);
+    cursor: zoom-in;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  a:hover {
+    border-color: var(--mark);
+    box-shadow: 0 0 0 1px var(--mark);
+  }
+
+  /* Never wider than the file itself: a small picture sits centred in its
+     frame instead of being stretched soft. */
+  a :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+</style>
