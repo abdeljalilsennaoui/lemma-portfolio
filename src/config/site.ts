@@ -33,6 +33,8 @@ export const person = {
   school: {
     name: t('Concordia University', 'Université Concordia'),
     url: 'https://www.concordia.ca/',
+    /** The university's own page for the Software Engineering degree (BEng). */
+    programUrl: 'https://www.concordia.ca/academics/undergraduate/software-engineering.html',
   },
   location: t('Montreal, Quebec, Canada', 'Montréal (Québec), Canada'),
 } as const;

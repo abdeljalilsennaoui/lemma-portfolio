@@ -97,7 +97,7 @@ export const skillGroups: SkillGroup[] = [
       { name: 'BDD', evidence: [qa] },
       { name: 'Requirements traceability', evidence: [qa] },
       { name: 'Defect reporting', evidence: [qa] },
-      { name: 'Design patterns', evidence: [summs] },
+      { name: 'Design patterns', evidence: [campus, summs] },
       { name: 'Dependency injection', evidence: [study] },
     ],
   },

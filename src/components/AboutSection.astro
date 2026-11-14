@@ -38,7 +38,11 @@ const strings = ui.about;
         </tr>
         <tr>
           <th scope="row">{strings.facts.studies[locale]}</th>
-          <td>{strings.facts.studiesValue[locale]}</td>
+          <td>
+            <a class="link" href={person.school.programUrl} rel="noopener">
+              {strings.facts.studiesValue[locale]}
+            </a>
+          </td>
         </tr>
         <tr>
           <th scope="row">{strings.facts.location[locale]}</th>

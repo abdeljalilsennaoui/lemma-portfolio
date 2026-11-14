@@ -43,7 +43,10 @@ export const campusGuide: Project = {
     teamSize: 11,
   },
   period: t('January to April 2026', 'Janvier à avril 2026'),
-  disciplines: ['android', 'frontend', 'testing', 'cicd'],
+  // Architecture: the layered design and the patterns recorded in the team's
+  // wiki. Back end and APIs: the app is a client of Google's Routes API and of
+  // Concordia's Open Data API; it has no server of its own.
+  disciplines: ['android', 'frontend', 'architecture', 'backend', 'testing', 'cicd'],
 
   stack: [
     'Kotlin',
@@ -267,6 +270,10 @@ export const campusGuide: Project = {
         'The shuttle is modelled as a domain class behind a data-source interface, so its schedule logic can be tested without a map on screen.',
         "La navette est modélisée par une classe du domaine placée derrière une interface de source de données : sa logique d'horaire se teste ainsi sans carte à l'écran.",
       ),
+      t(
+        'The design is written down in the team’s wiki: a layered architecture chosen so that each layer can be tested alone, a domain model, component and class diagrams, and a log of the patterns added sprint by sprint. The first sprint had none, with everything in one activity; by the fourth the log lists Repository, Strategy, Factory, Adapter, Observer, Singleton and a sealed-class state machine for the steps of asking for directions.',
+        "La conception est consignée dans le wiki de l'équipe : une architecture en couches choisie pour que chaque couche se teste isolément, un modèle du domaine, des diagrammes de composants et de classes, et un journal des patrons ajoutés sprint après sprint. Le premier sprint n'en comptait aucun, tout se trouvant dans une seule activité; au quatrième, le journal recense Dépôt, Stratégie, Fabrique, Adaptateur, Observateur, Singleton et une machine à états en classes scellées pour les étapes d'une demande d'itinéraire.",
+      ),
     ],
     diagram: {
       caption: t(
@@ -344,8 +351,8 @@ export const campusGuide: Project = {
       ),
     ],
     evidence: t(
-      '100 of the 507 non-merge commits on the main branch are mine. Indoor navigation, points of interest and the accessibility screens were built by teammates.',
-      "100 des 507 commits (hors fusions) de la branche main sont les miens. La navigation intérieure, les points d'intérêt et les écrans d'accessibilité ont été réalisés par des coéquipiers.",
+      '100 of the 507 non-merge commits on the main branch are mine. In the wiki’s log of patterns, the entries for the shuttle (pull request 198) and for the extended routes repository (pull request 197) are my pull requests; the repository interface itself, the sealed-class state machine and the shuttle schedule are teammates’. Indoor navigation, points of interest and the accessibility screens were built by teammates.',
+      "100 des 507 commits (hors fusions) de la branche main sont les miens. Dans le journal des patrons du wiki, les entrées sur la navette (demande de tirage 198) et sur l'extension du dépôt d'itinéraires (demande de tirage 197) correspondent à mes demandes de tirage; l'interface du dépôt elle-même, la machine à états en classes scellées et l'horaire de la navette sont l'œuvre de coéquipiers. La navigation intérieure, les points d'intérêt et les écrans d'accessibilité ont été réalisés par des coéquipiers.",
     ),
   },
 
@@ -369,6 +376,13 @@ export const campusGuide: Project = {
       body: t(
         'For the shuttle I first extracted a ShuttleTracker class and a stop model behind a data-source interface, and only then drew markers and the information sheet on top. The schedule logic is covered by unit tests that never touch a map.',
         "Pour la navette, j'ai d'abord extrait une classe ShuttleTracker et un modèle d'arrêt derrière une interface de source de données, puis seulement dessiné les marqueurs et la fiche d'information par-dessus. La logique d'horaire est couverte par des tests unitaires qui ne touchent jamais à une carte.",
+      ),
+    },
+    {
+      title: t('Extend the repository, keep its interface', "Étendre le dépôt sans toucher à son interface"),
+      body: t(
+        'Outdoor directions come from Google’s Routes API through a DirectionsRepository interface that a teammate had introduced; screens depend on the interface only. Routing between the two campuses needed transit mode and a different shape of JSON. I added both inside GoogleRoutesRepository and left the interface exactly as it was, so no screen had to change.',
+        "Les itinéraires extérieurs proviennent de l'API Routes de Google, par l'entremise d'une interface DirectionsRepository qu'un coéquipier avait introduite; les écrans ne dépendent que de l'interface. L'itinéraire entre les deux campus exigeait le mode transport en commun et un JSON de forme différente. J'ai ajouté les deux à l'intérieur de GoogleRoutesRepository en laissant l'interface exactement telle quelle : aucun écran n'a eu à changer.",
       ),
     },
     {
@@ -462,6 +476,22 @@ export const campusGuide: Project = {
         value: t(
           'Campus maps, outdoor and indoor directions, shuttle, schedule and points of interest',
           "Cartes des campus, itinéraires extérieurs et intérieurs, navette, horaire et points d'intérêt",
+        ),
+        source: t('Source tree on the main branch', 'Arborescence du code sur la branche main'),
+      },
+      {
+        label: t('Architecture on record', 'Architecture consignée'),
+        value: t(
+          'Layered design, three diagrams and a sprint-by-sprint log of patterns',
+          'Conception en couches, trois diagrammes et un journal des patrons, sprint par sprint',
+        ),
+        source: t('Team wiki, Architecture page', "Wiki de l'équipe, page Architecture"),
+      },
+      {
+        label: t('Outside services', 'Services externes'),
+        value: t(
+          'Google Maps SDK, Google Routes API, Concordia Open Data API',
+          'SDK Google Maps, API Routes de Google, API de données ouvertes de Concordia',
         ),
         source: t('Source tree on the main branch', 'Arborescence du code sur la branche main'),
       },
