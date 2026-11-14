@@ -1,7 +1,9 @@
 // Renders scripts/og-image.html to public/og.png (1200 × 630) with headless
-// Chrome, so the image uses the site's real typefaces. Run with `npm run og`.
+// Chrome, so the image uses the site's real typefaces. Run with `npm run og`
+// after `npm run build`: the drawing in the image is made from the relation
+// between projects and disciplines that the built home page carries.
 import { execFileSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const candidates = [
@@ -18,7 +20,19 @@ if (!chrome) {
   process.exit(1);
 }
 
+const home = fileURLToPath(new URL('../dist/index.html', import.meta.url));
+if (!existsSync(home)) {
+  console.error('dist/index.html was not found. Run `npm run build` first.');
+  process.exit(1);
+}
+const model = readFileSync(home, 'utf8').match(/<script[^>]*data-model[^>]*>(.*?)<\/script>/s)?.[1];
+if (!model) {
+  console.error('The built home page carries no figure data.');
+  process.exit(1);
+}
+
 const source = new URL('./og-image.html', import.meta.url);
+source.hash = encodeURIComponent(model);
 const output = fileURLToPath(new URL('../public/og.png', import.meta.url));
 
 execFileSync(

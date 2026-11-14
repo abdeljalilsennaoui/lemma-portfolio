@@ -1,0 +1,684 @@
+---
+import Icon from './Icon.astro';
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import type { Machine } from '../types/content';
+
+/**
+ * A state machine the reader can drive: a statechart, the actions that can
+ * be called on the current state, a log of what each call answered, and the
+ * table of every state and action pair.
+ *
+ * The chart and the table are complete without JavaScript: they state the
+ * rule. With it, the reader can try each pair and see the refusals, and the
+ * table keeps count of the pairs that have been tried.
+ */
+interface Props {
+  machine: Machine;
+  locale: Locale;
+  /** Figure number in the case study. */
+  number: number;
+}
+
+const { machine, locale, number } = Astro.props;
+const strings = ui.machine;
+
+const move = (state: string, action: string) =>
+  machine.transitions.find((transition) => transition.from === state && transition.action === action);
+const pairs = machine.states.length * machine.actions.length;
+
+// ----- Geometry of the statechart -----
+// Drawn twice: across for a wide column, and turned a quarter for a narrow
+// one, so the labels stay a readable size on a phone.
+const WIDTH = 108;
+const HEIGHT = 40;
+const round = (value: number) => Math.round(value * 10) / 10;
+
+function chart(tall: boolean) {
+  const gapX = tall ? 56 : 88;
+  const gapY = tall ? 58 : 60;
+  const pad = tall ? { left: 6, top: 34, right: 8, bottom: 10 } : { left: 36, top: 24, right: 8, bottom: 10 };
+  const cell = (at: [number, number]) => (tall ? [at[1], at[0]] : at) as [number, number];
+  const columns = Math.max(...machine.states.map((state) => cell(state.at)[0])) + 1;
+  const rows = Math.max(...machine.states.map((state) => cell(state.at)[1])) + 1;
+  const centre = new Map(
+    machine.states.map((state) => {
+      const [column, row] = cell(state.at);
+      return [
+        state.id,
+        { x: pad.left + WIDTH / 2 + column * (WIDTH + gapX), y: pad.top + HEIGHT / 2 + row * (HEIGHT + gapY) },
+      ];
+    }),
+  );
+  const head = (x: number, y: number, ux: number, uy: number) =>
+    [
+      [x, y],
+      [x - ux * 8 - uy * 4, y - uy * 8 + ux * 4],
+      [x - ux * 8 + uy * 4, y - uy * 8 - ux * 4],
+    ]
+      .map(([px, py]) => `${round(px!)},${round(py!)}`)
+      .join(' ');
+
+  const edges = machine.transitions.map((transition) => {
+    const a = centre.get(transition.from)!;
+    const b = centre.get(transition.to)!;
+    const length = Math.hypot(b.x - a.x, b.y - a.y);
+    const ux = (b.x - a.x) / length;
+    const uy = (b.y - a.y) / length;
+    // Distance from the centre of a box to its edge in this direction.
+    const reach = Math.min(
+      ux ? WIDTH / 2 / Math.abs(ux) : Infinity,
+      uy ? HEIGHT / 2 / Math.abs(uy) : Infinity,
+    );
+    const x1 = a.x + ux * (reach + 3);
+    const y1 = a.y + uy * (reach + 3);
+    const x2 = b.x - ux * (reach + 4);
+    const y2 = b.y - uy * (reach + 4);
+    const level = Math.abs(uy) < 0.01;
+    return {
+      key: `${transition.from}:${transition.action}`,
+      action: transition.action,
+      line: { x1: round(x1), y1: round(y1), x2: round(x2), y2: round(y2) },
+      head: head(x2, y2, ux, uy),
+      label: level
+        ? { x: round((x1 + x2) / 2), y: round(y1 - 9), anchor: 'middle' }
+        : { x: round((x1 + x2) / 2 + 9), y: round((y1 + y2) / 2 + (Math.abs(ux) < 0.01 ? 4 : -3)), anchor: 'start' },
+    };
+  });
+
+  const first = centre.get(machine.initial)!;
+  const start = tall
+    ? { cx: first.x, cy: 8, x2: first.x, y2: first.y - HEIGHT / 2 - 4, ux: 0, uy: 1 }
+    : { cx: 10, cy: first.y, x2: first.x - WIDTH / 2 - 4, y2: first.y, ux: 1, uy: 0 };
+
+  return {
+    tall,
+    width: pad.left + columns * WIDTH + (columns - 1) * gapX + pad.right,
+    height: pad.top + rows * HEIGHT + (rows - 1) * gapY + pad.bottom,
+    states: machine.states.map((state) => ({ ...state, ...centre.get(state.id)! })),
+    edges,
+    start: { ...start, head: head(start.x2, start.y2, start.ux, start.uy) },
+  };
+}
+
+const charts = [chart(false), chart(true)];
+const spec = {
+  initial: machine.initial,
+  actions: machine.actions,
+  transitions: machine.transitions,
+  refusal: machine.refusal,
+  pairs,
+  allowed: machine.transitions.length,
+};
+---
+
+<figure class="machine" data-machine>
+  <div class="frame machine-frame">
+    <div class="machine-chart">
+      {
+        charts.map((drawing) => (
+          <svg
+            class={drawing.tall ? 'chart-tall' : 'chart-wide'}
+            viewBox={`0 0 ${drawing.width} ${drawing.height}`}
+            style={`max-width:${drawing.width}px`}
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle class="chart-start" cx={drawing.start.cx} cy={drawing.start.cy} r="5" />
+            <line
+              class="chart-edge"
+              x1={drawing.start.cx}
+              y1={drawing.start.cy}
+              x2={drawing.start.x2}
+              y2={drawing.start.y2}
+            />
+            <polygon class="chart-head" points={drawing.start.head} />
+            {drawing.edges.map((edge) => (
+              <g class="chart-move" data-edge={edge.key}>
+                <line class="chart-edge" {...edge.line} />
+                <polygon class="chart-head" points={edge.head} />
+                <text class="chart-action" x={edge.label.x} y={edge.label.y} text-anchor={edge.label.anchor}>
+                  {edge.action}
+                </text>
+              </g>
+            ))}
+            {drawing.states.map((state) => (
+              <g class="chart-state" data-state={state.id} data-current={state.id === machine.initial ? '' : undefined}>
+                <rect x={state.x - WIDTH / 2} y={state.y - HEIGHT / 2} width={WIDTH} height={HEIGHT} />
+                {state.terminal && (
+                  <rect
+                    class="chart-terminal"
+                    x={state.x - WIDTH / 2 + 4}
+                    y={state.y - HEIGHT / 2 + 4}
+                    width={WIDTH - 8}
+                    height={HEIGHT - 8}
+                  />
+                )}
+                <text x={state.x} y={state.y + 4.5} text-anchor="middle">
+                  {state.id}
+                </text>
+              </g>
+            ))}
+          </svg>
+        ))
+      }
+    </div>
+
+    <div class="machine-panel" data-panel hidden>
+      <p class="machine-heading">{strings.heading[locale]}</p>
+      <p class="machine-now">
+        {strings.current[locale]}: <output data-now>{machine.initial}</output>
+      </p>
+      <div class="machine-actions" role="group" aria-label={strings.calls[locale]}>
+        {
+          machine.actions.map((action) => (
+            <button type="button" class="machine-call" data-action={action.id}>
+              {action.id}()
+            </button>
+          ))
+        }
+        <button type="button" class="machine-reset" data-reset data-label={machine.reset[locale]}>
+          {machine.reset[locale]}
+        </button>
+      </div>
+      <p class="machine-empty" data-empty>{strings.noAttempts[locale]}</p>
+      <ol class="machine-log" data-log aria-label={strings.attempts[locale]} aria-live="polite"></ol>
+      <p
+        class="machine-tally"
+        data-tally
+        data-tried={strings.tried[locale]}
+        data-all={strings.allTried[locale]}
+        aria-live="polite"
+      >
+      </p>
+    </div>
+
+    <table class="booktabs machine-table">
+      <caption class="sr-only">{strings.tableCaption[locale]}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{strings.state[locale]}</th>
+          {machine.actions.map((action) => <th scope="col">{action.id}()</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          machine.states.map((state) => (
+            <tr data-row={state.id}>
+              <th scope="row">{state.id}</th>
+              {machine.actions.map((action) => {
+                const allowed = move(state.id, action.id);
+                return (
+                  <td data-cell={`${state.id}:${action.id}`}>
+                    <span class="tombstone" aria-hidden="true" />
+                    {allowed ? `→ ${allowed.to}` : `409, ${strings.refused[locale]}`}
+                  </td>
+                );
+              })}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <figcaption class="caption">
+    <span class="caption-label">{ui.work.figure[locale]}&nbsp;{number}.</span>{' '}
+    {machine.caption[locale]}{' '}
+    <a class="link machine-source" href={machine.source.url} target="_blank" rel="noopener">
+      {machine.source.label}
+      <span class="sr-only">({ui.work.opensInNewTab[locale]})</span>
+      <Icon name="external" size={13} />
+    </a>
+  </figcaption>
+
+  <script type="application/json" data-spec is:inline set:html={JSON.stringify(spec)} />
+</figure>
+
+<script>
+  interface Spec {
+    initial: string;
+    actions: { id: string; target: string }[];
+    transitions: { from: string; action: string; to: string }[];
+    refusal: string;
+    pairs: number;
+    allowed: number;
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-machine]')) {
+    const spec = JSON.parse(root.querySelector('[data-spec]')?.textContent ?? 'null') as Spec | null;
+    const panel = root.querySelector<HTMLElement>('[data-panel]');
+    const now = root.querySelector<HTMLElement>('[data-now]');
+    const log = root.querySelector<HTMLOListElement>('[data-log]');
+    const empty = root.querySelector<HTMLElement>('[data-empty]');
+    const tally = root.querySelector<HTMLElement>('[data-tally]');
+    if (!spec || !panel || !now || !log || !empty || !tally) continue;
+
+    let state = spec.initial;
+    const tried = new Set<string>();
+    panel.hidden = false;
+
+    const show = () => {
+      now.textContent = state;
+      for (const node of root.querySelectorAll<SVGGElement>('[data-state]')) {
+        node.toggleAttribute('data-current', node.dataset.state === state);
+      }
+      for (const row of root.querySelectorAll<HTMLElement>('[data-row]')) {
+        row.toggleAttribute('data-current', row.dataset.row === state);
+      }
+    };
+
+    const write = (call: string, answer: string, kind: 'moved' | 'refused' | 'new') => {
+      empty.hidden = true;
+      const item = document.createElement('li');
+      item.dataset.kind = kind;
+      const code = document.createElement('code');
+      code.textContent = call;
+      const result = document.createElement('span');
+      result.textContent = answer;
+      item.append(code, result);
+      log.append(item);
+      log.scrollTop = log.scrollHeight;
+    };
+
+    // Restart an animation that is driven by an attribute.
+    const pulse = (elements: Iterable<Element>, name: string) => {
+      for (const element of elements) {
+        element.removeAttribute(name);
+        void element.getBoundingClientRect();
+        element.setAttribute(name, '');
+      }
+    };
+
+    const count = () => {
+      const refused = spec.pairs - spec.allowed;
+      tally.textContent =
+        tried.size === spec.pairs
+          ? (tally.dataset.all ?? '')
+              .replace('{total}', String(spec.pairs))
+              .replace('{allowed}', String(spec.allowed))
+              .replace('{refused}', String(refused))
+          : (tally.dataset.tried ?? '').replace('{n}', String(tried.size)).replace('{total}', String(spec.pairs));
+      tally.toggleAttribute('data-done', tried.size === spec.pairs);
+    };
+
+    panel.addEventListener('click', (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button');
+      if (!button) return;
+      if (button.hasAttribute('data-reset')) {
+        state = spec.initial;
+        write(button.dataset.label ?? '', state, 'new');
+        show();
+        return;
+      }
+      const action = spec.actions.find((candidate) => candidate.id === button.dataset.action);
+      if (!action) return;
+      const key = `${state}:${action.id}`;
+      const allowed = spec.transitions.find(
+        (transition) => transition.from === state && transition.action === action.id,
+      );
+      tried.add(key);
+      root.querySelector(`[data-cell="${key}"]`)?.setAttribute('data-tried', '');
+      if (allowed) {
+        pulse(root.querySelectorAll(`[data-edge="${key}"]`), 'data-taken');
+        write(`${state}.${action.id}()`, `→ ${allowed.to}`, 'moved');
+        state = allowed.to;
+        show();
+      } else {
+        pulse(root.querySelectorAll(`[data-state="${state}"]`), 'data-refused');
+        write(
+          `${state}.${action.id}()`,
+          `409 ${spec.refusal.replace('{target}', action.target).replace('{state}', state)}`,
+          'refused',
+        );
+      }
+      count();
+    });
+
+    show();
+    count();
+  }
+</script>
+
+<style>
+  .machine {
+    margin-top: 2rem;
+  }
+
+  .machine-frame {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(1rem, 3vw, 1.75rem);
+  }
+
+  .machine-frame > * {
+    min-width: 0;
+  }
+
+  .machine-chart svg {
+    width: 100%;
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .chart-wide {
+    display: none;
+  }
+
+  .chart-tall {
+    display: block;
+  }
+
+  @media (min-width: 40rem) {
+    .chart-wide {
+      display: block;
+    }
+
+    .chart-tall {
+      display: none;
+    }
+  }
+
+  .chart-start,
+  .chart-head {
+    fill: var(--text);
+  }
+
+  .chart-edge {
+    stroke: var(--text);
+    stroke-width: 1.25;
+  }
+
+  .chart-action {
+    fill: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+  }
+
+  .chart-state rect {
+    fill: var(--panel);
+    stroke: var(--text);
+    stroke-width: 1.5;
+    transition:
+      fill 200ms ease,
+      stroke 200ms ease;
+  }
+
+  .chart-state .chart-terminal {
+    fill: none;
+    stroke-width: 1;
+  }
+
+  .chart-state text {
+    fill: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    transition: fill 200ms ease;
+  }
+
+  .chart-state[data-current] rect:first-child {
+    fill: var(--mark);
+    stroke: var(--mark);
+  }
+
+  .chart-state[data-current] .chart-terminal {
+    stroke: var(--mark-ink);
+  }
+
+  .chart-state[data-current] text {
+    fill: var(--mark-ink);
+  }
+
+  .chart-move[data-taken] .chart-edge {
+    animation: taken 900ms ease both;
+  }
+
+  .chart-move[data-taken] .chart-head {
+    animation: taken-head 900ms ease both;
+  }
+
+  @keyframes taken {
+    0%,
+    60% {
+      stroke: var(--mark);
+      stroke-width: 3;
+    }
+  }
+
+  @keyframes taken-head {
+    0%,
+    60% {
+      fill: var(--mark);
+    }
+  }
+
+  /* A refused call: the state does not move, and says so. */
+  @media (prefers-reduced-motion: no-preference) {
+    .chart-state[data-refused] {
+      transform-box: fill-box;
+      animation: refuse 380ms ease both;
+    }
+
+    @keyframes refuse {
+      20% {
+        transform: translateX(-5px);
+      }
+      45% {
+        transform: translateX(5px);
+      }
+      70% {
+        transform: translateX(-3px);
+      }
+      90% {
+        transform: translateX(2px);
+      }
+    }
+  }
+
+  .machine-panel {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line-strong);
+    font-size: var(--text-sm);
+  }
+
+  .machine-panel[hidden] {
+    display: none;
+  }
+
+  .machine-heading {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  .machine-now {
+    color: var(--muted);
+  }
+
+  .machine-now output {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--text);
+  }
+
+  .machine-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .machine-call {
+    min-height: 2.75rem;
+    padding: 0.375rem 0.875rem;
+    border: 1.5px solid var(--text);
+    background: var(--panel);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text);
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .machine-call:hover {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .machine-reset {
+    min-height: 2.75rem;
+    margin-left: 0.5rem;
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.22em;
+  }
+
+  .machine-reset:hover {
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+  }
+
+  .machine-empty {
+    color: var(--muted);
+  }
+
+  .machine-log {
+    display: grid;
+    gap: 0.125rem;
+    max-height: 10.5rem;
+    overflow-y: auto;
+    counter-reset: attempt;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+  }
+
+  .machine-log:empty {
+    display: none;
+  }
+
+  .machine-log :global(li) {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, auto) minmax(0, 1fr);
+    gap: 0 0.75rem;
+    color: var(--muted);
+  }
+
+  .machine-log :global(li)::before {
+    counter-increment: attempt;
+    content: counter(attempt);
+    font-style: italic;
+    text-align: right;
+  }
+
+  .machine-log :global(code) {
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+
+  .machine-log :global([data-kind='moved'] span) {
+    color: var(--text);
+  }
+
+  .machine-log :global([data-kind='new'] code) {
+    font-family: var(--font-sans);
+    font-size: 1em;
+    font-style: italic;
+  }
+
+  .machine-tally {
+    color: var(--muted);
+  }
+
+  .machine-tally[data-done] {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .machine-table {
+    background: var(--panel);
+    font-size: var(--text-xs);
+  }
+
+  .machine-table :is(th, td) {
+    padding-left: 0.625rem;
+  }
+
+  .machine-table thead th,
+  .machine-table tbody th {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    font-weight: 400;
+  }
+
+  .machine-table thead th:first-child {
+    font-family: var(--font-sans);
+    font-size: 1em;
+    font-weight: 700;
+  }
+
+  .machine-table tbody th {
+    color: var(--text);
+  }
+
+  .machine-table td {
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* A pair the reader has tried carries the mark that closes a proof. */
+  .machine-table .tombstone {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    margin-right: 0.375rem;
+    visibility: hidden;
+  }
+
+  .machine-table td[data-tried] {
+    color: var(--text);
+  }
+
+  .machine-table td[data-tried] .tombstone {
+    visibility: visible;
+  }
+
+  .machine-table tr[data-current] th {
+    text-decoration: underline;
+    text-decoration-color: var(--mark);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  .machine-source {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    overflow-wrap: anywhere;
+  }
+
+  .machine-source :global(svg) {
+    display: inline;
+    vertical-align: -0.1em;
+  }
+
+  @media (max-width: 39.99rem) {
+    .machine-table {
+      display: block;
+      overflow-x: auto;
+    }
+
+    /* On a phone each attempt takes two lines: the call, then its answer. */
+    .machine-log :global(li) {
+      grid-template-columns: 1.75rem minmax(0, 1fr);
+    }
+
+    .machine-log :global(li span) {
+      grid-column: 2;
+    }
+  }
+</style>

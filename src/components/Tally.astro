@@ -1,0 +1,201 @@
+---
+import { languageTag, type Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import type { Tally } from '../types/content';
+
+/**
+ * A count broken into its parts, drawn as a stack of planes whose widths are
+ * the counts, widest at the base. It is a table underneath, so every number
+ * is read out with its label.
+ */
+interface Props {
+  tally: Tally;
+  locale: Locale;
+  number: number;
+}
+
+const { tally, locale, number } = Astro.props;
+const total = tally.rows.reduce((sum, row) => sum + row.count, 0);
+const largest = Math.max(...tally.rows.map((row) => row.count));
+const format = new Intl.NumberFormat(languageTag[locale]);
+const share = new Intl.NumberFormat(languageTag[locale], { style: 'percent', maximumFractionDigits: 0 });
+---
+
+<figure class="tally">
+  <div class="frame tally-frame">
+    <table>
+      <thead class="sr-only">
+        <tr>
+          <th scope="col">{ui.tally.kind[locale]}</th>
+          <th scope="col">{ui.tally.count[locale]}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          tally.rows.map((row) => (
+            <tr style={`--share:${(row.count / largest).toFixed(4)}`}>
+              <th scope="row">
+                <span class="tally-label">{row.label[locale]}</span>
+                {row.detail && <span class="tally-detail">{row.detail[locale]}</span>}
+              </th>
+              <td>
+                <span class="tally-plane" aria-hidden="true" />
+                <span class="tally-count">{format.format(row.count)}</span>
+                <span class="tally-share">{share.format(row.count / total)}</span>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row">{ui.tally.total[locale]}</th>
+          <td>
+            <span class="hl">{format.format(total)}</span> {tally.unit[locale]}
+            <span class="tombstone" aria-hidden="true"></span>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <figcaption class="caption">
+    <span class="caption-label">{ui.work.figure[locale]}&nbsp;{number}.</span>{' '}
+    {tally.caption[locale]}
+  </figcaption>
+</figure>
+
+<style>
+  .tally {
+    margin-top: 2rem;
+  }
+
+  .tally-frame {
+    padding: clamp(1rem, 3vw, 1.75rem);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  /* The stack is drawn base first in the markup and base last on the page. */
+  tbody {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.625rem;
+  }
+
+  tr {
+    display: grid;
+    grid-template-columns: 9.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0 1.25rem;
+  }
+
+  th {
+    display: grid;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.3;
+  }
+
+  .tally-label {
+    color: var(--text);
+  }
+
+  .tally-detail {
+    font-size: var(--text-2xs);
+    color: var(--muted);
+  }
+
+  td {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-width: 0;
+  }
+
+  /* One plane: as wide as its count, leaning the way the other figures do. */
+  .tally-plane {
+    flex: 0 1 calc(var(--share) * (100% - 7.5rem));
+    min-width: 0.5rem;
+    height: 1.625rem;
+    margin-left: 0.625rem;
+    border: 1px solid var(--mark);
+    background: color-mix(in srgb, var(--mark) 16%, var(--bg));
+    box-shadow: 0 4px 0 var(--mark);
+    transform: skewX(-20deg);
+    transition: background-color 200ms ease;
+  }
+
+  tr:hover .tally-plane {
+    background: color-mix(in srgb, var(--mark) 55%, var(--bg));
+  }
+
+  .tally-count {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .tally-share {
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  tfoot tr {
+    margin-top: 1.125rem;
+    padding-top: 0.875rem;
+    border-top: 1.5px solid var(--text);
+  }
+
+  tfoot th {
+    color: var(--muted);
+  }
+
+  tfoot td {
+    display: block;
+    color: var(--muted);
+  }
+
+  tfoot .hl {
+    color: var(--text);
+  }
+
+  tfoot .tombstone {
+    margin-left: 0.5rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tally-plane {
+      transform-origin: left center;
+      animation: tally-grow 700ms cubic-bezier(0.3, 0.7, 0.2, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+
+    @keyframes tally-grow {
+      from {
+        transform: skewX(-20deg) scaleX(0.05);
+      }
+    }
+  }
+
+  @media (max-width: 39.99rem) {
+    tr {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.25rem;
+    }
+
+    th {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 0.625rem;
+    }
+
+    .tally-plane {
+      height: 1.25rem;
+    }
+  }
+</style>

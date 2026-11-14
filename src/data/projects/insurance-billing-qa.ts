@@ -364,6 +364,24 @@ export const insuranceBillingQa: Project = {
     },
   ],
 
+  // The same six counts as the first paragraph of `testing`; they add up to
+  // the 600 quoted from the repository.
+  tally: {
+    caption: t(
+      'The 600 automated tests by kind, each plane as wide as its count. 596 run on every pull request; the four that reset the database run alone.',
+      'Les 600 tests automatisés par type, chaque plan étant aussi large que son nombre. 596 s’exécutent à chaque demande de tirage; les quatre qui réinitialisent la base de données s’exécutent seuls.',
+    ),
+    unit: t('automated tests', 'tests automatisés'),
+    rows: [
+      { label: t('Unit', 'Unitaires'), count: 176, detail: t('Domain and services', 'Domaine et services') },
+      { label: t('Integration', 'Intégration'), count: 160, detail: t('Spring context', 'Contexte Spring') },
+      { label: t('API', 'API'), count: 129, detail: t('REST Assured, TestNG', 'REST Assured, TestNG') },
+      { label: t('UI', 'Interface'), count: 67, detail: t('Selenium, page objects', 'Selenium, objets de page') },
+      { label: t('BDD', 'BDD'), count: 53, detail: t('Cucumber scenarios', 'Scénarios Cucumber') },
+      { label: t('Smoke', 'Fumée'), count: 15, detail: t('Cypress', 'Cypress') },
+    ],
+  },
+
   testing: [
     t(
       '600 automated tests: 176 domain and service unit tests, 160 Spring integration tests, 129 API tests, 67 UI tests, 53 BDD scenarios and 15 Cypress smoke tests. 596 of them run on every pull request; the four that are excluded reset the database and so must run alone.',

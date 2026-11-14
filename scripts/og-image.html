@@ -1,7 +1,11 @@
 <!doctype html>
 <!--
   Source for public/og.png, the image shown when the site is shared.
-  Regenerate with `npm run og` (needs Google Chrome installed).
+  Regenerate with `npm run og` (needs Google Chrome installed, and a build).
+
+  The drawing on the right is the figure of the home page. Its relation
+  between projects and disciplines is not written here: generate-og.mjs
+  reads it from the built site and passes it in the address, after the #.
 -->
 <html lang="en">
   <head>
@@ -59,8 +63,69 @@
       h1 {
         margin-top: 10px;
         margin-left: -4px;
-        font: 700 96px/1.04 'Charis SIL', serif;
+        font: 700 56px/1.08 'Charis SIL', serif;
         letter-spacing: -0.02em;
+      }
+      .claim {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+      }
+      svg {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 1200px;
+        height: 630px;
+      }
+      .ground {
+        fill: #17483a;
+        stroke: #5a8474;
+        stroke-width: 1.25;
+      }
+      .rule {
+        fill: none;
+        stroke: #2b5647;
+      }
+      .edge {
+        fill: #2b5647;
+        stroke: #5a8474;
+      }
+      .top {
+        fill: #f4cf45;
+      }
+      .front {
+        fill: #a88d2c;
+      }
+      .side {
+        fill: #77641f;
+      }
+      .wire {
+        stroke: #5a8474;
+        stroke-width: 1;
+      }
+      .proof {
+        stroke: #f4f2e8;
+        stroke-width: 1.5;
+        stroke-dasharray: 9 5;
+        fill: none;
+      }
+      .box {
+        fill: #0b2f25;
+        stroke: #f4f2e8;
+        stroke-width: 1.5;
+      }
+      .root {
+        fill: #f4f2e8;
+      }
+      text {
+        font: 700 19px 'Charis SIL', serif;
+        fill: #f4f2e8;
+        text-anchor: middle;
+      }
+      .root-text {
+        fill: #10231c;
+        font-size: 22px;
       }
       .foot {
         display: flex;
@@ -84,7 +149,8 @@
   </head>
   <body>
     <div class="wordmark"><div>lemma<i></i></div><span>BY AJS</span></div>
-    <div>
+    <svg id="figure" viewBox="0 0 1200 630"></svg>
+    <div class="claim">
       <div class="label">Lemma.</div>
       <h1>I build software,<br />then I try to break it.</h1>
     </div>
@@ -92,5 +158,55 @@
       <div><b>Abdeljalil Sennaoui</b>Software Engineering, Concordia University, Montreal</div>
       <div class="qed"></div>
     </div>
+    <script>
+      // The same projection as src/lib/axo.ts, at one fixed view.
+      const model = JSON.parse(decodeURIComponent(location.hash.slice(1)) || '{"lemmas":[],"disciplines":[]}');
+      const svg = document.getElementById('figure');
+      const COLUMN = 150, ROW = 46, PAIR = 24, BLOCK = 16, SLAB = 9;
+      const yaw = (-14 * Math.PI) / 180, tilt = (58 * Math.PI) / 180, zoom = 0.8, ox = 640, oy = 356;
+      const at = (x, y, z = 0) => [
+        ox + zoom * (x * Math.cos(yaw) - y * Math.sin(yaw)),
+        oy + zoom * ((x * Math.sin(yaw) + y * Math.cos(yaw)) * Math.cos(tilt) - z * Math.sin(tilt)),
+      ];
+      const add = (name, cls, attrs) => {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', name);
+        el.setAttribute('class', cls);
+        for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+        svg.append(el);
+        return el;
+      };
+      const quad = (...points) => ({ d: 'M' + points.map((p) => p.map((n) => n.toFixed(1)).join(' ')).join('L') + 'Z' });
+      const width = model.lemmas.length * COLUMN, depth = model.disciplines.length * ROW;
+
+      add('path', 'edge', quad(at(0, depth), at(width, depth), at(width, depth, -SLAB), at(0, depth, -SLAB)));
+      add('path', 'edge', quad(at(0, 0), at(0, depth), at(0, depth, -SLAB), at(0, 0, -SLAB)));
+      add('path', 'ground', quad(at(0, 0), at(width, 0), at(width, depth), at(0, depth)));
+      for (let r = 1; r < model.disciplines.length; r++) add('path', 'rule', quad(at(0, r * ROW), at(width, r * ROW)));
+      for (let c = 1; c < model.lemmas.length; c++) add('path', 'rule', quad(at(c * COLUMN, 0), at(c * COLUMN, depth)));
+
+      const root = at(width / 2, -150, 250);
+      const boxes = [];
+      model.lemmas.forEach((lemma, c) => {
+        const x = c * COLUMN + COLUMN / 2;
+        const anchor = at(x, -24, 110);
+        model.disciplines.forEach((discipline, r) => {
+          if (!lemma.disciplines.includes(discipline)) return;
+          const y = r * ROW + ROW / 2, h = PAIR / 2;
+          const top = at(x, y, BLOCK);
+          add('line', 'wire', { x1: anchor[0], y1: anchor[1], x2: top[0], y2: top[1] });
+          add('path', 'side', quad(at(x - h, y - h, BLOCK), at(x - h, y + h, BLOCK), at(x - h, y + h), at(x - h, y - h)));
+          add('path', 'front', quad(at(x - h, y + h, BLOCK), at(x + h, y + h, BLOCK), at(x + h, y + h), at(x - h, y + h)));
+          add('path', 'top', quad(at(x - h, y - h, BLOCK), at(x + h, y - h, BLOCK), at(x + h, y + h, BLOCK), at(x - h, y + h, BLOCK)));
+        });
+        boxes.push([lemma.id, anchor]);
+      });
+      for (const [id, [x, y]] of boxes) {
+        add('path', 'proof', { d: `M${x} ${y - 40}L${root[0] + (x - root[0]) * 0.12} ${root[1] + 4}` });
+        add('rect', 'box', { x: x - 34, y: y - 40, width: 68, height: 40 });
+        add('text', '', { x, y: y - 13 }).textContent = id;
+      }
+      add('rect', 'root', { x: root[0] - 62, y: root[1] - 40, width: 124, height: 42 });
+      add('text', 'root-text', { x: root[0], y: root[1] - 12 }).textContent = 'lemma';
+    </script>
   </body>
 </html>

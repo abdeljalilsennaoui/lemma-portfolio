@@ -1,73 +1,219 @@
 ---
 import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
 import type { Diagram } from '../types/content';
 
 /**
- * A layered architecture diagram built from project data. It is plain HTML —
- * a list of layers, each a list of parts — so it stays readable at any width
- * and is available to screen readers. It is always drawn on a board panel.
+ * A layered architecture diagram built from project data, drawn the way the
+ * figure on the home page is: each layer is a plane seen at an angle, with
+ * its parts standing on it, and an arrow down to the layer it depends on.
+ *
+ * It is plain HTML, a list of layers that are each a list of parts, so it
+ * stays readable at any width and is available to screen readers. In a case
+ * study the reader can trace the path from the top layer to the bottom one.
  */
 interface Props {
   diagram: Diagram;
   locale: Locale;
-  /** Smaller text and no details, for use as a card visual. */
+  /** Smaller text, no details and no trace: for use as a card visual. */
   compact?: boolean;
 }
 
 const { diagram, locale, compact = false } = Astro.props;
+const last = diagram.layers.length - 1;
 ---
 
-<ol class:list={['layers', { compact }]}>
+<div class:list={['stack', { compact }]} data-stack data-step-label={ui.diagram.step[locale]}>
   {
-    diagram.layers.map((layer) => (
-      <li class="layer">
-        <p class="layer-label">{layer.label[locale]}</p>
-        <ul class="layer-nodes">
-          {layer.nodes.map((node) => (
-            <li class="node">
-              <span class="node-name">{node.name}</span>
-              {!compact && node.detail && <span class="node-detail">{node.detail[locale]}</span>}
-            </li>
-          ))}
-        </ul>
-      </li>
-    ))
+    !compact && (
+      <p class="stack-bar">
+        <button type="button" class="stack-trace" data-trace hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M7 4.5v15l12-7.5z" />
+          </svg>
+          {ui.diagram.trace[locale]}
+        </button>
+        <span class="stack-status" data-status aria-live="polite" />
+      </p>
+    )
   }
-</ol>
+  <ol class="layers">
+    {
+      diagram.layers.map((layer, index) => (
+        <li class="layer" data-layer>
+          <div class="plane">
+            <p class="layer-label">{layer.label[locale]}</p>
+            <ul class="layer-parts">
+              {layer.nodes.map((node) => (
+                <li class="part">
+                  <span class="part-name">{node.name}</span>
+                  {!compact && node.detail && <span class="part-detail">{node.detail[locale]}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+          {index < last && <span class="descent" aria-hidden="true" />}
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<script>
+  // Tracing the path: the layers are marked one after another, top to
+  // bottom, and a square travels down each arrow in turn.
+  const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+  for (const stack of document.querySelectorAll<HTMLElement>('[data-stack]')) {
+    const button = stack.querySelector<HTMLButtonElement>('[data-trace]');
+    const status = stack.querySelector<HTMLElement>('[data-status]');
+    const layers = [...stack.querySelectorAll<HTMLElement>('[data-layer]')];
+    if (!button || !status || layers.length === 0) continue;
+    button.hidden = false;
+
+    button.addEventListener('click', async () => {
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      button.disabled = true;
+      stack.setAttribute('data-tracing', '');
+      for (const [index, layer] of layers.entries()) {
+        layer.setAttribute('data-on', '');
+        const label = layer.querySelector('.layer-label')?.textContent ?? '';
+        const step = (stack.dataset.stepLabel ?? '')
+          .replace('{n}', String(index + 1))
+          .replace('{total}', String(layers.length));
+        status.textContent = `${step}: ${label}`;
+        await wait(still ? 900 : 650);
+        if (index < layers.length - 1) {
+          layer.setAttribute('data-descending', '');
+          await wait(still ? 0 : 520);
+          layer.removeAttribute('data-descending');
+        }
+      }
+      await wait(1400);
+      for (const layer of layers) layer.removeAttribute('data-on');
+      stack.removeAttribute('data-tracing');
+      status.textContent = '';
+      button.disabled = false;
+    });
+  }
+</script>
 
 <style>
+  /* The lean is a shear, so a deeper plane reaches further to the left at
+     its near edge. `--reach` is the room kept for that on either side. */
+  .stack {
+    --lean: -20deg;
+    --reach: clamp(2.5rem, 7vw, 4.75rem);
+    --gap: 2.25rem;
+  }
+
+  .stack-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    min-height: 2.75rem;
+    margin-bottom: 1.25rem;
+    font-size: var(--text-sm);
+  }
+
+  .stack-trace {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0.375rem 0.875rem 0.375rem 0.75rem;
+    border: 1.5px solid var(--text);
+    background: var(--panel);
+    color: var(--text);
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      opacity 150ms ease;
+  }
+
+  .stack-trace[hidden] {
+    display: none;
+  }
+
+  .stack-trace:hover:not(:disabled) {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .stack-trace:disabled {
+    opacity: 0.45;
+  }
+
+  .stack-status {
+    color: var(--muted);
+  }
+
   .layers {
     display: grid;
-    gap: 2rem;
+    padding-left: var(--reach);
   }
 
   .layer {
     position: relative;
     display: grid;
+  }
+
+  /* A layer is a plane seen at an angle. The plane itself is drawn behind
+     the text, which stays upright. */
+  .plane {
+    position: relative;
+    z-index: 0;
+    display: grid;
     gap: 0.5rem;
+    padding: 0.875rem calc(var(--reach) + 0.5rem) 1.125rem 1.25rem;
   }
 
-  /* Connector to the next layer: a chalk stroke ending in an arrowhead. */
-  .layer:not(:last-child)::after {
+  .plane::before {
     content: '';
     position: absolute;
-    left: 1.25rem;
-    bottom: -1.5rem;
-    width: 1px;
-    height: 1.125rem;
-    background: var(--line-strong);
+    inset: 0;
+    z-index: -1;
+    border: 1px solid var(--line-strong);
+    background: color-mix(in srgb, var(--mark) 4%, var(--bg));
+    box-shadow: 0 4px 0 var(--line);
+    transform: skewX(var(--lean));
+    transform-origin: top left;
+    transition:
+      border-color 250ms ease,
+      background-color 250ms ease,
+      box-shadow 250ms ease;
   }
 
-  .layer:not(:last-child)::before {
-    content: '';
-    position: absolute;
-    left: calc(1.25rem - 3px);
-    bottom: -1.5rem;
-    width: 7px;
-    height: 7px;
-    border-right: 1px solid var(--line-strong);
-    border-bottom: 1px solid var(--line-strong);
-    transform: rotate(45deg);
+  .layer[data-on] .plane::before {
+    border-color: var(--mark);
+    background: color-mix(in srgb, var(--mark) 13%, var(--bg));
+    box-shadow: 0 4px 0 var(--mark);
+  }
+
+  .stack[data-tracing] .layer:not([data-on]) .plane {
+    opacity: 0.5;
+  }
+
+  .plane {
+    transition:
+      opacity 250ms ease,
+      transform 250ms cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+
+  /* A plane lifts off the stack when it is pointed at or being traced. */
+  .stack:not(.compact) .layer:hover .plane,
+  .layer[data-on] .plane {
+    transform: translateY(-4px);
+  }
+
+  .stack:not(.compact) .layer:hover .plane::before,
+  .layer[data-on] .plane::before {
+    box-shadow: 0 8px 0 var(--line);
+  }
+
+  .layer[data-on] .plane::before {
+    box-shadow: 0 8px 0 var(--mark);
   }
 
   .layer-label {
@@ -77,56 +223,123 @@ const { diagram, locale, compact = false } = Astro.props;
     color: var(--muted);
   }
 
-  .layer-nodes {
+  .layer[data-on] .layer-label {
+    color: var(--text);
+  }
+
+  .layer-parts {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.5rem 0.625rem;
   }
 
-  .node {
+  .part {
     display: grid;
     gap: 0.125rem;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--line-strong);
+    padding: 0.4375rem 0.6875rem 0.5rem;
+    border: 1px solid var(--text);
+    background: var(--panel);
+    box-shadow: 2px 2px 0 var(--line);
   }
 
-  .node-name {
+  .part-name {
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--text);
   }
 
-  .node-detail {
+  .part-detail {
     font-size: var(--text-2xs);
     color: var(--muted);
   }
 
+  /* The arrow down to the next layer, and the square that travels it. */
+  .descent {
+    position: relative;
+    display: block;
+    width: 1px;
+    height: var(--gap);
+    margin-left: 1.25rem;
+    background: var(--line-strong);
+  }
+
+  .descent::after {
+    content: '';
+    position: absolute;
+    left: -3px;
+    bottom: 1px;
+    width: 7px;
+    height: 7px;
+    border-right: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line-strong);
+    transform: rotate(45deg);
+  }
+
+  .descent::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 0;
+    width: 9px;
+    height: 9px;
+    background: var(--mark);
+    opacity: 0;
+  }
+
+  .layer[data-on] .descent {
+    background: var(--mark);
+  }
+
+  .layer[data-on] .descent::after {
+    border-color: var(--mark);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .layer[data-descending] .descent::before {
+      animation: descend 520ms cubic-bezier(0.4, 0, 0.6, 1) both;
+    }
+
+    @keyframes descend {
+      from {
+        opacity: 1;
+        transform: translateY(-4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(calc(var(--gap) - 6px));
+      }
+    }
+  }
+
   .compact {
-    gap: 1.625rem;
+    --gap: 1.5rem;
   }
 
-  .compact .layer {
-    gap: 0.375rem;
-  }
-
-  .compact .layer:not(:last-child)::after {
-    bottom: -1.25rem;
-    height: 0.875rem;
-  }
-
-  .compact .layer:not(:last-child)::before {
-    bottom: -1.25rem;
+  .compact .plane {
+    gap: 0.3125rem;
+    padding-block: 0.5rem 0.75rem;
   }
 
   .compact .layer-label {
     font-size: var(--text-sm);
   }
 
-  .compact .node-name {
+  .compact .part-name {
     font-size: var(--text-2xs);
   }
 
-  .compact .node {
-    padding: 0.3125rem 0.5rem;
+  .compact .part {
+    padding: 0.25rem 0.5rem 0.3125rem;
+  }
+
+  @media (max-width: 39.99rem) {
+    .stack {
+      --lean: -7deg;
+      --reach: 2rem;
+    }
+
+    .plane {
+      padding-left: 0.875rem;
+    }
   }
 </style>

@@ -9,15 +9,21 @@ interface Props {
   title: string;
   /** One sentence under the title. */
   intro?: string;
+  /**
+   * What the section is in the terms of a paper (a definition, a remark),
+   * as the figure at the top of the page labels it.
+   */
+  kind?: string;
 }
 
-const { id, title, intro } = Astro.props;
+const { id, title, intro, kind } = Astro.props;
 ---
 
 <section id={id} class="shell" aria-labelledby={`${id}-title`}>
   <div class="sheet sheet-rule">
     <div class="margin-note">
       <div class="margin-stick">
+        {kind && <p class="kind">{kind}.</p>}
         <h2 id={`${id}-title`} class="margin-key">{title}</h2>
         {intro && <p class="intro">{intro}</p>}
       </div>
@@ -29,6 +35,10 @@ const { id, title, intro } = Astro.props;
 </section>
 
 <style>
+  .kind {
+    font-style: italic;
+  }
+
   .intro {
     margin-top: 0.625rem;
     max-width: 30rem;

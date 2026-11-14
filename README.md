@@ -15,12 +15,15 @@ proof.
 
 ## What is on the site
 
-- **Home** — a title block that says who this is, a claim and its proof (one counted result per
-  project), four selected projects with their figures, my role at GDG on Campus Concordia, an
-  about section, engineering principles and skills with evidence, and contact details.
+- **Home** — a title block that says who this is, a claim and its proof, four selected projects
+  with their figures, my role at GDG on Campus Concordia, an about section, engineering
+  principles and skills with evidence, and contact details. The proof is a figure of the whole
+  site, described below.
 - **Case studies** — one page per project: overview, a gallery of figures that open at full
   size, problem, goals, technologies, architecture, my responsibilities, engineering decisions,
-  testing, challenges, results, and links.
+  testing, challenges, results, and links. The contents list is grouped by the movements of a
+  proof (statement, construction, verification, conclusion), and the page ends with the other
+  projects ordered by the disciplines they share with this one.
 - **English and French**, with a language switch that keeps you on the same page.
 - **Two themes**, the pad and the board. The site starts in whichever matches the reader's
   system setting and remembers a choice made with the switch.
@@ -39,10 +42,61 @@ The site is laid out as the two surfaces an engineering student does mathematics
   answer to a worked problem is.
 - **The tombstone** (∎) still closes a proof and stands in for the full stop of the wordmark.
 
-The only motion that is not a response to the reader is the highlighter crossing the four
-results when the home page loads. Following a link to another page cross-fades, and a project's
-picture travels from the home page to the top of its case study, in browsers that support
-cross-document view transitions. Both are switched off for readers who ask for reduced motion.
+### The figure
+
+The proof on the home page is one drawing of the site as a system (`src/components/atlas/`,
+`src/lib/atlas.ts`). It is an axonometric projection, the kind an engineering drawing uses:
+
+- The ground is a slab, the product *P* × *D* of projects and disciplines, ruled into cells,
+  with a block standing on it for each pair of the relation *R* ⊆ *P* × *D*.
+- Each project stands over its column as a box with its name above the rule and its counted
+  result below, tied by a line to each of its squares.
+- The parts of the site sit one level higher, labelled as a paper would label them (definition,
+  axioms, corollary, remark), and each project points up at the claim it supports.
+
+Selecting a part re-sorts the ground so that what is related comes to the near corner, moves
+the view there, and opens a panel that says what the part holds, links to it, and names the
+file of this repository its content is kept in. The selection is in the address (`#L3`), so it
+can be linked to and the back button undoes it. What is pointed at or selected stands taller,
+and the figure leans a little toward the pointer. The drawing turns when dragged, and seen from
+directly above (the Plan view) it is the adjacency matrix of the same relation. Arrow keys
+move from part to part along the drawing.
+
+Below 1024 pixels the same markup is a list of results followed by the matrix, and the matrix
+can be chosen from: a row selects that project, a column heading selects that discipline, and
+the same panel opens under it. Without JavaScript the list and the matrix are simply shown.
+Selecting a project, here or in the drawing, also narrows the skills table further down the
+page to the skills seen in that project; the table has the same control of its own. Nothing is drawn with WebGL or a library: the boxes are HTML, the lines are SVG,
+and the projection is about a hundred lines in `src/lib/axo.ts`.
+
+Each case study has one figure of its own, built from numbers and rules that are in the
+project's repository:
+
+- **A count as a stack** (Insurance QA). The 600 tests by kind, each plane as wide as its
+  count. Add a `tally` to a project to draw one.
+- **The versions of a fix** (CampusGuide). Three versions of loading a map overlay, with where
+  each step ran and what came of it. Add `attempts` to a challenge.
+- **A chunking rule to stall** (Study Assistant). Two sliders set chunk size and overlap; a
+  setting the project refuses is refused in the project's words. Add a `chunker` to a challenge.
+
+Two more are interactive:
+
+- **Architecture.** Each layer is a plane with its parts standing on it. "Trace the path"
+  marks the layers from top to bottom.
+- **A state machine to try to break** (SUMMS). The booking state machine as a model: a
+  statechart, the three actions, a log of what each call answered, and the table of all twelve
+  state and action pairs, which marks the ones the reader has tried. The states, the legal
+  moves and the text of the refusal are those of the project's source, which the figure links
+  to. To give another decision a model, add a `machine` to it in the project's data file.
+
+### Motion
+
+The only motion that is not a response to the reader is on the home page: the figure starts
+flat, as the matrix, and stands up once; the highlighter crosses the four results; and the
+lines to the claim carry a slow current. Following a link to another page cross-fades, and a
+project's picture travels from the home page to the top of its case study, in browsers that
+support cross-document view transitions. All of it is switched off for readers who ask for
+reduced motion, and the figure is then simply drawn in place.
 
 Other things the reader may not notice, by design:
 
@@ -71,10 +125,11 @@ separately, what I built.
 | Images | `astro:assets`, responsive WebP |
 | Hosting | GitHub Pages, deployed by GitHub Actions |
 
-There is no client-side framework. The JavaScript on a page is a few small inline scripts: the
-theme switch, the mobile menu, the current-section marker, the matrix and graph interactions,
-and the figure lightbox. There are no analytics, no
-cookies, no third-party scripts and no requests to other origins.
+There is no client-side framework and no runtime dependency. The JavaScript on a page is a few
+small inline scripts (the theme switch, the mobile menu, the current-section marker, the
+figure lightbox, the layer trace and the state machine) and, on the home page, one module of
+about 5 kB compressed that draws the figure. There are no analytics, no cookies, no
+third-party scripts and no requests to other origins.
 
 ## Directory structure
 
@@ -89,15 +144,18 @@ cookies, no third-party scripts and no requests to other origins.
 │   │   ├── fonts/                 Maths symbol font and its licence   
 │   │   └── projects/<slug>/       Real screenshots, one folder per project
 │   ├── components/                Page sections and building blocks
+│   │   └── atlas/                 The figure of the whole site, and its panels
 │   ├── config/site.ts             Brand name, identity, links — edit here to rename
 │   ├── data/
 │   │   ├── projects/              One file per project, plus index.ts
 │   │   ├── community.ts           GDG on Campus Concordia: role and chapter events
-│   │   ├── disciplines.ts         Columns of the coverage matrix
+│   │   ├── disciplines.ts         Disciplines: one side of the relation in the figure
 │   │   ├── principles.ts          Engineering principles
-│   │   └── skills.ts              Skills and where each is evidenced
+│   │   ├── skills.ts              Skills and where each is evidenced
+│   │   └── system.ts              The relations derived from the data above
 │   ├── i18n/                      Languages and interface copy
 │   ├── layouts/Base.astro         <head>, metadata, structured data
+│   ├── lib/                       The projection (axo.ts) and the figure's behaviour (atlas.ts)
 │   ├── pages/                     Routes
 │   ├── styles/global.css          Fonts, tokens, shared component classes
 │   ├── types/content.ts           The shape of a project
@@ -134,7 +192,7 @@ machine first.
 | `npm run verify` | `check`, then `build`, then `test:links` — what CI runs |
 | `npm run fonts` | Rebuild the maths symbol font |
 | `npm run icons` | Rebuild `favicon.ico` and `apple-touch-icon.png` from `favicon.svg` |
-| `npm run og` | Rebuild the social image (needs Google Chrome) |
+| `npm run og` | Rebuild the social image (needs Google Chrome, and a build first) |
 
 To also request every outbound link: `node scripts/check-links.mjs --external`.
 
@@ -176,14 +234,14 @@ Only state what the project's repository can back up, and say where a number com
 
 1. Copy an existing file in `src/data/projects/` to `my-project.ts` and rewrite its content. Set
    `slug` (the URL segment), `order` (its position and lemma number), `disciplines` (which
-   columns of the coverage matrix it fills) and `proof` (the one counted result shown on the
+   pairs of the relation it adds to the figure) and `proof` (the one counted result shown on the
    home page; it must repeat a row of `results`).
 2. Add it to the list in `src/data/projects/index.ts`.
 3. If it has screenshots, put them in `src/assets/projects/<slug>/` and import them at the top of
    the file, as the existing projects do.
 
-That is all. The gallery entry, the case study pages in both languages, its line in the proof
-at the top of the home page, the coverage matrix, the previous and next links and the sitemap
+That is all. The gallery entry, the case study pages in both languages, its box in the figure
+at the top of the home page, its row of the matrix, the neighbouring-lemma links and the sitemap
 are generated from the list. To cite the project as
 evidence for a skill, add it in `src/data/skills.ts`.
 

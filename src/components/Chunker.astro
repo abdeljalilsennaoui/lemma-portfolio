@@ -1,0 +1,286 @@
+---
+import Icon from './Icon.astro';
+import { languageTag, type Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import type { Chunker } from '../types/content';
+
+/**
+ * A model of splitting a text into overlapping chunks. Two sliders set the
+ * chunk size and the overlap; the chunks are drawn along the text, and a
+ * setting the project would refuse is refused here in the project's words.
+ *
+ * Without JavaScript the figure shows the default setting, drawn at build
+ * time. The rule lives in `src/lib/chunks.ts`, shared by both.
+ */
+interface Props {
+  chunker: Chunker;
+  locale: Locale;
+  number: number;
+}
+
+import { chunkSpans } from '../lib/chunks';
+
+const { chunker, locale, number } = Astro.props;
+const strings = ui.chunker;
+const format = new Intl.NumberFormat(languageTag[locale]);
+const initial = chunkSpans(chunker.length, chunker.size.default, chunker.overlap.default);
+const step = chunker.size.default - chunker.overlap.default;
+const sizeMax = Math.round(chunker.length / 3 / 100) * 100;
+---
+
+<figure
+  class="chunker"
+  data-chunker
+  data-length={chunker.length}
+  data-min={chunker.size.min}
+  data-too-small={chunker.refusals.tooSmall}
+  data-refusal={chunker.refusals.overlap}
+  data-result={strings.result[locale]}
+  data-one={strings.one[locale]}
+  data-refused={strings.refused[locale]}
+  data-shown={strings.shown[locale]}
+  data-locale={languageTag[locale]}
+>
+  <div class="frame chunker-frame">
+    <p class="chunker-heading">{strings.heading[locale]}</p>
+
+    <div class="chunker-controls" data-controls hidden>
+      <label>
+        <span>{strings.size[locale]}</span>
+        <input type="range" data-size min="100" max={sizeMax} step="50" value={chunker.size.default} />
+        <output data-size-out>{format.format(chunker.size.default)}</output>
+      </label>
+      <label>
+        <span>{strings.overlap[locale]}</span>
+        <input type="range" data-overlap min="0" max={sizeMax} step="50" value={chunker.overlap.default} />
+        <output data-overlap-out>{format.format(chunker.overlap.default)}</output>
+      </label>
+    </div>
+
+    <div class="chunker-drawing">
+      <p class="chunker-text-label">
+        {strings.document[locale].replace('{n}', format.format(chunker.length))}
+      </p>
+      <div class="chunker-text" aria-hidden="true"></div>
+      <div class="chunker-spans" data-spans aria-hidden="true">
+        {
+          initial.spans.map(([start, end], index) => (
+            <span
+              style={`left:${(start / chunker.length) * 100}%;width:${((end - start) / chunker.length) * 100}%;top:${(index % 3) * 0.875}rem`}
+            />
+          ))
+        }
+      </div>
+    </div>
+
+    <p class="chunker-status" data-status aria-live="polite">
+      {
+        strings.result[locale]
+          .replace('{n}', format.format(initial.count))
+          .replace('{step}', format.format(step))
+      }
+    </p>
+  </div>
+
+  <figcaption class="caption">
+    <span class="caption-label">{ui.work.figure[locale]}&nbsp;{number}.</span>{' '}
+    {chunker.caption[locale]}{' '}
+    <a class="link chunker-source" href={chunker.source.url} target="_blank" rel="noopener">
+      {chunker.source.label}
+      <span class="sr-only">({ui.work.opensInNewTab[locale]})</span>
+      <Icon name="external" size={13} />
+    </a>
+  </figcaption>
+</figure>
+
+<script>
+  import { chunkSpans } from '../lib/chunks';
+
+  const DRAWN = 90;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-chunker]')) {
+    const controls = root.querySelector<HTMLElement>('[data-controls]');
+    const size = root.querySelector<HTMLInputElement>('[data-size]');
+    const overlap = root.querySelector<HTMLInputElement>('[data-overlap]');
+    const sizeOut = root.querySelector<HTMLElement>('[data-size-out]');
+    const overlapOut = root.querySelector<HTMLElement>('[data-overlap-out]');
+    const spans = root.querySelector<HTMLElement>('[data-spans]');
+    const status = root.querySelector<HTMLElement>('[data-status]');
+    if (!controls || !size || !overlap || !sizeOut || !overlapOut || !spans || !status) continue;
+
+    const length = Number(root.dataset.length);
+    const minimum = Number(root.dataset.min);
+    const format = new Intl.NumberFormat(root.dataset.locale);
+    controls.hidden = false;
+
+    const update = () => {
+      const chunk = Number(size.value);
+      const shared = Number(overlap.value);
+      sizeOut.textContent = format.format(chunk);
+      overlapOut.textContent = format.format(shared);
+
+      // The two refusals, checked in the order the project checks them.
+      const refusal =
+        chunk < minimum
+          ? (root.dataset.tooSmall ?? '').replace('{min}', String(minimum)).replace('{size}', String(chunk))
+          : shared >= chunk
+            ? (root.dataset.refusal ?? '').replace('{overlap}', String(shared)).replace('{size}', String(chunk))
+            : '';
+      root.toggleAttribute('data-refused-now', Boolean(refusal));
+      if (refusal) {
+        spans.replaceChildren();
+        status.textContent = `${root.dataset.refused}: ${refusal}`;
+        return;
+      }
+
+      const result = chunkSpans(length, chunk, shared, DRAWN);
+      spans.replaceChildren(
+        ...result.spans.map(([start, end], index) => {
+          const span = document.createElement('span');
+          span.style.left = `${(start / length) * 100}%`;
+          span.style.width = `${((end - start) / length) * 100}%`;
+          span.style.top = `${(index % 3) * 0.875}rem`;
+          return span;
+        }),
+      );
+      status.textContent =
+        result.count === 1
+          ? (root.dataset.one ?? '')
+          : (root.dataset.result ?? '')
+              .replace('{n}', format.format(result.count))
+              .replace('{step}', format.format(chunk - shared)) +
+            (result.count > result.spans.length
+              ? ' ' + (root.dataset.shown ?? '').replace('{n}', String(result.spans.length))
+              : '');
+    };
+
+    size.addEventListener('input', update);
+    overlap.addEventListener('input', update);
+  }
+</script>
+
+<style>
+  .chunker {
+    margin-top: 2rem;
+  }
+
+  .chunker-frame {
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1rem, 3vw, 1.75rem);
+  }
+
+  .chunker-frame > * {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .chunker-heading {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  .chunker-controls {
+    display: grid;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+  }
+
+  .chunker-controls[hidden] {
+    display: none;
+  }
+
+  .chunker-controls label {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) 3.25rem;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    color: var(--muted);
+  }
+
+  .chunker-controls output {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-align: right;
+    color: var(--text);
+  }
+
+  input[type='range'] {
+    width: 100%;
+    accent-color: var(--mark);
+  }
+
+  .chunker-drawing {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .chunker-text-label {
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  /* The text, as a ruled strip, and the chunks laid along it on three
+     levels so that the overlaps show. */
+  .chunker-text {
+    height: 0.875rem;
+    border: 1px solid var(--line-strong);
+    background: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2.7778%);
+  }
+
+  .chunker-spans {
+    position: relative;
+    height: 2.75rem;
+  }
+
+  .chunker-spans :global(span) {
+    position: absolute;
+    height: 0.625rem;
+    border: 1px solid var(--mark);
+    background: color-mix(in srgb, var(--mark) 45%, var(--bg));
+  }
+
+  .chunker-status {
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .chunker[data-refused-now] .chunker-status {
+    padding-left: 0.875rem;
+    border-left: 2px solid var(--mark);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text);
+  }
+
+  .chunker[data-refused-now] .chunker-text {
+    opacity: 0.5;
+  }
+
+  .chunker-source {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    overflow-wrap: anywhere;
+  }
+
+  .chunker-source :global(svg) {
+    display: inline;
+    vertical-align: -0.1em;
+  }
+
+  @media (max-width: 39.99rem) {
+    .chunker-controls label {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .chunker-controls input {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+</style>

@@ -238,6 +238,25 @@ export const localAiStudyAssistant: Project = {
         'With overlap, the next chunk starts before the previous one ends, and a careless configuration could leave the cursor standing still. The next start is always at least one character further on, and an overlap as large as the chunk size is rejected up front. Both rules are covered by tests.',
         "Avec le chevauchement, le segment suivant commence avant la fin du précédent, et une configuration imprudente pourrait immobiliser le curseur. Le début suivant avance toujours d'au moins un caractère, et un chevauchement aussi grand que la taille du segment est refusé d'emblée. Ces deux règles sont couvertes par des tests.",
       ),
+      // Defaults, the minimum size and the wording of the two refusals are
+      // those of config.py and text_processing.py in the repository.
+      chunker: {
+        caption: t(
+          'The chunking rule as a model you can drive. Set an overlap as large as the chunk and it is refused, as the project refuses it. The model cuts at the exact character; the project then backs up to the nearest paragraph or sentence end. It runs in your browser and is not the project’s code, which is linked beside it.',
+          'La règle de découpage, sous la forme d’un modèle que vous pouvez piloter. Réglez un chevauchement aussi grand que le segment et il est refusé, comme le projet le refuse. Le modèle coupe au caractère exact; le projet recule ensuite jusqu’à la fin de paragraphe ou de phrase la plus proche. Il s’exécute dans votre navigateur et n’est pas le code du projet, dont le lien figure à côté.',
+        ),
+        source: {
+          label: 'src/local_study_assistant/text_processing.py',
+          url: 'https://github.com/abdeljalilsennaoui/local-ai-study-assistant/blob/main/src/local_study_assistant/text_processing.py',
+        },
+        length: 9000,
+        size: { default: 1500, min: 200 },
+        overlap: { default: 200 },
+        refusals: {
+          tooSmall: 'Chunk size must be at least {min} characters, got {size}.',
+          overlap: 'Chunk overlap ({overlap}) must be smaller than the chunk size ({size}).',
+        },
+      },
     },
   ],
 

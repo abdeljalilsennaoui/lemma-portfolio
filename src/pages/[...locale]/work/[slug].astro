@@ -3,8 +3,13 @@ import { getImage } from 'astro:assets';
 import Icon from '../../../components/Icon.astro';
 import LayerDiagram from '../../../components/LayerDiagram.astro';
 import Lightbox from '../../../components/Lightbox.astro';
+import Attempts from '../../../components/Attempts.astro';
+import Chunker from '../../../components/Chunker.astro';
+import StateMachine from '../../../components/StateMachine.astro';
+import Tally from '../../../components/Tally.astro';
 import ZoomFigure from '../../../components/ZoomFigure.astro';
 import { projects } from '../../../data/projects';
+import { lemmaId, neighbours } from '../../../data/system';
 import { defaultLocale, locales, localeFromParam } from '../../../i18n';
 import { ui } from '../../../i18n/ui';
 import Base from '../../../layouts/Base.astro';
@@ -29,9 +34,8 @@ const locale = localeFromParam(Astro.params.locale);
 const strings = ui.caseStudy;
 const figureLabel = ui.work.figure[locale];
 
-const index = projects.findIndex((candidate) => candidate.slug === project.slug);
-const previous = projects[index - 1];
-const next = projects[index + 1];
+// The other projects, ordered by how much they share with this one.
+const related = neighbours(project);
 
 // Figures are numbered in reading order: the cover (the architecture diagram
 // when there is no screenshot), then the gallery, then the architecture
@@ -39,6 +43,9 @@ const next = projects[index + 1];
 const gallery = project.gallery ?? [];
 const firstGalleryFigure = 2;
 const diagramFigure = project.cover ? firstGalleryFigure + gallery.length : 1;
+// The figure a project has of its own (a model to drive, a count, the
+// versions of a fix) comes after those. A project has one at most.
+const modelFigure = Math.max(diagramFigure, firstGalleryFigure + gallery.length - 1) + 1;
 
 // A link to this page shared elsewhere shows the project's own picture. It is
 // never enlarged, so the size reported with it is worked out here.
@@ -51,19 +58,26 @@ const social = project.cover
   ? await getImage({ src: project.cover.src, width: socialWidth, format: 'png' })
   : undefined;
 
-const sections = [
-  { id: 'overview', label: strings.sections.overview[locale] },
-  ...(gallery.length > 0 ? [{ id: 'gallery', label: strings.sections.gallery[locale] }] : []),
-  { id: 'problem', label: strings.sections.problem[locale] },
-  { id: 'goals', label: strings.sections.goals[locale] },
-  { id: 'technologies', label: strings.sections.technologies[locale] },
-  { id: 'architecture', label: strings.sections.architecture[locale] },
-  { id: 'role', label: strings.sections.role[locale] },
-  { id: 'decisions', label: strings.sections.decisions[locale] },
-  { id: 'testing', label: strings.sections.testing[locale] },
-  { id: 'challenges', label: strings.sections.challenges[locale] },
-  { id: 'results', label: strings.sections.results[locale] },
-  { id: 'links', label: strings.sections.links[locale] },
+// The contents list follows the movements of a proof: what is claimed, how
+// it was built, how it was checked, and what came of it.
+const entry = (id: keyof typeof strings.sections) => ({ id, label: strings.sections[id][locale] });
+const outline = [
+  {
+    label: strings.outline.statement[locale],
+    sections: [entry('overview'), ...(gallery.length > 0 ? [entry('gallery')] : []), entry('problem'), entry('goals')],
+  },
+  {
+    label: strings.outline.construction[locale],
+    sections: [entry('technologies'), entry('architecture'), entry('role'), entry('decisions')],
+  },
+  {
+    label: strings.outline.verification[locale],
+    sections: [entry('testing'), entry('challenges')],
+  },
+  {
+    label: strings.outline.conclusion[locale],
+    sections: [entry('results'), entry('links')],
+  },
 ];
 ---
 
@@ -147,11 +161,18 @@ const sections = [
     <div class="case-layout">
       <nav class="toc" aria-label={strings.contents[locale]}>
         <p class="toc-title">{strings.contents[locale]}</p>
-        <ol data-spy>
+        <ol class="movements" data-spy>
           {
-            sections.map((section) => (
-              <li>
-                <a href={`#${section.id}`}>{section.label}</a>
+            outline.map((movement) => (
+              <li class="movement">
+                <span class="movement-label">{movement.label}</span>
+                <ol>
+                  {movement.sections.map((section) => (
+                    <li>
+                      <a href={`#${section.id}`}>{section.label}</a>
+                    </li>
+                  ))}
+                </ol>
               </li>
             ))
           }
@@ -247,6 +268,7 @@ const sections = [
               <div class="note">
                 <h3>{decision.title[locale]}</h3>
                 <p>{decision.body[locale]}</p>
+                {decision.machine && <StateMachine machine={decision.machine} locale={locale} number={modelFigure} />}
               </div>
             ))
           }
@@ -255,6 +277,7 @@ const sections = [
         <section id="testing" aria-labelledby="testing-title">
           <h2 id="testing-title">{strings.sections.testing[locale]}</h2>
           {project.testing.map((paragraph) => <p>{paragraph[locale]}</p>)}
+          {project.tally && <Tally tally={project.tally} locale={locale} number={modelFigure} />}
         </section>
 
         <section id="challenges" aria-labelledby="challenges-title">
@@ -264,6 +287,8 @@ const sections = [
               <div class="note">
                 <h3>{challenge.title[locale]}</h3>
                 <p>{challenge.body[locale]}</p>
+                {challenge.attempts && <Attempts attempts={challenge.attempts} locale={locale} number={modelFigure} />}
+                {challenge.chunker && <Chunker chunker={challenge.chunker} locale={locale} number={modelFigure} />}
               </div>
             ))
           }
@@ -341,41 +366,49 @@ const sections = [
       </div>
     </div>
 
-    <nav class="pager" aria-label={ui.work.title[locale]}>
-      {
-        previous ? (
-          <a href={href(`/work/${previous.slug}/`, locale)} rel="prev">
-            <span class="pager-kind">
-              <Icon name="arrow-left" size={14} />
-              {strings.previous[locale]}
-            </span>
-            <span class="pager-title">
-              <span class="theorem-label">
-                {ui.work.lemma[locale]}&nbsp;{previous.order}
-              </span>{' '}
-              ({previous.shortTitle})
-            </span>
-          </a>
-        ) : (
-          <span />
-        )
-      }
-      {
-        next && (
-          <a class="pager-next" href={href(`/work/${next.slug}/`, locale)} rel="next">
-            <span class="pager-kind">
-              {strings.next[locale]}
-              <Icon name="arrow-right" size={14} />
-            </span>
-            <span class="pager-title">
-              <span class="theorem-label">
-                {ui.work.lemma[locale]}&nbsp;{next.order}
-              </span>{' '}
-              ({next.shortTitle})
-            </span>
-          </a>
-        )
-      }
+    <nav class="related" aria-labelledby="related-title">
+      <div class="related-head">
+        <h2 id="related-title">{strings.related.title[locale]}</h2>
+        <p>{strings.related.intro[locale]}</p>
+      </div>
+      <ul class="related-list">
+        {
+          related.map(({ project: other, shared }) => (
+            <li>
+              <a href={href(`/work/${other.slug}/`, locale)}>
+                <span class="related-name">
+                  <span class="theorem-label">
+                    {ui.work.lemma[locale]}&nbsp;{other.order}
+                  </span>{' '}
+                  ({other.shortTitle})
+                </span>
+                <span class="related-result">
+                  {other.proof.figure[locale]} {other.proof.claim[locale]}
+                </span>
+                <span class="related-shared">
+                  <span class="related-count">
+                    {shared.length > 0
+                      ? strings.related.shared[locale].replace('{n}', String(shared.length))
+                      : strings.related.none[locale]}
+                  </span>
+                  {shared.length > 0 && <span class="sr-only">: </span>}
+                  {shared.map((discipline) => (
+                    <span class="related-pair">
+                      <span class="tombstone" aria-hidden="true" />
+                      {discipline.label[locale]}
+                    </span>
+                  ))}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="related-figure">
+        <a class="link" href={href(`/#${lemmaId(project)}`, locale)}>
+          {strings.related.inFigure[locale]}
+        </a>
+      </p>
     </nav>
   </article>
   <Lightbox locale={locale} />
@@ -490,10 +523,22 @@ const sections = [
     font-size: var(--text-base);
   }
 
-  .toc ol {
-    margin-top: 0.25rem;
+  /* The contents list is grouped by the movements of a proof. */
+  .movements {
+    margin-top: 0.5rem;
     columns: 2;
     column-gap: 1.5rem;
+  }
+
+  .movement {
+    break-inside: avoid;
+    padding-bottom: 0.5rem;
+  }
+
+  .movement-label {
+    display: block;
+    font-style: italic;
+    color: var(--muted);
   }
 
   .toc a {
@@ -649,47 +694,111 @@ const sections = [
     height: 1rem;
   }
 
-  .pager {
+  /* Where to go next: the other projects, by what they share with this one. */
+  .related {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
     margin-top: clamp(3rem, 7vw, 5rem);
-    padding-top: 1.5rem;
+    padding-top: 1.75rem;
     border-top: 2px solid var(--text);
   }
 
-  .pager a {
-    display: grid;
-    gap: 0.25rem;
-    align-content: start;
-    min-height: 2.75rem;
+  .related-head h2 {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    line-height: 1.2;
   }
 
-  .pager-next {
-    grid-column: 2;
-    justify-items: end;
-    text-align: right;
-  }
-
-  .pager-kind {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
+  .related-head p {
+    max-width: 34rem;
+    margin-top: 0.5rem;
     font-size: var(--text-sm);
     color: var(--muted);
   }
 
-  .pager-title {
+  .related-list {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .related-list li {
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .related-list a {
+    display: grid;
+    gap: 0.25rem 2rem;
+    padding-block: 1rem;
+  }
+
+  .related-name {
     font-family: var(--font-serif);
     font-size: var(--text-lg);
     line-height: 1.25;
   }
 
-  .pager a:hover .pager-title {
+  .related-list a:hover .related-name {
     text-decoration: underline;
     text-decoration-color: var(--mark);
     text-decoration-thickness: 2px;
     text-underline-offset: 0.25em;
+  }
+
+  .related-result {
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .related-shared {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.125rem 0.875rem;
+    font-size: var(--text-xs);
+    color: var(--muted);
+  }
+
+  .related-count {
+    color: var(--text);
+  }
+
+  .related-pair {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.375rem;
+    white-space: nowrap;
+  }
+
+  .related-pair .tombstone {
+    width: 0.4375rem;
+    height: 0.4375rem;
+  }
+
+  .related-figure {
+    font-size: var(--text-sm);
+  }
+
+  .related-figure a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  @media (min-width: 64rem) {
+    .related-list a {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: start;
+    }
+
+    .related-result {
+      grid-column: 1;
+    }
+
+    .related-shared {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      padding-top: 0.3125rem;
+    }
   }
 
   @media (min-width: 40rem) {
@@ -786,14 +895,42 @@ const sections = [
       border: 0;
     }
 
-    .toc ol {
+    .movements {
       columns: 1;
-      margin-top: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .movement {
+      padding-bottom: 0.75rem;
+    }
+
+    /* Each movement is a line with its sections strung along it, and the
+       section being read carries the mark. */
+    .movement ol {
+      margin: 0.25rem 0 0 0.1875rem;
+      border-left: 1px solid var(--line-strong);
     }
 
     .toc a {
-      min-height: 2rem;
+      position: relative;
+      min-height: 1.875rem;
+      padding-left: 0.875rem;
       color: var(--muted);
+    }
+
+    .toc a::before {
+      content: '';
+      position: absolute;
+      left: -0.25rem;
+      top: 50%;
+      width: 0.4375rem;
+      height: 0.4375rem;
+      margin-top: -0.21875rem;
+      border: 1px solid var(--line-strong);
+      background: var(--bg);
+      transition:
+        background-color 150ms ease,
+        border-color 150ms ease;
     }
 
     .toc a:hover,
@@ -801,13 +938,8 @@ const sections = [
       color: var(--text);
     }
 
-    /* The section being read carries the mark. */
     .toc a[aria-current]::before {
-      content: '';
-      flex: none;
-      width: 0.4375rem;
-      height: 0.4375rem;
-      margin-right: 0.5rem;
+      border-color: var(--mark);
       background: var(--mark);
     }
   }

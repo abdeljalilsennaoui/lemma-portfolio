@@ -1,0 +1,196 @@
+---
+import type { Locale } from '../i18n';
+import { ui } from '../i18n/ui';
+import type { Attempts } from '../types/content';
+
+/**
+ * The versions of a solution, wrong ones included, set side by side. Each
+ * version is a small diagram with one row per place a step can run (a
+ * thread, say) and the steps in the order they ran, followed by what came of
+ * it. It needs no script: the comparison is the figure.
+ */
+interface Props {
+  attempts: Attempts;
+  locale: Locale;
+  number: number;
+}
+
+const { attempts, locale, number } = Astro.props;
+const strings = ui.attempts;
+---
+
+<figure class="attempts">
+  <ol class="frame versions">
+    {
+      attempts.versions.map((version, index) => (
+        <li class="version" data-works={version.works ? '' : undefined}>
+          <p class="version-head">
+            <span class="theorem-label">{strings.version[locale].replace('{n}', String(index + 1))}</span>
+            <span class="verdict">
+              <span class="verdict-mark" aria-hidden="true" />
+              {version.works ? strings.works[locale] : strings.fails[locale]}
+            </span>
+          </p>
+          <div class="lanes" style={`--steps:${version.steps.length}`}>
+            {attempts.lanes.map((lane, row) => (
+              <>
+                <p class="lane-label" style={`grid-row:${row + 1}`}>
+                  {lane.label[locale]}
+                </p>
+                <span class="lane-line" style={`grid-row:${row + 1}`} aria-hidden="true" />
+              </>
+            ))}
+            {version.steps.map((step, column) => (
+              <p
+                class="step"
+                style={`grid-row:${attempts.lanes.findIndex((lane) => lane.id === step.lane) + 1};grid-column:${column + 2}`}
+              >
+                <span class="step-order" aria-hidden="true">
+                  {column + 1}
+                </span>
+                {step.label[locale]}
+                <span class="sr-only">
+                  ({attempts.lanes.find((lane) => lane.id === step.lane)?.label[locale]})
+                </span>
+              </p>
+            ))}
+          </div>
+          <p class="outcome">{version.outcome[locale]}</p>
+        </li>
+      ))
+    }
+  </ol>
+  <figcaption class="caption">
+    <span class="caption-label">{ui.work.figure[locale]}&nbsp;{number}.</span>{' '}
+    {attempts.caption[locale]}
+  </figcaption>
+</figure>
+
+<style>
+  .attempts {
+    margin-top: 2rem;
+  }
+
+  .versions {
+    display: grid;
+    padding: 0 clamp(1rem, 3vw, 1.75rem);
+  }
+
+  .version {
+    display: grid;
+    gap: 0.75rem;
+    padding-block: 1.25rem 1.375rem;
+  }
+
+  .version + .version {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .version-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0 1rem;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  /* An open square for a version that failed, the filled one that closes a
+     proof for the version that holds. */
+  .verdict-mark {
+    width: 0.5625rem;
+    height: 0.5625rem;
+    border: 1.5px solid var(--line-strong);
+  }
+
+  .version[data-works] .verdict {
+    color: var(--text);
+  }
+
+  .version[data-works] .verdict-mark {
+    border-color: var(--mark);
+    background: var(--mark);
+  }
+
+  /* One row per lane: its name, then a line the steps sit on. */
+  .lanes {
+    display: grid;
+    grid-template-columns: 7.5rem repeat(var(--steps), minmax(0, 1fr));
+    align-items: center;
+    gap: 0.625rem 0.75rem;
+  }
+
+  .lanes p {
+    margin: 0;
+  }
+
+  .lane-label {
+    grid-column: 1;
+    font-size: var(--text-xs);
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .lane-line {
+    grid-column: 2 / -1;
+    align-self: center;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--line-strong) 0 4px, transparent 4px 8px);
+  }
+
+  .step {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    justify-self: start;
+    padding: 0.375rem 0.6875rem 0.4375rem;
+    border: 1px solid var(--text);
+    background: var(--panel);
+    box-shadow: 2px 2px 0 var(--line);
+    font-size: var(--text-xs);
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  .version[data-works] .step {
+    border-color: var(--mark);
+    box-shadow: 2px 2px 0 var(--mark);
+  }
+
+  .step-order {
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .outcome {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--muted);
+  }
+
+  .version[data-works] .outcome {
+    color: var(--text);
+  }
+
+  @media (max-width: 39.99rem) {
+    .lanes {
+      grid-template-columns: 5.25rem repeat(var(--steps), minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+
+    .step {
+      padding-inline: 0.5rem;
+    }
+  }
+</style>

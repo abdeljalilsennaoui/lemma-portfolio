@@ -12,6 +12,16 @@ import { href } from '../utils/paths';
 <Base locale="en" route="/" title={ui.notFound.title.en} noindex>
   <section class="shell not-found">
     <p class="code">404</p>
+    <p class="kind">
+      {locales.map((locale, index) => (
+        <>
+          {index > 0 && ' / '}
+          <span lang={languageTag[locale]} class="theorem-label">
+            {ui.notFound.kind[locale]}.
+          </span>
+        </>
+      ))}
+    </p>
     {
       locales.map((locale) => (
         <div lang={languageTag[locale]}>

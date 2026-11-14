@@ -51,19 +51,133 @@ export const ui = {
     openToValue: t('Internships and co-op terms', 'Stages et placements coop'),
   },
 
-  relation: {
-    title: t('Projects and the disciplines they exercised', 'Les projets et les disciplines qu’ils ont mobilisées'),
+  /** The figure in the hero: the site drawn as one system. */
+  atlas: {
+    title: t('The site, drawn as one system', 'Le site, dessiné comme un seul système'),
+    matrixTitle: t(
+      'Projects and the disciplines they exercised',
+      'Les projets et les disciplines qu’ils ont mobilisées',
+    ),
     projects: t('Projects', 'Projets'),
     disciplines: t('Disciplines', 'Disciplines'),
-    graph: t('Graph', 'Graphe'),
-    matrix: t('Matrix', 'Matrice'),
-    viewLabel: t('Representation', 'Représentation'),
-    caption: t(
-      'Projects against the disciplines they exercised. A filled square means the project did the work; the same relation can be read as a graph.',
-      'Les projets et les disciplines qu’ils ont mobilisées. Un carré plein signifie que le projet a fait le travail; la même relation se lit aussi comme un graphe.',
-    ),
+    sections: t('Parts of the site', 'Parties du site'),
+    viewLabel: t('View', 'Vue'),
+    axonometric: t('Axonometric', 'Axonométrie'),
+    plan: t('Plan', 'Plan'),
     yes: t('yes', 'oui'),
     no: t('no', 'non'),
+    /** Shown under the matrix, where the figure is not drawn in depth. */
+    matrixCaption: t(
+      'Projects against the disciplines they exercised. A filled square means the project did the work.',
+      'Les projets et les disciplines qu’ils ont mobilisées. Un carré plein signifie que le projet a fait le travail.',
+    ),
+    /** Shown under the figure when it is drawn in depth. */
+    caption: t(
+      'Each project stands over the disciplines it exercised, and a filled square is one pair of the relation. Select a part to see what it holds. Drag to turn the figure, or look at it in plan to read the same relation as a matrix.',
+      'Chaque projet surplombe les disciplines qu’il a mobilisées, et un carré plein est un couple de la relation. Choisissez une partie pour voir ce qu’elle contient. Faites glisser pour tourner la figure, ou regardez-la en plan pour lire la même relation comme une matrice.',
+    ),
+    keys: t(
+      'Arrow keys move from part to part, Enter selects, Escape returns to the whole.',
+      'Les flèches passent d’une partie à l’autre, Entrée sélectionne, Échap revient à l’ensemble.',
+    ),
+    kinds: {
+      definition: t('Definition', 'Définition'),
+      axioms: t('Axioms', 'Axiomes'),
+      remark: t('Remark', 'Remarque'),
+      corollary: t('Corollary', 'Corollaire'),
+    },
+    solo: t('Solo', 'Individuel'),
+    /** `{n}` is replaced with the size of the team. */
+    team: t('Team of {n}', 'Équipe de {n}'),
+    wholeSystem: t('The whole system', 'L’ensemble du système'),
+    selected: t('Selected part', 'Partie sélectionnée'),
+    tapHint: t(
+      'Tap a project or a discipline to see what it holds.',
+      'Touchez un projet ou une discipline pour voir ce qu’il contient.',
+    ),
+    close: t('Close', 'Fermer'),
+    result: t('Result', 'Résultat'),
+    context: t('Context', 'Contexte'),
+    exercises: t('Exercises', 'Mobilise'),
+    builtWith: t('Built with', 'Réalisé avec'),
+    exercisedBy: t('Exercised by', 'Mobilisée par'),
+    /** `{n}` and `{total}` are replaced with counts of projects. */
+    exercisedCount: t('{n} of the {total} projects did work in this discipline.', 'Projets ayant travaillé dans cette discipline : {n} sur {total}.'),
+    skillsLink: t('Skills, and where each is used', 'Les compétences, et où chacune sert'),
+    claim: t('Claim', 'Énoncé'),
+    axiomsBody: t(
+      'Six things I take as given before the work starts.',
+      'Six choses que je tiens pour acquises avant de commencer le travail.',
+    ),
+    readAbout: t('Read the About section', 'Lire la section À propos'),
+    readEngineering: t('Read the Engineering section', 'Lire la section Ingénierie'),
+    readCommunity: t('Read the Community section', 'Lire la section Communauté'),
+    readContact: t('Go to the Contact section', 'Aller à la section Contact'),
+    source: t('Defined in', 'Défini dans'),
+  },
+
+  /** The layered architecture figure. */
+  diagram: {
+    trace: t('Trace the path', 'Suivre le parcours'),
+    /** `{n}` and `{total}` are replaced with the position of the layer. */
+    step: t('Layer {n} of {total}', 'Couche {n} de {total}'),
+  },
+
+  /** A state machine the reader can drive. */
+  machine: {
+    heading: t('Try to break it', 'Essayez de la casser'),
+    state: t('State', 'État'),
+    current: t('Current state', 'État actuel'),
+    calls: t('Call on the current state', 'Appeler sur l’état actuel'),
+    attempts: t('Attempts', 'Tentatives'),
+    noAttempts: t('Nothing tried yet.', 'Rien d’essayé pour l’instant.'),
+    refused: t('refused', 'refusée'),
+    /** `{n}` and `{total}` are replaced with counts of state and action pairs. */
+    tried: t('{n} of {total} pairs tried', '{n} sur {total} couples essayés'),
+    /** `{total}`, `{allowed}` and `{refused}` are replaced with counts. */
+    allTried: t(
+      'All {total} pairs tried: {allowed} allowed, {refused} refused.',
+      'Les {total} couples ont été essayés : {allowed} permis, {refused} refusés.',
+    ),
+    tableCaption: t(
+      'What each action answers in each state',
+      'Ce que répond chaque action dans chaque état',
+    ),
+    sourceLabel: t('The rule in the project’s source', 'La règle dans le code source du projet'),
+  },
+
+  /** A count broken into its parts. */
+  tally: {
+    kind: t('Kind', 'Type'),
+    count: t('Count', 'Nombre'),
+    total: t('Total', 'Total'),
+  },
+
+  /** The versions of a solution, side by side. */
+  attempts: {
+    /** `{n}` is replaced with the number of the version. */
+    version: t('Version {n}', 'Version {n}'),
+    fails: t('Fails', 'Échoue'),
+    works: t('Works', 'Fonctionne'),
+  },
+
+  /** A model of chunking the reader can drive. */
+  chunker: {
+    heading: t('Try to stall it', 'Essayez de l’immobiliser'),
+    size: t('Chunk size', 'Taille du segment'),
+    overlap: t('Overlap', 'Chevauchement'),
+    characters: t('characters', 'caractères'),
+    /** `{n}` is replaced with the length of the example text. */
+    document: t('An example text of {n} characters', 'Un texte d’exemple de {n} caractères'),
+    /** `{n}` and `{step}` are replaced with numbers. */
+    result: t(
+      '{n} chunks. Each one starts {step} characters after the last.',
+      '{n} segments. Chacun commence {step} caractères après le précédent.',
+    ),
+    one: t('One chunk: the text fits in it.', 'Un seul segment : le texte y tient en entier.'),
+    refused: t('Refused', 'Refusé'),
+    /** `{n}` is replaced with how many chunks are drawn. */
+    shown: t('The first {n} are drawn.', 'Les {n} premiers sont dessinés.'),
   },
 
   work: {
@@ -155,8 +269,12 @@ export const ui = {
       'How I work, and what I have worked with. Each skill links to a place where you can see it in use.',
       "Ma façon de travailler, et les outils que j'ai employés. Chaque compétence renvoie à un endroit où on peut la voir à l'œuvre.",
     ),
-    coverage: t('Coverage', 'Couverture'),
+    filter: t('Show the skills seen in', 'Afficher les compétences vues dans'),
+    all: t('All projects', 'Tous les projets'),
+    /** `{n}` and `{total}` are replaced with counts of skills. */
+    filtered: t('{n} of {total} skills', '{n} compétences sur {total}'),
     principles: t('Principles', 'Principes'),
+    axiom: t('Axiom', 'Axiome'),
     skills: t('Skills', 'Compétences'),
     evidenceHint: t(
       'Skills, and where each can be seen in use. L1 to L4 cite the lemmas above.',
@@ -215,6 +333,24 @@ export const ui = {
       value: t('Result', 'Résultat'),
       source: t('Source', 'Source'),
     },
+    /** The four movements of a proof, which group the contents list. */
+    outline: {
+      statement: t('Statement', 'Énoncé'),
+      construction: t('Construction', 'Construction'),
+      verification: t('Verification', 'Vérification'),
+      conclusion: t('Conclusion', 'Conclusion'),
+    },
+    related: {
+      title: t('Neighbouring lemmas', 'Lemmes voisins'),
+      intro: t(
+        'The other projects, nearest first, with the disciplines each has in common with this one.',
+        'Les autres projets, du plus proche au plus éloigné, avec les disciplines que chacun a en commun avec celui-ci.',
+      ),
+      /** `{n}` is replaced with a count of disciplines. */
+      shared: t('{n} in common', '{n} en commun'),
+      none: t('No discipline in common', 'Aucune discipline en commun'),
+      inFigure: t('Find this lemma in the figure of the whole site', 'Retrouver ce lemme dans la figure de l’ensemble du site'),
+    },
     limitations: t('What this does not show', 'Ce que cela ne démontre pas'),
     result: t('Result', 'Résultat'),
     enlarge: t('Enlarge', 'Agrandir'),
@@ -230,6 +366,7 @@ export const ui = {
   },
 
   notFound: {
+    kind: t('Counterexample', 'Contre-exemple'),
     title: t('Page not found', 'Page introuvable'),
     body: t(
       'There is nothing at this address. It may have moved, or the link may be mistyped.',

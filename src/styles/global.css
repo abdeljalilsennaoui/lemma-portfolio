@@ -496,9 +496,11 @@
   .thumbs,
   .entry-links .button,
   .toc,
-  .pager,
+  .related,
+  .stack-bar,
+  .machine-panel,
+  .atlas-switch,
   .back,
-  .relation-switch,
   dialog {
     display: none !important;
   }

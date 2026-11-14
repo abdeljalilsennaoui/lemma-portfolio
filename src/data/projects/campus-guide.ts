@@ -398,6 +398,46 @@ export const campusGuide: Project = {
         'Adding the second campus made the map screen stop responding at start-up. The cause was GeoJSON parsing on the main thread. Moving it off fixed the freeze and exposed the next problem: attaching overlays from a background thread crashed, because the Maps SDK is main-thread only. The final shape parses in the background and attaches on the main thread.',
         "L'ajout du second campus a rendu l'écran de la carte inerte au démarrage. La cause : l'analyse du GeoJSON sur le fil principal. La déplacer a réglé le gel et révélé le problème suivant : attacher les surimpressions depuis un fil d'arrière-plan faisait planter l'application, car le SDK Maps ne fonctionne que sur le fil principal. La version finale analyse en arrière-plan et attache sur le fil principal.",
       ),
+      // The three versions the paragraph above describes, side by side.
+      attempts: {
+        caption: t(
+          'The three versions of loading a campus overlay: where each step ran, and what came of it.',
+          "Les trois versions du chargement d'une surimpression de campus : où chaque étape s'exécutait, et ce qui en a résulté.",
+        ),
+        lanes: [
+          { id: 'main', label: t('Main thread', 'Fil principal') },
+          { id: 'background', label: t('Background', 'Arrière-plan') },
+        ],
+        versions: [
+          {
+            steps: [
+              { lane: 'main', label: t('Parse GeoJSON', 'Analyser le GeoJSON') },
+              { lane: 'main', label: t('Attach overlays', 'Attacher les surimpressions') },
+            ],
+            works: false,
+            outcome: t('The map screen freezes at start-up.', "L'écran de la carte fige au démarrage."),
+          },
+          {
+            steps: [
+              { lane: 'background', label: t('Parse GeoJSON', 'Analyser le GeoJSON') },
+              { lane: 'background', label: t('Attach overlays', 'Attacher les surimpressions') },
+            ],
+            works: false,
+            outcome: t(
+              'No freeze, but a crash: the Maps SDK is main-thread only.',
+              'Plus de gel, mais un plantage : le SDK Maps ne fonctionne que sur le fil principal.',
+            ),
+          },
+          {
+            steps: [
+              { lane: 'background', label: t('Parse GeoJSON', 'Analyser le GeoJSON') },
+              { lane: 'main', label: t('Attach overlays', 'Attacher les surimpressions') },
+            ],
+            works: true,
+            outcome: t('No freeze and no crash. This is the version that shipped.', "Ni gel ni plantage. C'est la version livrée."),
+          },
+        ],
+      },
     },
     {
       title: t('A test suite that ran out of memory', 'Une suite de tests à court de mémoire'),

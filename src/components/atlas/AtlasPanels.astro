@@ -1,0 +1,267 @@
+---
+import Icon from '../Icon.astro';
+import { brand, links, person } from '../../config/site';
+import { gdg } from '../../data/community';
+import { disciplines } from '../../data/disciplines';
+import { principles } from '../../data/principles';
+import { projects } from '../../data/projects';
+import { disciplineNodeId, disciplinesOf, lemmaId, lemmasOf, sourceUrl, sources } from '../../data/system';
+import type { Locale } from '../../i18n';
+import { ui } from '../../i18n/ui';
+import { href } from '../../utils/paths';
+
+/**
+ * What the panel beside the drawing says about each part, one template per
+ * part. The drawing copies a template into the panel when its part is
+ * selected. Every word comes from the data and interface files, and each
+ * panel ends by naming the file its content is kept in.
+ */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const strings = ui.atlas;
+const block = ui.titleBlock;
+// Month names take a capital in English but not in French.
+const period = (text: string) => (locale === 'fr' ? text.toLowerCase() : text);
+---
+
+{
+  projects.map((project) => (
+    <template data-panel={lemmaId(project)}>
+      <h3 class="atlas-panel-title">
+        <span class="theorem-label">
+          {ui.work.lemma[locale]}&nbsp;{project.order}
+        </span>{' '}
+        ({project.shortTitle})<span class="theorem-label">.</span>
+      </h3>
+      <p class="atlas-panel-context">
+        {project.context.label[locale]}, {period(project.period[locale])}
+      </p>
+      <p class="theorem-body atlas-panel-statement">{project.summary[locale]}</p>
+      <dl class="atlas-panel-facts">
+        <div>
+          <dt>{strings.result[locale]}</dt>
+          <dd>
+            <span class="answer">
+              <span class="hl">{project.proof.figure[locale]}</span> {project.proof.claim[locale]}
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt>{strings.exercises[locale]}</dt>
+          <dd>
+            <ul class="atlas-hops">
+              {disciplinesOf(project).map((discipline) => (
+                <li>
+                  <button type="button" class="atlas-hop" data-goto={disciplineNodeId(discipline.id)}>
+                    {discipline.label[locale]}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+        <div>
+          <dt>{strings.builtWith[locale]}</dt>
+          <dd>{project.stack.join(', ')}</dd>
+        </div>
+      </dl>
+      <p class="atlas-panel-source">
+        {strings.source[locale]}{' '}
+        <a href={sourceUrl(sources.project(project))} rel="noopener">
+          {sources.project(project)}
+        </a>
+      </p>
+      <p class="atlas-panel-actions">
+        <a class="button button-primary" href={href(`/work/${project.slug}/`, locale)}>
+          {ui.work.caseStudy[locale]}
+          <span class="sr-only">: {project.title}</span>
+        </a>
+        <a class="link" href={project.repository.url} target="_blank" rel="noopener">
+          <Icon name="github" size={16} />
+          {ui.contact.github[locale]}
+          <span class="sr-only">
+            : {project.title} ({ui.work.opensInNewTab[locale]})
+          </span>
+        </a>
+      </p>
+    </template>
+  ))
+}
+
+{
+  disciplines.map((discipline) => {
+    const lemmas = lemmasOf(discipline.id);
+    return (
+      <template data-panel={disciplineNodeId(discipline.id)}>
+        <h3 class="atlas-panel-title">
+          <span class="theorem-label">{discipline.label[locale]}</span>
+        </h3>
+        <p>
+          {strings.exercisedCount[locale]
+            .replace('{n}', String(lemmas.length))
+            .replace('{total}', String(projects.length))}
+        </p>
+        <dl class="atlas-panel-facts">
+          <div>
+            <dt>{strings.exercisedBy[locale]}</dt>
+            <dd>
+              <ul class="atlas-hops atlas-hops-list">
+                {lemmas.map((project) => (
+                  <li>
+                    <button type="button" class="atlas-hop" data-goto={lemmaId(project)}>
+                      <span class="atlas-id" aria-hidden="true">
+                        {lemmaId(project)}
+                      </span>
+                      <strong>{project.shortTitle}</strong>
+                      <span>
+                        {project.proof.figure[locale]} {project.proof.claim[locale]}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        </dl>
+        <p class="atlas-panel-source">
+          {strings.source[locale]}{' '}
+          <a href={sourceUrl(sources.disciplines)} rel="noopener">
+            {sources.disciplines}
+          </a>
+        </p>
+        <p class="atlas-panel-actions">
+          <a class="link" href={href('/#engineering', locale)}>
+            {strings.skillsLink[locale]}
+          </a>
+        </p>
+      </template>
+    );
+  })
+}
+
+<template data-panel="root">
+  <h3 class="atlas-panel-title">
+    <span class="theorem-label">{brand.name}</span>
+  </h3>
+  <p class="theorem-body atlas-panel-statement">{brand.headline[locale]}</p>
+  <dl class="atlas-panel-facts">
+    <div>
+      <dt>{block.name[locale]}</dt>
+      <dd>{person.name}</dd>
+    </div>
+    <div>
+      <dt>{block.program[locale]}</dt>
+      <dd>{block.programValue[locale]}, {person.school.name[locale]}</dd>
+    </div>
+    <div>
+      <dt>{block.basedIn[locale]}</dt>
+      <dd>{block.basedInValue[locale]}</dd>
+    </div>
+    <div>
+      <dt>{block.openTo[locale]}</dt>
+      <dd>{block.openToValue[locale]}</dd>
+    </div>
+  </dl>
+  <p>{ui.hero.footnote[locale]}</p>
+  <p class="atlas-panel-source">
+    {strings.source[locale]}{' '}
+    <a href={sourceUrl(sources.identity)} rel="noopener">{sources.identity}</a>
+  </p>
+  <p class="atlas-panel-actions">
+    <a class="link" href={href('/#about', locale)}>{strings.readAbout[locale]}</a>
+  </p>
+</template>
+
+<template data-panel="definition">
+  <h3 class="atlas-panel-title">
+    <span class="theorem-label">{ui.about.definition[locale]}</span> ({brand.name})<span class="theorem-label">.</span>
+  </h3>
+  <p class="theorem-body atlas-panel-statement">{ui.about.definitionBody[locale]}</p>
+  <p>{ui.about.paragraphs[2]?.[locale]}</p>
+  <p class="atlas-panel-source">
+    {strings.source[locale]}{' '}
+    <a href={sourceUrl(sources.copy)} rel="noopener">{sources.copy}</a>
+  </p>
+  <p class="atlas-panel-actions">
+    <a class="button" href={href('/#about', locale)}>{strings.readAbout[locale]}</a>
+  </p>
+</template>
+
+<template data-panel="axioms">
+  <h3 class="atlas-panel-title">
+    <span class="theorem-label">{strings.kinds.axioms[locale]}</span> ({ui.engineering.principles[locale]})<span class="theorem-label">.</span>
+  </h3>
+  <p class="theorem-body atlas-panel-statement">{strings.axiomsBody[locale]}</p>
+  <ol class="atlas-panel-list">
+    {principles.map((principle) => <li>{principle.name[locale]}</li>)}
+  </ol>
+  <p class="atlas-panel-source">
+    {strings.source[locale]}{' '}
+    <a href={sourceUrl(sources.principles)} rel="noopener">{sources.principles}</a>
+  </p>
+  <p class="atlas-panel-actions">
+    <a class="button" href={href('/#engineering', locale)}>{strings.readEngineering[locale]}</a>
+  </p>
+</template>
+
+<template data-panel="corollary">
+  <h3 class="atlas-panel-title">
+    <span class="theorem-label">{strings.kinds.corollary[locale]}</span> ({ui.nav.contact[locale]})<span class="theorem-label">.</span>
+  </h3>
+  <p class="theorem-body atlas-panel-statement">{ui.contact.body[locale]}</p>
+  <ul class="atlas-panel-links">
+    {
+      links.email && (
+        <li>
+          <a class="link" href={`mailto:${links.email}`}>
+            <Icon name="mail" size={16} />
+            {links.email}
+          </a>
+        </li>
+      )
+    }
+    <li>
+      <a class="link" href={links.github} rel="me noopener">
+        <Icon name="github" size={16} />
+        github.com/{links.githubHandle}
+      </a>
+    </li>
+    {
+      links.linkedin && (
+        <li>
+          <a class="link" href={links.linkedin} rel="me noopener">
+            <Icon name="linkedin" size={16} />
+            {ui.contact.linkedin[locale]}
+          </a>
+        </li>
+      )
+    }
+  </ul>
+  <p class="atlas-panel-source">
+    {strings.source[locale]}{' '}
+    <a href={sourceUrl(sources.identity)} rel="noopener">{sources.identity}</a>
+  </p>
+  <p class="atlas-panel-actions">
+    <a class="button" href={href('/#contact', locale)}>{strings.readContact[locale]}</a>
+  </p>
+</template>
+
+<template data-panel="remark">
+  <h3 class="atlas-panel-title">
+    <span class="theorem-label">{strings.kinds.remark[locale]}</span> ({ui.nav.community[locale]})<span class="theorem-label">.</span>
+  </h3>
+  <p class="theorem-body atlas-panel-statement">
+    {gdg.name[locale]}. {gdg.role[locale]}, {gdg.since[locale]}.
+  </p>
+  <p>{ui.community.intro[locale]}</p>
+  <p class="atlas-panel-source">
+    {strings.source[locale]}{' '}
+    <a href={sourceUrl(sources.community)} rel="noopener">{sources.community}</a>
+  </p>
+  <p class="atlas-panel-actions">
+    <a class="button" href={href('/#community', locale)}>{strings.readCommunity[locale]}</a>
+  </p>
+</template>

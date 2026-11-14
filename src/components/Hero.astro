@@ -1,7 +1,7 @@
 ---
+import Atlas from './atlas/Atlas.astro';
 import Icon from './Icon.astro';
 import { brand, links, person } from '../config/site';
-import { projects } from '../data/projects';
 import type { Locale } from '../i18n';
 import { ui } from '../i18n/ui';
 import { href } from '../utils/paths';
@@ -9,8 +9,8 @@ import { href } from '../utils/paths';
 /**
  * The top of the sheet. First the pad's title block, which answers who this
  * is before anything else. Then a lemma and its proof, the form the site is
- * named after: the claim is the headline, and the proof is the list of
- * results, one per project, each a link to the working.
+ * named after: the claim is the headline, and the proof is a construction,
+ * the figure of the whole site with one result per project (`Atlas.astro`).
  */
 interface Props {
   locale: Locale;
@@ -58,28 +58,16 @@ const block = ui.titleBlock;
       <div class="sheet-body proof-body">
         <p class="hero-body">{strings.proofBody[locale]}</p>
 
-        <ol class="ledger" aria-label={strings.ledgerTitle[locale]}>
-          {
-            projects.map((project, index) => (
-              <li>
-                <a href={href(`/work/${project.slug}/`, locale)}>
-                  <span class="ledger-id" aria-hidden="true">
-                    L{project.order}
-                  </span>
-                  <span class="ledger-name">{project.shortTitle}</span>
-                  <span class="ledger-leader" aria-hidden="true" />
-                  <span class="ledger-result">
-                    <span class="hl" style={`--i:${index}`}>
-                      {project.proof.figure[locale]}
-                    </span>{' '}
-                    {project.proof.claim[locale]}
-                  </span>
-                </a>
-              </li>
-            ))
-          }
-        </ol>
+      </div>
+    </div>
 
+    <div class="hero-figure">
+      <Atlas locale={locale} />
+    </div>
+
+    <div class="sheet">
+      <div class="margin-note closing-label"></div>
+      <div class="sheet-body closing-body">
         <p class="hero-qed">
           <span class="tombstone" aria-hidden="true"></span><span class="sr-only">{strings.endOfProof[locale]}</span>
         </p>
@@ -149,13 +137,13 @@ const block = ui.titleBlock;
      closed up between them. */
   .sheet > .claim-label,
   .sheet > .claim-body {
-    padding-top: clamp(2rem, 5vw, 3.5rem);
+    padding-top: clamp(1.75rem, 3.6vw, 2.75rem);
     padding-bottom: 0;
   }
 
   .sheet > .proof-label,
   .sheet > .proof-body {
-    padding-top: clamp(1.25rem, 3vw, 2.25rem);
+    padding-top: clamp(1.25rem, 2.4vw, 1.75rem);
   }
 
   .proof-label .margin-key {
@@ -167,74 +155,43 @@ const block = ui.titleBlock;
     max-width: 11.5em;
     font-family: var(--font-serif);
     font-weight: 700;
-    font-size: clamp(2.625rem, 6.6vw, 5rem);
+    font-size: clamp(2.625rem, 5.8vw, 4.5rem);
     line-height: 1.02;
     letter-spacing: -0.022em;
   }
 
   .hero-body {
-    max-width: 39rem;
+    max-width: 46rem;
     font-size: var(--text-lg);
     line-height: 1.5;
   }
 
-  /* The proof itself: one counted result per project, set like the list of
-     results at the front of a paper. Each row is a link to the working. */
-  .ledger {
-    margin-top: 1.75rem;
-    border-top: 2px solid var(--text);
-    border-bottom: 2px solid var(--text);
-    background: var(--panel);
+  /* The proof is a figure, and it runs the full width of the sheet: the
+     margin rule stops above it and picks up again below. */
+  .sheet > .proof-label {
+    padding-bottom: 0;
   }
 
-  .ledger li + li {
-    border-top: 1px solid var(--line);
+  .sheet > .proof-body {
+    padding-bottom: 1.25rem;
   }
 
-  .ledger a {
-    display: grid;
-    grid-template-columns: 2.25rem minmax(0, 1fr);
-    gap: 0.125rem 0.5rem;
-    padding: 0.875rem 0.875rem;
-    line-height: 1.35;
+  .hero-figure {
+    min-width: 0;
   }
 
-  .ledger-id {
-    font-style: italic;
-    color: var(--muted);
+  .sheet > .closing-label {
+    padding-top: 0;
   }
 
-  .ledger-name {
-    font-weight: 700;
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.22em;
-    transition: text-decoration-color 150ms ease;
-  }
-
-  .ledger a:hover .ledger-name {
-    text-decoration-color: var(--mark);
-  }
-
-  .ledger-leader {
-    display: none;
-  }
-
-  .ledger-result {
-    grid-column: 2;
-    color: var(--muted);
-  }
-
-  .ledger-result .hl {
-    color: var(--text);
+  .sheet > .closing-body {
+    padding-top: 0.875rem;
   }
 
   /* As in a typeset proof, the mark sits at the end of the last line. */
   .hero-qed {
     display: flex;
     justify-content: flex-end;
-    margin-top: 0.875rem;
     line-height: 1;
   }
 
@@ -258,30 +215,6 @@ const block = ui.titleBlock;
     color: var(--muted);
   }
 
-  @media (min-width: 40rem) {
-    .ledger a {
-      grid-template-columns: 2.25rem auto minmax(1.5rem, 1fr) auto;
-      align-items: baseline;
-      gap: 0 0.5rem;
-    }
-
-    /* Dot leaders carry the eye from a project to its result. */
-    .ledger-leader {
-      display: block;
-      align-self: end;
-      height: 0.35em;
-      margin-bottom: 0.3em;
-      background: radial-gradient(circle, var(--line-strong) 1px, transparent 1.25px) left bottom / 0.5rem 0.35em
-        repeat-x;
-    }
-
-    .ledger-result {
-      grid-column: auto;
-      max-width: 30rem;
-      text-align: right;
-    }
-  }
-
   @media (min-width: 64rem) {
     .title-block {
       grid-template-columns: var(--margin-col) 1.5fr 1fr 1fr;
@@ -299,25 +232,7 @@ const block = ui.titleBlock;
 
     .sheet > .proof-label {
       /* Sits on the first line of the proof, not above it. */
-      padding-top: calc(clamp(1.25rem, 3vw, 2.25rem) + 0.1rem);
-    }
-  }
-
-  /* The one orchestrated moment on the page: the results are highlighted,
-     one after another, the way you would mark them with a pen. */
-  @media (prefers-reduced-motion: no-preference) {
-    .ledger .hl {
-      animation: swipe 520ms cubic-bezier(0.3, 0.7, 0.2, 1) both;
-      animation-delay: calc(350ms + var(--i) * 170ms);
-    }
-
-    @keyframes swipe {
-      from {
-        background-size: 0% var(--hl-size);
-      }
-      to {
-        background-size: 100% var(--hl-size);
-      }
+      padding-top: calc(clamp(1.25rem, 2.4vw, 1.75rem) + 0.1rem);
     }
   }
 </style>

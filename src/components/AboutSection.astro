@@ -15,7 +15,7 @@ const { locale } = Astro.props;
 const strings = ui.about;
 ---
 
-<Section id="about" title={strings.title[locale]}>
+<Section id="about" title={strings.title[locale]} kind={ui.atlas.kinds.definition[locale]}>
   <div class="about">
     <div class="about-body">
       <p class="statement">

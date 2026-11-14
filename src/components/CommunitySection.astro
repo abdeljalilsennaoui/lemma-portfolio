@@ -28,7 +28,12 @@ const fill = (text: string) =>
   text.replace('{members}', numberFormat.format(gdg.members.count)).replace('{asOf}', gdg.members.asOf[locale]);
 ---
 
-<Section id="community" title={strings.title[locale]} intro={strings.intro[locale]}>
+<Section
+  id="community"
+  title={strings.title[locale]}
+  intro={strings.intro[locale]}
+  kind={ui.atlas.kinds.remark[locale]}
+>
   <div class="community">
     <div class="community-text">
       <p class="statement">

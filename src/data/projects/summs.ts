@@ -293,6 +293,38 @@ export const summs: Project = {
         'The base booking state rejects every action with a 409; each concrete state overrides only the transitions it allows, and the two terminal states override none. The service rebuilds the state machine from the booking’s stored status before each attempt, so a booking cannot be completed twice or confirmed after it failed, and no payment is charged for a transition that was never valid.',
         "L'état de base d'une réservation rejette toute action par un 409; chaque état concret ne redéfinit que les transitions qu'il autorise, et les deux états terminaux n'en redéfinissent aucune. Le service reconstruit la machine à états à partir du statut enregistré avant chaque tentative : une réservation ne peut donc pas être terminée deux fois ni confirmée après un échec, et aucun paiement n'est débité pour une transition qui n'a jamais été valide.",
       ),
+      // The states, the three actions, the three legal moves and the wording
+      // of the refusal are those of backend/src/lib/BookingStateMachine.js
+      // and backend/src/lib/states/ in the repository.
+      machine: {
+        caption: t(
+          'The booking state machine as a model you can drive. Three moves are allowed; the other nine answer with the 409 the back end throws. This is a model running in your browser, not the project’s code, which is linked beside it.',
+          'La machine à états des réservations, sous la forme d’un modèle que vous pouvez piloter. Trois déplacements sont permis; les neuf autres répondent par le 409 que lance le serveur. Il s’agit d’un modèle exécuté dans votre navigateur, et non du code du projet, dont le lien figure à côté.',
+        ),
+        source: {
+          label: 'backend/src/lib/BookingStateMachine.js',
+          url: 'https://github.com/abdeljalilsennaoui/SOEN343-Project-W26/blob/main/backend/src/lib/BookingStateMachine.js',
+        },
+        initial: 'DRAFT',
+        states: [
+          { id: 'DRAFT', at: [0, 0] },
+          { id: 'ACTIVE', at: [1, 0] },
+          { id: 'COMPLETE', at: [2, 0], terminal: true },
+          { id: 'FAILED', at: [1, 1], terminal: true },
+        ],
+        actions: [
+          { id: 'toActive', target: 'ACTIVE' },
+          { id: 'toComplete', target: 'COMPLETE' },
+          { id: 'toFailed', target: 'FAILED' },
+        ],
+        transitions: [
+          { from: 'DRAFT', action: 'toActive', to: 'ACTIVE' },
+          { from: 'DRAFT', action: 'toFailed', to: 'FAILED' },
+          { from: 'ACTIVE', action: 'toComplete', to: 'COMPLETE' },
+        ],
+        refusal: 'Cannot transition to {target} from {state}.',
+        reset: t('New booking', 'Nouvelle réservation'),
+      },
     },
     {
       title: t('One command per request type, no switch statement', "Une commande par type de requête, sans instruction switch"),
