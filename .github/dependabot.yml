@@ -1,0 +1,23 @@
+# Weekly update proposals for the deploy workflow's actions and for npm
+# packages, each ecosystem grouped into one pull request so they are easy to
+# review. Security fixes are proposed as soon as an advisory is published,
+# separately from this schedule.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dependencies:
+        patterns: ['*']
+        update-types: [minor, patch]

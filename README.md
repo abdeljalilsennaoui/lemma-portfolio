@@ -386,5 +386,6 @@ root, usually after a past `sudo npm`. Fix the ownership with
   family name "Lemma Math"; the licence is alongside it.
 - Screenshots are from my own repositories.
 
-The content of this site — text, images and the LEMMA by AJS identity — is © Abdeljalil
-Sennaoui.
+The code and the content of this site — text, images and the LEMMA by AJS identity — are
+© Abdeljalil Sennaoui, all rights reserved. The repository is public to be read, not reused;
+see [LICENSE](LICENSE).

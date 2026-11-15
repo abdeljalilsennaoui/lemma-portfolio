@@ -1,0 +1,20 @@
+Copyright (c) 2025-2026 Abdeljalil Sennaoui. All rights reserved.
+
+This repository holds the source code and the content of lemmabyajs.com: the
+text, the screenshots, the diagrams and the LEMMA by AJS name and identity.
+
+The repository is public so that the work can be read and evaluated. No
+licence is granted to copy, modify, publish, distribute or reuse any part of
+it, in whole or in part, without written permission from the author. Viewing
+and forking on GitHub remain possible as GitHub's Terms of Service provide,
+and nothing beyond that is permitted.
+
+Third-party material keeps its own licence:
+
+- Barlow and Barlow Condensed, (c) The Barlow Project Authors, installed from
+  the @fontsource packages, are used under the SIL Open Font License 1.1.
+- STIX Two Math, (c) the STIX Fonts Project Authors, is used under the SIL
+  Open Font License 1.1; see src/assets/fonts/OFL.txt.
+- npm packages installed at build time are under their own licences.
+
+For permission, write to hello@lemmabyajs.com.
