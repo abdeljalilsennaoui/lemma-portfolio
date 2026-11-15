@@ -1,7 +1,7 @@
 // Builds src/assets/fonts/lemma-math.woff2: the handful of mathematical
 // symbols the site sets, taken from STIX Two Math.
 //
-// The text face, Charis SIL, has no set-theory or logic symbols, and the full
+// The text face, Barlow, has no set-theory or logic symbols, and the full
 // STIX Two Math file is about 400 kB. This keeps only the symbols below, so a
 // formula such as R ⊆ P × D costs a few kilobytes.
 //

@@ -20,9 +20,13 @@ const items = [
   { label: ui.nav.engineering[locale], target: '/#engineering' },
   { label: ui.nav.contact[locale], target: '/#contact' },
 ];
+
+// On a case study the reader is inside Work, so that link says so.
+const isCurrent = (target: string) =>
+  target === '/#work' && route.startsWith('/work/') ? 'true' : undefined;
 ---
 
-<header class="site-header" data-header>
+<header class="site-header board" data-header>
   <div class="shell flex h-[4.5rem] items-center justify-between gap-6">
     <Wordmark locale={locale} />
 
@@ -31,7 +35,7 @@ const items = [
         {
           items.map((item) => (
             <li>
-              <a href={href(item.target, locale)} class="nav-link">
+              <a href={href(item.target, locale)} class="nav-link" aria-current={isCurrent(item.target)}>
                 {item.label}
               </a>
             </li>
@@ -96,7 +100,7 @@ const items = [
       {
         items.map((item) => (
           <li>
-            <a href={href(item.target, locale)} class="mobile-link">
+            <a href={href(item.target, locale)} class="mobile-link" aria-current={isCurrent(item.target)}>
               {item.label}
             </a>
           </li>
@@ -316,9 +320,15 @@ const items = [
     align-items: center;
     min-height: 3.25rem;
     border-bottom: 1px solid var(--line);
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: var(--text-lg);
     color: var(--text);
+  }
+
+  .mobile-link[aria-current] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
   }
 
 </style>

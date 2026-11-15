@@ -38,7 +38,7 @@ const strings = ui.contact;
           <span class="contact-kind">{strings.github[locale]}</span>
           <a class="link" href={links.github} rel="me noopener">
             <Icon name="github" />
-            github.com/{links.githubHandle}
+            github.com/<wbr />{links.githubHandle}
           </a>
         </li>
         {
@@ -59,16 +59,7 @@ const strings = ui.contact;
 </section>
 
 <style>
-  /* The page ends at the blackboard, in either theme. On the board theme
-     there is no colour change to mark the band, so a rule does that job. */
-  .contact {
-    background-image: none;
-  }
-
-  :global(:root[data-theme='dark']) .contact {
-    border-top: 1.5px solid var(--text);
-  }
-
+  /* The page ends on a burgundy band, in either theme. */
   .contact-kind-label {
     font-style: italic;
   }
@@ -118,7 +109,8 @@ const strings = ui.contact;
     align-items: center;
     gap: 0.625rem;
     min-height: 2.75rem;
-    font-size: var(--text-lg);
+    /* Small enough on a phone that the LinkedIn address fits on one line. */
+    font-size: clamp(var(--text-base), 4.3vw, var(--text-lg));
     overflow-wrap: anywhere;
   }
 

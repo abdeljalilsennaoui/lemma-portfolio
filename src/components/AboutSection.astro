@@ -60,7 +60,7 @@ const strings = ui.about;
             <ul class="about-links">
               <li>
                 <a class="link" href={links.github} rel="me noopener">
-                  <Icon name="github" size={16} />github.com/{links.githubHandle}
+                  <Icon name="github" size={16} />github.com/<wbr />{links.githubHandle}
                 </a>
               </li>
               {
@@ -105,10 +105,6 @@ const strings = ui.about;
     display: grid;
     gap: 1.25rem;
     max-width: 40rem;
-  }
-
-  .about-body p {
-    color: var(--muted);
   }
 
   .about-body .statement {

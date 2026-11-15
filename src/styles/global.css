@@ -3,10 +3,11 @@
 /* ---------------------------------------------------------------------------
    Typefaces
 
-   One family sets everything: Charis SIL, SIL's release of Charter. Its four
-   styles are imported in src/layouts/Base.astro. The few mathematical symbols
-   it lacks come from a small subset of STIX Two Math built by `npm run fonts`;
-   see src/assets/fonts/OFL.txt for that licence.
+   Barlow, a grotesk drawn after the DIN lettering of road signs, sets the
+   text; its condensed cut sets the headings. Both are imported in
+   src/layouts/Base.astro. The few mathematical symbols they lack come from a
+   small subset of STIX Two Math built by `npm run fonts`; see
+   src/assets/fonts/OFL.txt for that licence.
 --------------------------------------------------------------------------- */
 @font-face {
   font-family: 'Lemma Math';
@@ -21,65 +22,69 @@
 /* ---------------------------------------------------------------------------
    Design tokens
 
-   The site is the two surfaces an engineering student does mathematics on,
-   and the two themes share one set of names.
+   White and black, and Concordia burgundy used as a solid colour rather than
+   a tint: the header, the contact band and footer, and the chips behind the
+   figures that matter. The dark theme is a neutral black with a burgundy
+   lifted just enough to hold white text.
 
-   Pad (default): an engineer's computation pad. Green-tinted paper with a
-   five-to-the-inch grid, dark ink, and a yellow highlighter for the answer.
-
-   Board (`data-theme="dark"`): the blackboard. Chalk on green, with yellow
-   chalk where the pad uses the highlighter.
-
-   Components reference the tokens only. `.board` re-declares the board set,
-   so the contact band at the foot of the page is a blackboard in either
-   theme.
+   Components reference the tokens only. `.board` re-declares them for a
+   burgundy surface, so the header and the foot of the page are burgundy in
+   either theme.
 --------------------------------------------------------------------------- */
 :root {
   color-scheme: light;
-  --bg: #eef2e4;
-  --panel: #f8faf3;
-  --line: #c6d2ba;
-  --line-strong: #7b9082;
-  --text: #14241d;
-  --muted: #45564b;
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --line: #e1e1e1;
+  --line-strong: #8a8a8a;
+  --text: #111111;
+  --muted: #555555;
   /* The solid mark: the tombstone, rules that carry meaning, focus rings. */
-  --mark: #1c6b4c;
-  --mark-ink: #f8faf3;
-  /* The highlighter. Only ever a fill behind ink, never a text colour. */
-  --hl: #f5d547;
-  --grid-minor: rgb(28 107 76 / 0.045);
-  --grid-major: rgb(28 107 76 / 0.09);
-}
-
-:root[data-theme='dark'],
-.board {
-  --bg: #0f3a2e;
-  --panel: #0b2f25;
-  --line: #2b5647;
-  --line-strong: #5a8474;
-  --text: #f4f2e8;
-  --muted: #b7c6bb;
-  --mark: #f4cf45;
-  --mark-ink: #10231c;
-  --hl: #f4cf45;
-  --grid-minor: rgb(244 242 232 / 0.035);
-  --grid-major: rgb(244 242 232 / 0.07);
+  --mark: #912338;
+  --mark-ink: #ffffff;
+  /* The chip behind the figure that matters, and the ink set on it. */
+  --hl: #912338;
+  --hl-ink: #ffffff;
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
+  --bg: #111111;
+  --panel: #1a1a1a;
+  --line: #2e2e2e;
+  --line-strong: #6e6e6e;
+  --text: #f2f2f2;
+  --muted: #a8a8a8;
+  --mark: #b8324b;
+  --mark-ink: #ffffff;
+  --hl: #b8324b;
+  --hl-ink: #ffffff;
 }
 
+/* A burgundy surface. White is its mark, so a primary button on it is a white
+   block with burgundy letters. */
 .board {
+  --bg: #912338;
+  --panel: #7d1d30;
+  --line: rgb(255 255 255 / 0.22);
+  --line-strong: rgb(255 255 255 / 0.5);
+  --text: #ffffff;
+  --muted: #f0d5da;
+  --mark: #ffffff;
+  --mark-ink: #912338;
+  --hl: #ffffff;
+  --hl-ink: #912338;
   background: var(--bg);
   color: var(--text);
 }
 
 @theme inline {
-  /* Headings and running text share one family. The two names are kept so a
-     component still says which role it is setting. */
-  --font-serif: 'Charis SIL', 'Lemma Math', Charter, 'Bitstream Charter', Georgia, serif;
-  --font-sans: 'Charis SIL', 'Lemma Math', Charter, 'Bitstream Charter', Georgia, serif;
+  /* Running text and labels share one family; `--font-serif` is kept as a
+     name so a component still says which role it is setting. Headings use
+     the condensed cut. */
+  --font-serif: 'Barlow', 'Lemma Math', 'DIN Alternate', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Barlow', 'Lemma Math', 'DIN Alternate', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Barlow Condensed', 'Lemma Math', 'DIN Condensed', 'Arial Narrow', sans-serif;
   /* Code and identifiers use the reader's own monospace face. */
   --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
@@ -123,19 +128,6 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
-    /* The pad's grid: light lines every cell, a heavier one every fifth. */
-    background-image:
-      linear-gradient(var(--grid-major) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
-      linear-gradient(var(--grid-minor) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
-    background-size:
-      calc(var(--cell) * 5) calc(var(--cell) * 5),
-      calc(var(--cell) * 5) calc(var(--cell) * 5),
-      var(--cell) var(--cell),
-      var(--cell) var(--cell);
-    background-position: center top;
-    --cell: 1.25rem;
   }
 
   ::selection {
@@ -219,11 +211,10 @@
   }
 
   .margin-key {
-    font-family: var(--font-serif);
-    font-size: clamp(1.75rem, 3.4vw, 2.125rem);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.8vw, 2.5rem);
     font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
+    line-height: 1.05;
     color: var(--text);
   }
 
@@ -248,7 +239,7 @@
     }
 
     .margin-key {
-      font-size: 1.5rem;
+      font-size: 1.875rem;
     }
 
     /* The label stays in view while its section scrolls past. */
@@ -258,23 +249,15 @@
     }
   }
 
-  /* The highlighter: a stroke behind the figure that matters. On the board
-     it is a line of yellow chalk under it instead. */
+  /* A solid chip behind the figure that matters. */
   .hl {
-    --hl-size: 80%;
-    --hl-at: 60%;
-    padding-inline: 0.2em;
-    margin-inline: -0.2em;
-    background: linear-gradient(var(--hl), var(--hl)) left var(--hl-at) / 100% var(--hl-size) no-repeat;
+    --hl-size: 100%;
+    padding-inline: 0.3em;
+    background: linear-gradient(var(--hl), var(--hl)) left center / 100% var(--hl-size) no-repeat;
+    color: var(--hl-ink);
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
     font-weight: 700;
-  }
-
-  :root[data-theme='dark'] .hl,
-  .board .hl {
-    --hl-size: 2px;
-    --hl-at: 100%;
   }
 
   /* The boxed answer at the end of a worked problem. */
@@ -350,9 +333,24 @@
     color: var(--mark-ink);
   }
 
-  :root[data-theme='dark'] .button-primary:hover,
+  :root[data-theme='dark'] .button-primary:hover {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .board .button:hover,
   .board .button-primary:hover {
     border-color: var(--text);
+    background: transparent;
+    color: var(--text);
+  }
+
+  .board .button:not(.button-primary) {
+    background: transparent;
+  }
+
+  .board .button:not(.button-primary):hover {
     background: var(--text);
     color: var(--bg);
   }
@@ -455,9 +453,9 @@
 /* ---------------------------------------------------------------------------
    Print
 
-   On paper there is one theme: ink on white, no grid. The blackboard band at
-   the foot of the page is set as ordinary text so that the contact details
-   are legible, and controls that do nothing on paper are left out.
+   On paper there is one theme: ink on white. The burgundy bands are set as
+   ordinary text so that the contact details are legible, and controls that do
+   nothing on paper are left out.
 --------------------------------------------------------------------------- */
 @media print {
   :root,
@@ -473,16 +471,11 @@
     --mark: #000;
     --mark-ink: #fff;
     --hl: transparent;
-    --grid-minor: transparent;
-    --grid-major: transparent;
+    --hl-ink: #000;
   }
 
   html {
     font-size: 11pt;
-  }
-
-  body {
-    background: none;
   }
 
   .site-header {

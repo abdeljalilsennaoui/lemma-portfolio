@@ -12,17 +12,19 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="footer board">
-  <div class="shell footer-inner">
-    <div>
-      <p class="footer-brand">{brand.name}</p>
-      <p>{ui.footer.tagline[locale]}</p>
-      <p>© {year} {person.name}</p>
+  <div class="shell">
+    <div class="footer-inner">
+      <div>
+        <p class="footer-brand">{brand.name}</p>
+        <p>{ui.footer.tagline[locale]}</p>
+        <p>© {year} {person.name}</p>
+      </div>
+      <ul>
+        <li><a class="link" href={links.github} rel="me noopener">GitHub</a></li>
+        <li><a class="link" href={links.repository} rel="noopener">{ui.footer.source[locale]}</a></li>
+        <li><a class="link" href="#main">{ui.footer.backToTop[locale]}</a></li>
+      </ul>
     </div>
-    <ul>
-      <li><a class="link" href={links.github} rel="me noopener">GitHub</a></li>
-      <li><a class="link" href={links.repository} rel="noopener">{ui.footer.source[locale]}</a></li>
-      <li><a class="link" href="#main">{ui.footer.backToTop[locale]}</a></li>
-    </ul>
   </div>
 </footer>
 
@@ -38,6 +40,13 @@ const year = new Date().getFullYear();
     gap: 1.5rem;
     padding-block: 2rem 2.5rem;
     border-top: 1px solid var(--line);
+  }
+
+  /* The rule parts the footer from the contact band; on a page without that
+     band the change of colour already does it. */
+  :global(body:not(:has(#contact))) .footer-inner {
+    padding-top: 2.5rem;
+    border-top: 0;
   }
 
   .footer-brand {

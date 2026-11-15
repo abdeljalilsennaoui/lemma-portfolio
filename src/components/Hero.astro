@@ -138,6 +138,30 @@ const block = ui.titleBlock;
     font-weight: 700;
   }
 
+  /* On a phone, one row per fact with the label beside its value, so no
+     value is squeezed into half the width. */
+  @media (max-width: 29.99rem) {
+    .title-block {
+      grid-template-columns: 1fr;
+    }
+
+    .title-block > div {
+      display: grid;
+      grid-template-columns: 5.25rem minmax(0, 1fr);
+      align-items: baseline;
+      gap: 0.75rem;
+      border-left: 0;
+    }
+
+    .title-block > div:nth-child(2) {
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .title-block dd {
+      margin-top: 0;
+    }
+  }
+
   /* The program is a link to the university's page for the degree. */
   .program {
     text-decoration: underline;
@@ -178,11 +202,11 @@ const block = ui.titleBlock;
 
   .hero-title {
     max-width: 11.5em;
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2.625rem, 5.8vw, 4.5rem);
-    line-height: 1.02;
-    letter-spacing: -0.022em;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
   }
 
   .hero-body {

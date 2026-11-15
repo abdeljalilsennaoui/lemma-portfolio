@@ -442,12 +442,12 @@ const outline = [
 
   h1 {
     margin-top: 0.5rem;
-    max-width: 20ch;
-    font-family: var(--font-serif);
-    font-size: clamp(2.5rem, 6vw, 4.25rem);
+    max-width: 13em;
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 7vw, 5rem);
     font-weight: 700;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+    line-height: 1;
+    letter-spacing: -0.01em;
   }
 
   .case-summary {
@@ -548,6 +548,13 @@ const outline = [
     color: var(--text);
   }
 
+  /* Touch screens and narrow windows get full-size targets. */
+  @media (pointer: coarse), (max-width: 39.99rem) {
+    .toc a {
+      min-height: 2.75rem;
+    }
+  }
+
   .toc a:hover {
     text-decoration: underline;
     text-decoration-color: var(--mark);
@@ -588,8 +595,8 @@ const outline = [
   }
 
   .case-body h2 {
-    font-family: var(--font-serif);
-    font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.8vw, 2.625rem);
     font-weight: 700;
     line-height: 1.1;
   }
@@ -604,7 +611,6 @@ const outline = [
 
   .case-body p {
     margin-top: 1.125rem;
-    color: var(--muted);
   }
 
   .case-body h2 + p {
@@ -625,13 +631,13 @@ const outline = [
     padding-left: 1rem;
     border-left: 2px solid var(--mark);
     font-size: var(--text-sm);
+    color: var(--muted);
   }
 
   .bullets {
     display: grid;
     gap: 0.625rem;
     margin-top: 1.25rem;
-    color: var(--muted);
   }
 
   .bullets li {
@@ -704,7 +710,7 @@ const outline = [
   }
 
   .related-head h2 {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: var(--text-xl);
     font-weight: 700;
     line-height: 1.2;

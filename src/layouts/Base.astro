@@ -1,12 +1,14 @@
 ---
-import '@fontsource/charis-sil/latin-400.css';
-import '@fontsource/charis-sil/latin-400-italic.css';
-import '@fontsource/charis-sil/latin-700.css';
-import '@fontsource/charis-sil/latin-700-italic.css';
+import '@fontsource/barlow/latin-400.css';
+import '@fontsource/barlow/latin-400-italic.css';
+import '@fontsource/barlow/latin-600.css';
+import '@fontsource/barlow/latin-700.css';
+import '@fontsource/barlow-condensed/latin-700.css';
+import '@fontsource/barlow-condensed/latin-700-italic.css';
 import '../styles/global.css';
 
-import textUrl from '@fontsource/charis-sil/files/charis-sil-latin-400-normal.woff2?url';
-import boldUrl from '@fontsource/charis-sil/files/charis-sil-latin-700-normal.woff2?url';
+import textUrl from '@fontsource/barlow/files/barlow-latin-400-normal.woff2?url';
+import displayUrl from '@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2?url';
 
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -139,15 +141,14 @@ const jsonLd = {
     <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <meta name="theme-color" content="#eef2e4" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f3a2e" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#912338" />
     <link rel="icon" href={asset('/favicon.svg')} type="image/svg+xml" />
     <link rel="icon" href={asset('/favicon.ico')} sizes="32x32" />
     <link rel="apple-touch-icon" href={asset('/apple-touch-icon.png')} />
     <link rel="sitemap" href={asset('/sitemap-index.xml')} />
 
     <link rel="preload" href={textUrl} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={boldUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={displayUrl} as="font" type="font/woff2" crossorigin />
 
     <!-- Picks the theme before first paint: a saved choice if there is one,
          otherwise the reader's system setting. Also marks the page as scripted. -->

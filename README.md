@@ -30,16 +30,17 @@ proof.
 
 ## The design
 
-The site is laid out as the two surfaces an engineering student does mathematics on.
+The site is white and black, with Concordia burgundy (`#912338`) used as a solid colour rather
+than a tint.
 
-- **The pad** (light) is an engineer's computation pad: green-tinted paper with a grid, a ruled
-  title block at the top, and a margin column down the left. Section titles and lemma numbers
-  sit in the margin, the way a problem number does, and stay in view while their section
-  scrolls. The work goes in the body beside them.
-- **The board** (dark) is the blackboard: the same layout in chalk.
-- **The highlighter** marks the one figure that matters in a result, and nothing else. On the
-  board it becomes a line of yellow chalk. A project's result is also shown in a box, as the
-  answer to a worked problem is.
+- **The page** has a ruled title block at the top and a margin column down the left. Section
+  titles and lemma numbers sit in the margin, the way a problem number does, and stay in view
+  while their section scrolls. The work goes in the body beside them.
+- **The burgundy bands** are the header and the contact band and footer, in both themes. On a
+  phone the browser bar takes the same colour.
+- **The dark theme** is a neutral black with the burgundy lifted to `#b8324b`.
+- **The chip** marks the one figure that matters in a result, and nothing else: white on
+  burgundy. A project's result is also shown in a box, as the answer to a worked problem is.
 - **The tombstone** (∎) still closes a proof and stands in for the full stop of the wordmark.
 
 ### The figure
@@ -121,7 +122,7 @@ separately, what I built.
 | Framework | [Astro](https://astro.build) 7, static output |
 | Language | TypeScript, strict |
 | Styling | Tailwind CSS 4, design tokens as CSS custom properties |
-| Type | Charis SIL (Charter) for all text, self-hosted; the reader's own monospace for code |
+| Type | Barlow for text and Barlow Condensed for headings, self-hosted; the reader's own monospace for code |
 | Images | `astro:assets`, responsive WebP |
 | Hosting | GitHub Pages, deployed by GitHub Actions |
 
@@ -378,8 +379,8 @@ root, usually after a past `sudo npm`. Fix the ownership with
 
 ## Credits and licences
 
-- Charis SIL, © SIL International, under the SIL Open Font License 1.1. It is SIL's release of
-  Charter, the typeface Matthew Carter designed for Bitstream.
+- Barlow and Barlow Condensed, © The Barlow Project Authors (Jeremy Tribby), under the SIL Open
+  Font License 1.1.
 - STIX Two Math, © the STIX Fonts Project Authors, under the SIL Open Font License 1.1. The file
   in `src/assets/fonts/` is a subset holding a few mathematical symbols, served under the CSS
   family name "Lemma Math"; the licence is alongside it.

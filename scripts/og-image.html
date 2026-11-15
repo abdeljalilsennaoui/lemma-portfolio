@@ -12,16 +12,22 @@
     <meta charset="utf-8" />
     <style>
       @font-face {
-        font-family: 'Charis SIL';
+        font-family: 'Barlow';
         font-style: normal;
         font-weight: 400;
-        src: url('../node_modules/@fontsource/charis-sil/files/charis-sil-latin-400-normal.woff2') format('woff2');
+        src: url('../node_modules/@fontsource/barlow/files/barlow-latin-400-normal.woff2') format('woff2');
       }
       @font-face {
-        font-family: 'Charis SIL';
+        font-family: 'Barlow';
         font-style: normal;
         font-weight: 700;
-        src: url('../node_modules/@fontsource/charis-sil/files/charis-sil-latin-700-normal.woff2') format('woff2');
+        src: url('../node_modules/@fontsource/barlow/files/barlow-latin-700-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Barlow Condensed';
+        font-style: normal;
+        font-weight: 700;
+        src: url('../node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2') format('woff2');
       }
       * {
         margin: 0;
@@ -34,13 +40,13 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        background: #0f3a2e;
-        color: #f4f2e8;
-        font-family: 'Charis SIL', serif;
+        background: #912338;
+        color: #ffffff;
+        font-family: 'Barlow', sans-serif;
         overflow: hidden;
       }
       .wordmark {
-        font: 700 46px/1 'Charis SIL', serif;
+        font: 700 46px/1 'Barlow', sans-serif;
         display: flex;
         align-items: baseline;
         gap: 18px;
@@ -50,21 +56,21 @@
         width: 12px;
         height: 12px;
         margin-left: 4px;
-        background: #f4cf45;
+        background: #ffffff;
       }
       .wordmark span {
-        font: 400 15px/1 'Charis SIL', serif;
+        font: 400 15px/1 'Barlow', sans-serif;
         letter-spacing: 0.16em;
-        color: #b7c6bb;
+        color: #f0d5da;
       }
       .label {
-        font: 700 34px/1 'Charis SIL', serif;
+        font: 700 38px/1 'Barlow Condensed', sans-serif;
       }
       h1 {
         margin-top: 10px;
         margin-left: -4px;
-        font: 700 56px/1.08 'Charis SIL', serif;
-        letter-spacing: -0.02em;
+        font: 700 72px/1 'Barlow Condensed', sans-serif;
+        letter-spacing: -0.01em;
       }
       .claim {
         position: relative;
@@ -79,52 +85,52 @@
         height: 630px;
       }
       .ground {
-        fill: #17483a;
-        stroke: #5a8474;
+        fill: #7d1d30;
+        stroke: #d38f9c;
         stroke-width: 1.25;
       }
       .rule {
         fill: none;
-        stroke: #2b5647;
+        stroke: #a33a50;
       }
       .edge {
-        fill: #2b5647;
-        stroke: #5a8474;
+        fill: #a33a50;
+        stroke: #d38f9c;
       }
       .top {
-        fill: #f4cf45;
+        fill: #ffffff;
       }
       .front {
-        fill: #a88d2c;
+        fill: #e8c6cd;
       }
       .side {
-        fill: #77641f;
+        fill: #c9919c;
       }
       .wire {
-        stroke: #5a8474;
+        stroke: #d38f9c;
         stroke-width: 1;
       }
       .proof {
-        stroke: #f4f2e8;
+        stroke: #ffffff;
         stroke-width: 1.5;
         stroke-dasharray: 9 5;
         fill: none;
       }
       .box {
-        fill: #0b2f25;
-        stroke: #f4f2e8;
+        fill: #7d1d30;
+        stroke: #ffffff;
         stroke-width: 1.5;
       }
       .root {
-        fill: #f4f2e8;
+        fill: #ffffff;
       }
       text {
-        font: 700 19px 'Charis SIL', serif;
-        fill: #f4f2e8;
+        font: 700 19px 'Barlow', sans-serif;
+        fill: #ffffff;
         text-anchor: middle;
       }
       .root-text {
-        fill: #10231c;
+        fill: #912338;
         font-size: 22px;
       }
       .foot {
@@ -132,18 +138,18 @@
         justify-content: space-between;
         align-items: flex-end;
         font-size: 26px;
-        color: #b7c6bb;
+        color: #f0d5da;
       }
       .foot b {
         display: block;
         font-weight: 400;
         font-size: 32px;
-        color: #f4f2e8;
+        color: #ffffff;
       }
       .qed {
         width: 30px;
         height: 30px;
-        background: #f4cf45;
+        background: #ffffff;
       }
     </style>
   </head>

@@ -366,10 +366,6 @@ const model = {
     color: var(--muted);
   }
 
-  .atlas-result .hl {
-    color: var(--text);
-  }
-
   @media (min-width: 40rem) {
     .atlas:not([data-scene]) .atlas-lemma {
       grid-template-columns: auto minmax(1.5rem, 1fr) auto;
@@ -872,7 +868,7 @@ const model = {
   /* A discipline: the name of a row of the ground. */
   .atlas[data-scene] .atlas-discipline {
     z-index: 1;
-    padding: 0.125rem 0.375rem;
+    padding: 0.25rem 0.375rem;
     font-size: var(--text-xs);
     line-height: 1.2;
     white-space: nowrap;
@@ -1149,9 +1145,11 @@ const model = {
     @keyframes atlas-swipe {
       from {
         background-size: 0% var(--hl-size);
+        color: var(--text);
       }
       to {
         background-size: 100% var(--hl-size);
+        color: var(--hl-ink);
       }
     }
 
